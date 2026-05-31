@@ -33,7 +33,6 @@ public class ProductService {
     ProductRepository productRepository;
     ProductMapper productMapper;
     CategoryRepository categoryRepository;
-    PurchaseDetailRepository purchaseDetailRepository;
 
     @Transactional
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
@@ -57,11 +56,7 @@ public class ProductService {
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(product -> {
-                    ProductResponse response = productMapper.toResponse(product);
-                    response.setPurchaseCount(purchaseDetailRepository.countByProductId(product.getId()));
-                    return response;
-                })
+                .map(productMapper::toResponse)
                 .collect(Collectors.toList());
     }
 

@@ -113,7 +113,7 @@ export default function ProductCard({
 
         <div className="border-t pt-2 mt-auto flex items-center justify-between">
           <span className="text-base font-bold text-blue-600">
-            {price.toLocaleString("vi-VN")}
+            ₫{price.toLocaleString("vi-VN")}
           </span>
           <div className="flex items-center gap-2">
             <button
@@ -140,7 +140,7 @@ export default function ProductCard({
                 handlePayment();
               }}
               disabled={availableAmount === 0}
-              className="bg-[#E8847A] hover:bg-[#d9736a] text-white text-xs font-semibold py-1.5 px-4 rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
+              className="bg-pink-500 hover:bg-pink-600 text-white text-xs font-semibold py-1.5 px-4 rounded-lg transition disabled:bg-gray-300 disabled:cursor-not-allowed"
               aria-label={`Thanh toán cho ${name}`}
             >
               Mua

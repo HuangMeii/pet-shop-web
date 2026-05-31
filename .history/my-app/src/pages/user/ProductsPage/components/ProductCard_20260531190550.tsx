@@ -113,7 +113,7 @@ export default function ProductCard({
 
         <div className="border-t pt-2 mt-auto flex items-center justify-between">
           <span className="text-base font-bold text-blue-600">
-            {price.toLocaleString("vi-VN")}
+            ₫{price.toLocaleString("vi-VN")}
           </span>
           <div className="flex items-center gap-2">
             <button

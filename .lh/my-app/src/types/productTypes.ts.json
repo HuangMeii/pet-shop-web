@@ -1,0 +1,18 @@
+{
+    "sourceFile": "my-app/src/types/productTypes.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780228651427,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780228651427,
+            "name": "Commit-0",
+            "content": "export interface ProductResponse {\r\n  id: string;\r\n  name: string;\r\n  description?: string;\r\n  price: number;\r\n  categoryId?: string;\r\n  categoryName?: string;\r\n  brand?: string;\r\n  origin?: string;\r\n  unit?: string;\r\n  quantity: number;\r\n  expiryDate?: string;\r\n  imageUrl?: string;\r\n  available?: boolean;\r\n  createdAt?: string;\r\n  updatedAt?: string | null;\r\n  purchaseCount?: number;\r\n}\r\n\r\nexport interface ProductCreationRequest {\r\n    name: string;\r\n    description?: string;\r\n    price: number;\r\n    quantity: number;\r\n    unit: string;\r\n    categoryId: string; // UUID bên backend → string bên FE\r\n    brand?: string;\r\n    origin?: string;\r\n    imageUrl?: string;\r\n}\r\n\r\nexport interface ProductUpdateRequest {\r\n    name?: string;\r\n    description?: string;\r\n    price?: number;\r\n    quantity?: number;\r\n    unit?: string;\r\n    categoryId?: string;\r\n    brand?: string;\r\n    origin?: string;\r\n    expiryDate?: string;\r\n    imageUrl?: string;\r\n    available?: boolean;\r\n}\r\n"
+        }
+    ]
+}

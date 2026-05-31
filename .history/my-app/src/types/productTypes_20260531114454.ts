@@ -14,7 +14,6 @@ export interface ProductResponse {
   available?: boolean;
   createdAt?: string;
   updatedAt?: string | null;
-  purchaseCount?: number;
 }
 
 export interface ProductCreationRequest {

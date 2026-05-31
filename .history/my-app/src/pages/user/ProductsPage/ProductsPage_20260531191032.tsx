@@ -76,15 +76,15 @@ export default function ProductsPage() {
             </div>
         )}
         {/* Banner */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <div className="w-full">
           <img
             src="https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg"
             alt="Happy Pet Shop Banner"
-            className="w-full h-auto max-h-[400px] object-cover rounded-2xl shadow-md"
+            className="w-full h-auto max-h-[400px] object-cover"
           />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
@@ -104,15 +104,6 @@ export default function ProductsPage() {
                     currentSort={sortBy}
                 />
               </div>
-
-              {/* Small banner below filters */}
-             <div className="rounded-2xl overflow-hidden shadow-md h-48">
-              <img
-                src="https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg"
-                alt="Happy Pet Shop"
-                className="w-full h-full object-cover scale-150"
-              />
-            </div>
 
             </div>
 

@@ -107,12 +107,12 @@ export default function ProductsPage() {
 
               {/* Small banner below filters */}
              <div className="rounded-2xl overflow-hidden shadow-md h-48">
-              <img
-                src="https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg"
-                alt="Happy Pet Shop"
-                className="w-full h-full object-cover scale-150"
-              />
-            </div>
+  <img
+    src="https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg"
+    alt="Happy Pet Shop"
+    className="w-full h-full object-cover scale-150"
+  />
+</div>
 
             </div>
 

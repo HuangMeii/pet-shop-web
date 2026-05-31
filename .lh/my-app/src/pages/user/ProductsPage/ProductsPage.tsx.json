@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 10,
+            "activePatchIndex": 18,
             "patches": [
                 {
                     "date": 1780209487443,
@@ -48,6 +48,38 @@
                 {
                     "date": 1780227619961,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,10 +38,8 @@\n     fetchData();\r\n   }, []);\r\n \r\n   const {\r\n-    selectedCategories,\r\n-    // searchQuery,\r\n     minPrice,\r\n     maxPrice,\r\n     sortBy,\r\n     currentPage,\r\n@@ -49,9 +47,8 @@\n     totalItems,\r\n     totalPages,\r\n     startIndex,\r\n     endIndex,\r\n-    handleCategoryChange,\r\n     handlePriceFilterChange,\r\n     handleSort,\r\n     handlePageChange,\r\n     resetFilters,\r\n"
+                },
+                {
+                    "date": 1780228635894,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -109,13 +109,12 @@\n                         <ProductCard\r\n                             key={product.id}\r\n                             id={product.id}\r\n                             name={product.name}\r\n-                            description={product.description?? \"\"}\r\n                             price={product.price}\r\n                             image={product.imageUrl?? \"\"}\r\n                             availableAmount={product.quantity}\r\n-                            category={product.categoryName}\r\n+                            purchaseCount={product.purchaseCount ?? 0}\r\n                         />\r\n                     ))}\r\n \r\n                   </div>\r\n"
+                },
+                {
+                    "date": 1780229432726,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -74,8 +74,17 @@\n \r\n               </div>\r\n             </div>\r\n         )}\r\n+        {/* Banner */}\r\n+        <div className=\"w-full\">\r\n+          <img\r\n+            src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n+            alt=\"Happy Pet Shop Banner\"\r\n+            className=\"w-full h-auto max-h-[400px] object-cover\"\r\n+          />\r\n+        </div>\r\n+\r\n         <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10\">\r\n \r\n           <div className=\"grid grid-cols-1 lg:grid-cols-4 gap-8\">\r\n \r\n"
+                },
+                {
+                    "date": 1780229500396,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -75,17 +75,17 @@\n               </div>\r\n             </div>\r\n         )}\r\n         {/* Banner */}\r\n-        <div className=\"w-full\">\r\n+        <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6\">\r\n           <img\r\n             src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n             alt=\"Happy Pet Shop Banner\"\r\n-            className=\"w-full h-auto max-h-[400px] object-cover\"\r\n+            className=\"w-full h-auto max-h-[400px] object-cover rounded-2xl shadow-md\"\r\n           />\r\n         </div>\r\n \r\n-        <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10\">\r\n+        <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8\">\r\n \r\n           <div className=\"grid grid-cols-1 lg:grid-cols-4 gap-8\">\r\n \r\n             <div className=\"lg:col-span-1 space-y-6 sticky top-20 self-start\">\r\n"
+                },
+                {
+                    "date": 1780230619996,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -104,8 +104,17 @@\n                     currentSort={sortBy}\r\n                 />\r\n               </div>\r\n \r\n+              {/* Small banner below filters */}\r\n+              <div className=\"rounded-2xl overflow-hidden shadow-md\">\r\n+                <img\r\n+                  src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n+                  alt=\"Happy Pet Shop\"\r\n+                  className=\"w-full h-auto object-cover\"\r\n+                />\r\n+              </div>\r\n+\r\n             </div>\r\n \r\n \r\n             <div className=\"lg:col-span-3\">\r\n"
+                },
+                {
+                    "date": 1780230653525,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -105,13 +105,13 @@\n                 />\r\n               </div>\r\n \r\n               {/* Small banner below filters */}\r\n-              <div className=\"rounded-2xl overflow-hidden shadow-md\">\r\n+              <div className=\"rounded-2xl overflow-hidden shadow-md h-48\">\r\n                 <img\r\n                   src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n                   alt=\"Happy Pet Shop\"\r\n-                  className=\"w-full h-auto object-cover\"\r\n+                  className=\"w-full h-full object-cover\"\r\n                 />\r\n               </div>\r\n \r\n             </div>\r\n"
+                },
+                {
+                    "date": 1780230864420,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -105,15 +105,15 @@\n                 />\r\n               </div>\r\n \r\n               {/* Small banner below filters */}\r\n-              <div className=\"rounded-2xl overflow-hidden shadow-md h-48\">\r\n-                <img\r\n-                  src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n-                  alt=\"Happy Pet Shop\"\r\n-                  className=\"w-full h-full object-cover\"\r\n-                />\r\n-              </div>\r\n+<div className=\"rounded-2xl overflow-hidden shadow-md h-48\">\r\n+  <img\r\n+    src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n+    alt=\"Happy Pet Shop\"\r\n+    className=\"w-full h-full object-cover transition-transform duration-300 hover:scale-110\"\r\n+  />\r\n+</div>\r\n \r\n             </div>\r\n \r\n \r\n"
+                },
+                {
+                    "date": 1780230903221,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -105,15 +105,14 @@\n                 />\r\n               </div>\r\n \r\n               {/* Small banner below filters */}\r\n-<div className=\"rounded-2xl overflow-hidden shadow-md h-48\">\r\n-  <img\r\n-    src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n-    alt=\"Happy Pet Shop\"\r\n-    className=\"w-full h-full object-cover transition-transform duration-300 hover:scale-110\"\r\n-  />\r\n-</div>\r\n+                <img\r\n+                  src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n+                  alt=\"Happy Pet Shop\"\r\n+                  className=\"w-full h-full object-cover transition-transform duration-300 hover:scale-110\"\r\n+                />\r\n+              </div>\r\n \r\n             </div>\r\n \r\n \r\n"
+                },
+                {
+                    "date": 1780230937590,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -105,15 +105,15 @@\n                 />\r\n               </div>\r\n \r\n               {/* Small banner below filters */}\r\n-              <div className=\"rounded-2xl overflow-hidden shadow-md h-48\">\r\n-                <img\r\n-                  src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n-                  alt=\"Happy Pet Shop\"\r\n-                  className=\"w-full h-full object-cover transition-transform duration-300 hover:scale-110\"\r\n-                />\r\n-              </div>\r\n+             <div className=\"rounded-2xl overflow-hidden shadow-md h-48\">\r\n+  <img\r\n+    src=\"https://i.pinimg.com/1200x/79/54/fe/7954fe5fac405a381f2af964ef774abb.jpg\"\r\n+    alt=\"Happy Pet Shop\"\r\n+    className=\"w-full h-full object-cover scale-150\"\r\n+  />\r\n+</div>\r\n \r\n             </div>\r\n \r\n \r\n"
                 }
             ],
             "date": 1780209487443,

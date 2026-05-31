@@ -57,11 +57,7 @@ public class ProductService {
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(product -> {
-                    ProductResponse response = productMapper.toResponse(product);
-                    response.setPurchaseCount(purchaseDetailRepository.countByProductId(product.getId()));
-                    return response;
-                })
+                .map(productMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
