@@ -1,0 +1,22 @@
+{
+    "sourceFile": "my-app/src/pages/user/ProductsPage/components/Pagination.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1780225947927,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780225956364,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,11 +14,8 @@\n   currentPage,\r\n   totalPages,\r\n   onPageChange,\r\n   totalItems,\r\n-  // itemsPerPage,\r\n-  startIndex,\r\n-  endIndex,\r\n }: PaginationProps) {\r\n   const getPageNumbers = () => {\r\n     const pages: (number | string)[] = [];\r\n     const maxVisiblePages = 5;\r\n"
+                }
+            ],
+            "date": 1780225947927,
+            "name": "Commit-0",
+            "content": "\"use client\";\r\n\r\ninterface PaginationProps {\r\n  currentPage: number;\r\n  totalPages: number;\r\n  onPageChange: (page: number) => void;\r\n  totalItems: number;\r\n  itemsPerPage: number;\r\n  startIndex: number;\r\n  endIndex: number;\r\n}\r\n\r\nexport default function Pagination({\r\n  currentPage,\r\n  totalPages,\r\n  onPageChange,\r\n  totalItems,\r\n  // itemsPerPage,\r\n  startIndex,\r\n  endIndex,\r\n}: PaginationProps) {\r\n  const getPageNumbers = () => {\r\n    const pages: (number | string)[] = [];\r\n    const maxVisiblePages = 5;\r\n\r\n    if (totalPages <= maxVisiblePages) {\r\n      for (let i = 1; i <= totalPages; i++) {\r\n        pages.push(i);\r\n      }\r\n    } else {\r\n      pages.push(1);\r\n\r\n      if (currentPage > 3) {\r\n        pages.push(\"...\");\r\n      }\r\n\r\n      const start = Math.max(2, currentPage - 1);\r\n      const end = Math.min(totalPages - 1, currentPage + 1);\r\n      for (let i = start; i <= end; i++) {\r\n        pages.push(i);\r\n      }\r\n\r\n      if (currentPage < totalPages - 2) {\r\n        pages.push(\"...\");\r\n      }\r\n\r\n      pages.push(totalPages);\r\n    }\r\n\r\n    return pages;\r\n  };\r\n\r\n  const handlePrevious = () => {\r\n    if (currentPage > 1) {\r\n      onPageChange(currentPage - 1);\r\n    }\r\n  };\r\n\r\n  const handleNext = () => {\r\n    if (currentPage < totalPages) {\r\n      onPageChange(currentPage + 1);\r\n    }\r\n  };\r\n\r\n  if (totalItems === 0) {\r\n    return null;\r\n  }\r\n\r\n  const pageNumbers = getPageNumbers();\r\n\r\n  return (\r\n    <div className=\"bg-white rounded-lg shadow-md p-4 mt-8\">\r\n      <div className=\"flex items-center justify-center gap-2 flex-wrap\">\r\n        <button\r\n          onClick={handlePrevious}\r\n          disabled={currentPage === 1}\r\n          className=\"px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium\"\r\n          aria-label=\"Trang trước\"\r\n        >\r\n          ← Trước\r\n        </button>\r\n\r\n        {pageNumbers.map((page, index) => (\r\n          <div key={index}>\r\n            {page === \"...\" ? (\r\n              <span className=\"px-2 py-2 text-gray-500\">...</span>\r\n            ) : (\r\n              <button\r\n                onClick={() => onPageChange(page as number)}\r\n                disabled={page === currentPage}\r\n                className={`px-4 py-2 rounded-lg transition font-medium ${\r\n                  page === currentPage\r\n                    ? \"bg-blue-600 text-white\"\r\n                    : \"border border-gray-300 hover:bg-gray-100\"\r\n                }`}\r\n                aria-label={`Trang ${page}`}\r\n                aria-current={page === currentPage ? \"page\" : undefined}\r\n              >\r\n                {page}\r\n              </button>\r\n            )}\r\n          </div>\r\n        ))}\r\n\r\n        <button\r\n          onClick={handleNext}\r\n          disabled={currentPage === totalPages}\r\n          className=\"px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium\"\r\n          aria-label=\"Trang sau\"\r\n        >\r\n          Sau →\r\n        </button>\r\n      </div>\r\n    </div>\r\n  );\r\n}\r\n"
+        }
+    ]
+}

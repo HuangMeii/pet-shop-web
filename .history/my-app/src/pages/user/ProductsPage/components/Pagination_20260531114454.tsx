@@ -15,6 +15,9 @@ export default function Pagination({
   totalPages,
   onPageChange,
   totalItems,
+  // itemsPerPage,
+  startIndex,
+  endIndex,
 }: PaginationProps) {
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -66,7 +69,16 @@ export default function Pagination({
   const pageNumbers = getPageNumbers();
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 mt-8">
+    <div className="bg-white rounded-lg shadow-md p-6 mt-8">
+      <div className="text-center mb-6">
+        <p className="text-gray-700 font-medium">
+          Hiển thị{" "}
+          <span className="font-bold text-blue-600">{startIndex + 1}</span> -{" "}
+          <span className="font-bold text-blue-600">{Math.min(endIndex, totalItems)}</span> trong{" "}
+          <span className="font-bold text-blue-600">{totalItems}</span> kết quả
+        </p>
+      </div>
+
       <div className="flex items-center justify-center gap-2 flex-wrap">
         <button
           onClick={handlePrevious}

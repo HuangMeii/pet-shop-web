@@ -118,6 +118,19 @@ export default function ProductsPage() {
 
             <div className="lg:col-span-3">
 
+              <div className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+
+                <p className="text-gray-700 text-lg">
+                  Tìm thấy{" "}
+                  <span className="font-bold text-[#ff8e53]">
+                {totalItems}
+              </span>{" "}
+                  sản phẩm
+                </p>
+
+              </div>
+
+
               {paginatedProducts.length > 0 ? (
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">

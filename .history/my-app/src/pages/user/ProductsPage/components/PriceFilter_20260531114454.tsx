@@ -71,30 +71,19 @@ export default function PriceFilter({
       </div>
 
 
-      <h3 className="text-lg font-bold text-gray-800 mb-3">Sắp xếp</h3>
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          onClick={() => onSort("price-asc")}
-          className={`flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg border transition font-medium text-sm ${
-            currentSort === "price-asc"
-              ? "bg-blue-600 text-white border-blue-600"
-              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-          }`}
-          aria-label="Giá tăng dần"
+      <h3 className="text-xl font-bold text-gray-800 mb-4">Sắp xếp</h3>
+      <div className="mb-6">
+        <select
+          value={currentSort}
+          onChange={(e) => onSort(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white cursor-pointer"
+          aria-label="Chọn cách sắp xếp"
         >
-          <span>↑</span>
-        </button>
-        <button
-          onClick={() => onSort("price-desc")}
-          className={`flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg border transition font-medium text-sm ${
-            currentSort === "price-desc"
-              ? "bg-blue-600 text-white border-blue-600"
-              : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-          }`}
-          aria-label="Giá giảm dần"
-        >
-          <span>↓</span>
-        </button>
+          <option value="price-asc">Giá: Thấp → Cao</option>
+          <option value="price-desc">Giá: Cao → Thấp</option>
+          <option value="name-asc">Tên: A → Z</option>
+          <option value="name-desc">Tên: Z → A</option>
+        </select>
       </div>
     </div>
   );
