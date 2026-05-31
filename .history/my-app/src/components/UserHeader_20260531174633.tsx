@@ -246,62 +246,39 @@ export default function UserHeader() {
 
                 {/* ❤️ Wishlist */}
                 <Link
-                  to="/user/wishlist"
-                  className={`flex items-center gap-1 px-3 py-2 rounded-full transition ${
-                      isActive("/user/wishlist")
-                          ? "bg-green-500 text-white shadow"
-                          : "text-gray-600 hover:bg-red-50 hover:text-red-500"
-                  }`}
-                  title="Yêu thích"
+                    to="/user/wishlist"
+                    className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-red-50 hover:text-red-500 transition text-lg text-gray-600"
+                    title="Yêu thích"
                 >
-                  <span className="text-lg leading-none">❤️</span>
-                  <span className="text-sm">Yêu thích</span>
+                  ❤️
                 </Link>
 
-
-                {/* 🛒 Cart */}
+                {/*  Notification - link đến trang riêng */}
                 <Link
-                  to="/user/cart"
-                  className={`relative flex items-center gap-1 px-3 py-2 rounded-full transition ${
-                      isActive("/user/cart")
-                          ? "bg-green-500 text-white shadow"
-                          : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                  title="Giỏ hàng"
+                    to="/user/notifications"
+                    className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-lg text-gray-600"
+                    title="Thông báo"
                 >
-                  <span className="text-lg leading-none">🛒</span>
-                  <span className="text-sm">Giỏ hàng</span>
-
-                  {cartCount > 0 && (
-                    <span
-                      className="absolute -top-1 -right-1 bg-green-500 text-white
-                                text-[10px] font-bold rounded-full
-                                min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow"
-                    >
-                      {cartCount > 99 ? "99+" : cartCount}
+                  🔔
+                  {notifications.length > 0 && (
+                      <span
+                          className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow">
+                      {notifications.length}
                     </span>
                   )}
                 </Link>
 
-                {/* 🔔 Notification */}
+                {/* 🛒 Cart - link đến trang CartPage */}
                 <Link
-                  to="/user/notifications"
-                  className={`relative flex items-center gap-1 px-3 py-2 rounded-full transition ${
-                      isActive("/user/notifications")
-                          ? "bg-green-500 text-white shadow"
-                          : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                  title="Thông báo"
+                    to="/user/cart"
+                    className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-lg text-gray-600"
+                    title="Giỏ hàng"
                 >
-                  <span className="text-lg leading-none">🔔</span>
-
-                  {notifications.length > 0 && (
-                    <span
-                      className="absolute -top-1 -right-1 bg-red-500 text-white
-                                text-[10px] font-bold rounded-full
-                                min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow"
-                    >
-                      {notifications.length}
+                  🛒
+                  {cartCount > 0 && (
+                      <span
+                          className="absolute -top-0.5 -right-0.5 bg-green-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow">
+                      {cartCount > 99 ? "99+" : cartCount}
                     </span>
                   )}
                 </Link>
@@ -309,6 +286,14 @@ export default function UserHeader() {
                 {/* Auth */}
                 {user ? (
                     <div className="flex items-center gap-1">
+                      <Link
+                          to="/user/invoices"
+                          className={`${navItem} hidden lg:flex ${
+                              isActive("/user/invoices") ? activeItem : "hover:bg-gray-100"
+                          }`}
+                      >
+                        🧾 Hóa đơn
+                      </Link>
                       <Link
                           to="/user/profile"
                           className={`${navItem} ${

@@ -286,11 +286,8 @@ export default function UserHeader() {
                 {/* 🔔 Notification */}
                 <Link
                   to="/user/notifications"
-                  className={`relative flex items-center gap-1 px-3 py-2 rounded-full transition ${
-                      isActive("/user/notifications")
-                          ? "bg-green-500 text-white shadow"
-                          : "text-gray-600 hover:bg-gray-100"
-                  }`}
+                  className="relative flex items-center gap-1 px-3 py-2 rounded-full
+                            hover:bg-gray-100 transition text-gray-600"
                   title="Thông báo"
                 >
                   <span className="text-lg leading-none">🔔</span>

@@ -247,26 +247,41 @@ export default function UserHeader() {
                 {/* ❤️ Wishlist */}
                 <Link
                   to="/user/wishlist"
-                  className={`flex items-center gap-1 px-3 py-2 rounded-full transition ${
-                      isActive("/user/wishlist")
-                          ? "bg-green-500 text-white shadow"
-                          : "text-gray-600 hover:bg-red-50 hover:text-red-500"
-                  }`}
+                  className="flex items-center gap-1 px-3 py-2 rounded-full
+                            hover:bg-red-50 hover:text-red-500 transition
+                            text-gray-600"
                   title="Yêu thích"
                 >
                   <span className="text-lg leading-none">❤️</span>
                   <span className="text-sm">Yêu thích</span>
                 </Link>
 
+                {/* 🔔 Notification */}
+                <Link
+                  to="/user/notifications"
+                  className="relative flex items-center gap-1 px-3 py-2 rounded-full
+                            hover:bg-gray-100 transition text-gray-600"
+                  title="Thông báo"
+                >
+                  <span className="text-lg leading-none">🔔</span>
+                  <span className="text-sm">Thông báo</span>
+
+                  {notifications.length > 0 && (
+                    <span
+                      className="absolute -top-1 -right-1 bg-red-500 text-white
+                                text-[10px] font-bold rounded-full
+                                min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow"
+                    >
+                      {notifications.length}
+                    </span>
+                  )}
+                </Link>
 
                 {/* 🛒 Cart */}
                 <Link
                   to="/user/cart"
-                  className={`relative flex items-center gap-1 px-3 py-2 rounded-full transition ${
-                      isActive("/user/cart")
-                          ? "bg-green-500 text-white shadow"
-                          : "text-gray-600 hover:bg-gray-100"
-                  }`}
+                  className="relative flex items-center gap-1 px-3 py-2 rounded-full
+                            hover:bg-gray-100 transition text-gray-600"
                   title="Giỏ hàng"
                 >
                   <span className="text-lg leading-none">🛒</span>
@@ -279,29 +294,6 @@ export default function UserHeader() {
                                 min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow"
                     >
                       {cartCount > 99 ? "99+" : cartCount}
-                    </span>
-                  )}
-                </Link>
-
-                {/* 🔔 Notification */}
-                <Link
-                  to="/user/notifications"
-                  className={`relative flex items-center gap-1 px-3 py-2 rounded-full transition ${
-                      isActive("/user/notifications")
-                          ? "bg-green-500 text-white shadow"
-                          : "text-gray-600 hover:bg-gray-100"
-                  }`}
-                  title="Thông báo"
-                >
-                  <span className="text-lg leading-none">🔔</span>
-
-                  {notifications.length > 0 && (
-                    <span
-                      className="absolute -top-1 -right-1 bg-red-500 text-white
-                                text-[10px] font-bold rounded-full
-                                min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow"
-                    >
-                      {notifications.length}
                     </span>
                   )}
                 </Link>
