@@ -22,8 +22,15 @@ export default function ProductsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productsData = await getAllProducts();
+        const [productsData, categoriesData] = await Promise.all([
+          getAllProducts(),
+          getAllCategories(),
+        ]);
+
         setProducts(productsData);
+        
+        const categoryNames = categoriesData.map((cat) => cat.name);
+        setCategories(["All", ...categoryNames]);
       } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
           setError(err.response?.data?.message || "Lỗi từ server");
@@ -39,6 +46,8 @@ export default function ProductsPage() {
   }, []);
 
   const {
+    selectedCategories,
+    // searchQuery,
     minPrice,
     maxPrice,
     sortBy,
@@ -48,6 +57,7 @@ export default function ProductsPage() {
     totalPages,
     startIndex,
     endIndex,
+    handleCategoryChange,
     handlePriceFilterChange,
     handleSort,
     handlePageChange,

@@ -67,7 +67,7 @@ export default function PriceFilter({
               handlePriceRangeSelect(selected);
             }
           }}
-          className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg bg-white cursor-pointer text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="flex-1 px-0 py-1 bg-transparent cursor-pointer text-sm text-gray-700 focus:outline-none"
           aria-label="Chọn khoảng giá"
         >
           {PRICE_RANGES.map((range) => (
@@ -84,12 +84,10 @@ export default function PriceFilter({
 
         <button
           onClick={handleSortToggle}
-          className={`flex items-center flex-shrink-0 justify-center w-6 h-6 rounded-full border transition text-base ${
-            currentSort === "price-desc"
-              ? "bg-blue-600 text-white border-blue-600"
-              : currentSort === "price-asc"
-              ? "bg-blue-600 text-white border-blue-600"
-              : "bg-white text-gray-500 border-gray-300 hover:bg-gray-50"
+          className={`flex items-center justify-center w-7 h-7 rounded transition text-sm ${
+            currentSort !== ""
+              ? "text-blue-600"
+              : "text-gray-400 hover:text-gray-600"
           }`}
           aria-label="Sắp xếp giá"
         >

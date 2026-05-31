@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1780209487443,
@@ -24,6 +24,30 @@
                 {
                     "date": 1780225916381,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -117,21 +117,8 @@\n \r\n \r\n             <div className=\"lg:col-span-3\">\r\n \r\n-              <div className=\"mb-6 flex flex-col sm:flex-row justify-between items-center gap-4\">\r\n-\r\n-                <p className=\"text-gray-700 text-lg\">\r\n-                  Tìm thấy{\" \"}\r\n-                  <span className=\"font-bold text-[#ff8e53]\">\r\n-                {totalItems}\r\n-              </span>{\" \"}\r\n-                  sản phẩm\r\n-                </p>\r\n-\r\n-              </div>\r\n-\r\n-\r\n               {paginatedProducts.length > 0 ? (\r\n \r\n                   <div className=\"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7\">\r\n \r\n"
+                },
+                {
+                    "date": 1780226425932,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -90,9 +90,9 @@\n         <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10\">\r\n \r\n           <div className=\"grid grid-cols-1 lg:grid-cols-4 gap-8\">\r\n \r\n-            <div className=\"lg:col-span-1 space-y-6\">\r\n+            <div className=\"lg:col-span-1 space-y-6 sticky top-20 self-start\">\r\n \r\n               <div className=\"bg-white rounded-2xl shadow-md p-5\">\r\n                 <CategoryFilter\r\n                     categories={categories}\r\n"
+                },
+                {
+                    "date": 1780227583433,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -93,14 +93,9 @@\n \r\n             <div className=\"lg:col-span-1 space-y-6 sticky top-20 self-start\">\r\n \r\n               <div className=\"bg-white rounded-2xl shadow-md p-5\">\r\n-                <CategoryFilter\r\n-                    categories={categories}\r\n-                    selectedCategories={selectedCategories}\r\n-                    onCategoriesChange={handleCategoryChange}\r\n-                    layout=\"sidebar\"\r\n-                />\r\n+                <CategoryFilter />\r\n               </div>\r\n \r\n               <div className=\"bg-white rounded-2xl shadow-md p-5\">\r\n                 <PriceFilter\r\n"
+                },
+                {
+                    "date": 1780227593201,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,9 +16,8 @@\n export default function ProductsPage() {\r\n   const ITEMS_PER_PAGE = 12;\r\n \r\n   const [products, setProducts] = useState<ProductResponse[]>([]);\r\n-  const [categories, setCategories] = useState<string[]>([\"All\"]);\r\n   const [loading, setLoading] = useState(true);\r\n   const [error, setError] = useState<string | null>(null);\r\n \r\n   useEffect(() => {\r\n"
+                },
+                {
+                    "date": 1780227601579,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,8 @@\n import type {ProductResponse} from \"@/types/productTypes\";\r\n import Loader from \"@/components/ui/loader\";\r\n import axios from \"axios\";\r\n import {getAllProducts} from \"@/services/productService\";\r\n-import {getAllCategories} from \"@/services/categoryService\";\r\n \r\n export default function ProductsPage() {\r\n   const ITEMS_PER_PAGE = 12;\r\n \r\n"
+                },
+                {
+                    "date": 1780227610983,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,17 +21,10 @@\n \r\n   useEffect(() => {\r\n     const fetchData = async () => {\r\n       try {\r\n-        const [productsData, categoriesData] = await Promise.all([\r\n-          getAllProducts(),\r\n-          getAllCategories(),\r\n-        ]);\r\n-\r\n+        const productsData = await getAllProducts();\r\n         setProducts(productsData);\r\n-        \r\n-        const categoryNames = categoriesData.map((cat) => cat.name);\r\n-        setCategories([\"All\", ...categoryNames]);\r\n       } catch (err: unknown) {\r\n         if (axios.isAxiosError(err)) {\r\n           setError(err.response?.data?.message || \"Lỗi từ server\");\r\n         } else {\r\n"
+                },
+                {
+                    "date": 1780227619961,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,10 +38,8 @@\n     fetchData();\r\n   }, []);\r\n \r\n   const {\r\n-    selectedCategories,\r\n-    // searchQuery,\r\n     minPrice,\r\n     maxPrice,\r\n     sortBy,\r\n     currentPage,\r\n@@ -49,9 +47,8 @@\n     totalItems,\r\n     totalPages,\r\n     startIndex,\r\n     endIndex,\r\n-    handleCategoryChange,\r\n     handlePriceFilterChange,\r\n     handleSort,\r\n     handlePageChange,\r\n     resetFilters,\r\n"
                 }
             ],
             "date": 1780209487443,

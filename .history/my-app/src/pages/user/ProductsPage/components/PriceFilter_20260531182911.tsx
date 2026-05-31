@@ -5,8 +5,8 @@ interface PriceFilterProps {
   maxPrice: number;
   onMinChange: (value: number) => void;
   onMaxChange: (value: number) => void;
-  onSort: (sortType: string) => void;
-  currentSort: string;
+  onSort: (sortType: "" | "price-asc" | "price-desc") => void;
+  currentSort: "" | "price-asc" | "price-desc";
 }
 
 const PRICE_RANGES = [
@@ -84,7 +84,7 @@ export default function PriceFilter({
 
         <button
           onClick={handleSortToggle}
-          className={`flex items-center flex-shrink-0 justify-center w-6 h-6 rounded-full border transition text-base ${
+          className={`flex items-center justify-center w-10 h-10 rounded-full border transition text-base ${
             currentSort === "price-desc"
               ? "bg-blue-600 text-white border-blue-600"
               : currentSort === "price-asc"

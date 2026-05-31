@@ -44,7 +44,7 @@ export function useProductManager({
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(DEFAULT_MAX_PRICE);
-  const [sortBy, setSortBy] = useState<SortOption>("");
+  const [sortBy, setSortBy] = useState<SortOption>("price-asc");
   const [currentPage, setCurrentPage] = useState(1);
 
   const filteredAndSortedProducts = useMemo(() => {
@@ -110,7 +110,7 @@ export function useProductManager({
   }, [resetPage]);
 
   const handleSort = useCallback((sortType: string) => {
-    if (sortType === "" || ["price-asc", "price-desc", "name-asc", "name-desc"].includes(sortType)) {
+    if (["price-asc", "price-desc", "name-asc", "name-desc"].includes(sortType)) {
       setSortBy(sortType as SortOption);
       resetPage();
     }
@@ -125,7 +125,7 @@ export function useProductManager({
     setSearchQuery("");
     setMinPrice(0);
     setMaxPrice(DEFAULT_MAX_PRICE);
-    setSortBy("");
+    setSortBy("price-asc");
     setCurrentPage(1);
   }, []);
 

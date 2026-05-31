@@ -84,7 +84,7 @@ export default function PriceFilter({
 
         <button
           onClick={handleSortToggle}
-          className={`flex items-center flex-shrink-0 justify-center w-6 h-6 rounded-full border transition text-base ${
+          className={`flex items-center flex-shrink-0 justify-center w-6 h-8 rounded-full border transition text-base ${
             currentSort === "price-desc"
               ? "bg-blue-600 text-white border-blue-600"
               : currentSort === "price-asc"

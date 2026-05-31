@@ -11,19 +11,28 @@ import type {ProductResponse} from "@/types/productTypes";
 import Loader from "@/components/ui/loader";
 import axios from "axios";
 import {getAllProducts} from "@/services/productService";
+import {getAllCategories} from "@/services/categoryService";
 
 export default function ProductsPage() {
   const ITEMS_PER_PAGE = 12;
 
   const [products, setProducts] = useState<ProductResponse[]>([]);
+  const [categories, setCategories] = useState<string[]>(["All"]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productsData = await getAllProducts();
+        const [productsData, categoriesData] = await Promise.all([
+          getAllProducts(),
+          getAllCategories(),
+        ]);
+
         setProducts(productsData);
+        
+        const categoryNames = categoriesData.map((cat) => cat.name);
+        setCategories(["All", ...categoryNames]);
       } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
           setError(err.response?.data?.message || "Lỗi từ server");
@@ -39,6 +48,8 @@ export default function ProductsPage() {
   }, []);
 
   const {
+    selectedCategories,
+    // searchQuery,
     minPrice,
     maxPrice,
     sortBy,
@@ -48,6 +59,7 @@ export default function ProductsPage() {
     totalPages,
     startIndex,
     endIndex,
+    handleCategoryChange,
     handlePriceFilterChange,
     handleSort,
     handlePageChange,
@@ -82,7 +94,12 @@ export default function ProductsPage() {
             <div className="lg:col-span-1 space-y-6 sticky top-20 self-start">
 
               <div className="bg-white rounded-2xl shadow-md p-5">
-                <CategoryFilter />
+                <CategoryFilter
+                    categories={categories}
+                    selectedCategories={selectedCategories}
+                    onCategoriesChange={handleCategoryChange}
+                    layout="sidebar"
+                />
               </div>
 
               <div className="bg-white rounded-2xl shadow-md p-5">

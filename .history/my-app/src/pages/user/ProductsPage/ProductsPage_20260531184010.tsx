@@ -39,6 +39,8 @@ export default function ProductsPage() {
   }, []);
 
   const {
+    selectedCategories,
+    // searchQuery,
     minPrice,
     maxPrice,
     sortBy,
@@ -48,6 +50,7 @@ export default function ProductsPage() {
     totalPages,
     startIndex,
     endIndex,
+    handleCategoryChange,
     handlePriceFilterChange,
     handleSort,
     handlePageChange,

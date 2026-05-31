@@ -125,7 +125,7 @@ export function useProductManager({
     setSearchQuery("");
     setMinPrice(0);
     setMaxPrice(DEFAULT_MAX_PRICE);
-    setSortBy("");
+    setSortBy("price-asc");
     setCurrentPage(1);
   }, []);
 

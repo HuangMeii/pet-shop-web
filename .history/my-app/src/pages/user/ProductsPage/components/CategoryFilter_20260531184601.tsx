@@ -41,7 +41,7 @@ export default function CategoryFilter() {
                 type="checkbox"
                 checked={isChecked}
                 onChange={() => handleToggle(cat.label)}
-                className="w-4 h-4 text-blue-600 rounded cursor-pointer"
+                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
               />
               <span className="text-base">{cat.icon}</span>
               <span className={`text-sm transition ${isChecked ? "text-blue-600 font-semibold" : "text-gray-800"}`}>
