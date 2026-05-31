@@ -1,0 +1,18 @@
+{
+    "sourceFile": "my-app/src/pages/LoginPage/useLogin.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780209099300,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780209099300,
+            "name": "Commit-0",
+            "content": "import { useNavigate, useLocation } from \"react-router-dom\";\r\nimport {useAuth} from \"../../context/authContext.tsx\";\r\nimport {useState} from \"react\";\r\n\r\ninterface LoginErrors {\r\n  username?: string;\r\n  password?: string;\r\n  general?: string;\r\n}\r\n\r\ninterface UseLoginReturn {\r\n  username: string;\r\n  password: string;\r\n  errors: LoginErrors;\r\n  isLoading: boolean;\r\n  setUsername: (value: string) => void;\r\n  setPassword: (value: string) => void;\r\n  handleSubmit: (e: React.FormEvent) => Promise<void>;\r\n  clearError: (field: keyof LoginErrors) => void;\r\n}\r\n\r\nexport function useLogin(): UseLoginReturn {\r\n  const navigate = useNavigate();\r\n  const location = useLocation();\r\n  const {login} = useAuth();\r\n\r\n  const [username, setUsername] = useState<string>(\"\");\r\n  const [password, setPassword] = useState<string>(\"\");\r\n  const [errors, setErrors] = useState<LoginErrors>({});\r\n  const [isLoading, setIsLoading] = useState<boolean>(false);\r\n\r\n  const validateForm = (): boolean => {\r\n    const newErrors: LoginErrors = {};\r\n\r\n    if (!username.trim()) {\r\n      newErrors.username = \"Tên đăng nhập không được để trống\";\r\n    }\r\n\r\n    if (!password) {\r\n      newErrors.password = \"Mật khẩu không được để trống\";\r\n    } else if (password.length < 6) {\r\n      newErrors.password = \"Mật khẩu phải có ít nhất 6 ký tự\";\r\n    }\r\n\r\n    setErrors(newErrors);\r\n    return Object.keys(newErrors).length === 0;\r\n  };\r\n\r\n  const handleSubmit = async (e: React.FormEvent): Promise<void> => {\r\n    e.preventDefault();\r\n\r\n    if (!validateForm()) return;\r\n\r\n    setIsLoading(true);\r\n    setErrors({});\r\n\r\n    try {\r\n      await login({ username, password });\r\n\r\n      // 🔥 Kiểm tra nếu đang ở đường dẫn admin\r\n      if (location.pathname.includes(\"/admin\")) {\r\n        navigate(\"/admin/dashBoard\");\r\n      } else {\r\n        navigate(\"/user/products\");\r\n      }\r\n\r\n    } catch (error: unknown) {\r\n      console.error(\"Login error:\", error);\r\n\r\n      if (error instanceof Error) {\r\n        setErrors({ general: \"Sai thông tin đăng nhập, vui lòng thử lại\" });\r\n      } else {\r\n        setErrors({\r\n          general: \"Đăng nhập thất bại. Vui lòng thử lại.\",\r\n        });\r\n      }\r\n    } finally {\r\n      setIsLoading(false);\r\n    }\r\n  };\r\n\r\n  const clearError = (field: keyof LoginErrors): void => {\r\n    if (errors[field]) {\r\n      setErrors(prev => ({ ...prev, [field]: undefined }));\r\n    }\r\n  };\r\n\r\n  return {\r\n    username,\r\n    password,\r\n    errors,\r\n    isLoading,\r\n    setUsername,\r\n    setPassword,\r\n    handleSubmit,\r\n    clearError,\r\n  };\r\n}\r\n"
+        }
+    ]
+}

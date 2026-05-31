@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.sgu.happycashierscreen.controllers.CashierController"
+            prefHeight="700" prefWidth="1200">
+    <top>
+        <HBox styleClass="cashier-header" alignment="CENTER_LEFT" spacing="15">
+            <padding>
+                <Insets bottom="12" left="20" right="20" top="12"/>
+            </padding>
+            <Label text="🐾" styleClass="header-logo"/>
+            <VBox spacing="2">
+                <Label fx:id="storeNameLabel" text="Pawsome Pet Shop" styleClass="header-title"/>
+                <Label fx:id="welcomeLabel" text="Welcome, Staff!" styleClass="header-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <VBox alignment="CENTER_RIGHT">
+                <Label text="Today's Date" styleClass="header-subtitle"/>
+                <Label fx:id="dateLabel" text="" styleClass="header-title"/>
+            </VBox>
+            <Button text="Sales History" onAction="#showSalesHistory" styleClass="header-button"/>
+            <Button text="Full History" onAction="#showFullHistory" styleClass="header-button"/>
+            <Button text="Staff Account" onAction="#showStaffAccount" styleClass="header-button"/>
+            <Button text="Logout" onAction="#handleLogout" styleClass="header-button"/>
+        </HBox>
+    </top>
+
+    <center>
+        <HBox spacing="0" BorderPane.alignment="CENTER">
+            <!-- Products Section -->
+            <VBox spacing="12" prefWidth="800" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets bottom="15" left="15" right="15" top="15"/>
+                </padding>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Search" style="-fx-font-weight: bold; -fx-text-fill: rgb(107, 114, 128);"/>
+                    <TextField fx:id="productSearchField"
+                               promptText="Search by ID, name, category, brand, description..."
+                               HBox.hgrow="ALWAYS"
+                               prefHeight="36"/>
+                </HBox>
+                <ScrollPane fx:id="productsScrollPane" fitToWidth="true" HBox.hgrow="ALWAYS" style="-fx-background-color: transparent;">
+                    <FlowPane fx:id="productsGrid" hgap="12" vgap="12" prefWrapLength="750"/>
+                </ScrollPane>
+            </VBox>
+
+            <!-- Cart Section -->
+            <VBox prefWidth="320" style="-fx-background-color: white; -fx-border-color: rgb(229, 231, 235); -fx-border-width: 0 0 0 1;">
+                <padding>
+                    <Insets bottom="15" left="15" right="15" top="15"/>
+                </padding>
+                <Label text="🛒 Current Order" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Separator/>
+                <VBox spacing="8">
+                    <Label text="Invoice / customer" style="-fx-font-weight: bold; -fx-text-fill: rgb(107, 114, 128);"/>
+                    <Label text="Customer ID (UUID)" style="-fx-font-size: 11px; -fx-text-fill: rgb(107, 114, 128);"/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <TextField fx:id="customerIdField" promptText="Optional — UUID or use … to find by username" prefHeight="32" HBox.hgrow="ALWAYS"/>
+                        <Button mnemonicParsing="false" onAction="#openCustomerPicker" prefHeight="32" prefWidth="40" text="…"/>
+                    </HBox>
+                    <Label text="Shipping address" style="-fx-font-size: 11px; -fx-text-fill: rgb(107, 114, 128);"/>
+                    <TextArea fx:id="shippingAddressField" promptText="Optional — delivery / pickup address" wrapText="true" prefRowCount="3" prefHeight="72"/>
+                </VBox>
+                <Separator/>
+                <ScrollPane fx:id="cartScrollPane" fitToWidth="true" prefHeight="240" style="-fx-background-color: transparent;">
+                    <VBox fx:id="cartItemsVBox" spacing="8"/>
+                </ScrollPane>
+                <Separator/>
+                <VBox spacing="8">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Subtotal:" style="-fx-text-fill: rgb(107, 114, 128);"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="subtotalLabel" text="\$0.00"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Label text="Total:" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="totalLabel" text="\$0.00" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: rgb(234, 88, 12);"/>
+                    </HBox>
+                </VBox>
+                <HBox spacing="10" alignment="CENTER">
+                    <Button text="💵 Cash" onAction="#processCash" styleClass="pay-cash-button" prefWidth="140" prefHeight="40"/>
+                    <Button text="💳 Card" onAction="#processCard" styleClass="pay-card-button" prefWidth="140" prefHeight="40"/>
+                </HBox>
+                <Button text="Clear Cart" onAction="#clearCart" prefWidth="300" prefHeight="36"/>
+            </VBox>
+        </HBox>
+    </center>
+</BorderPane>

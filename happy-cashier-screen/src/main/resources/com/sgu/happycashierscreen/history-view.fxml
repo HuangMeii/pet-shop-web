@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.sgu.happycashierscreen.controllers.HistoryController"
+            prefHeight="650" prefWidth="1000">
+    <top>
+        <HBox styleClass="cashier-header" alignment="CENTER_LEFT" spacing="15">
+            <padding>
+                <Insets bottom="12" left="20" right="20" top="12"/>
+            </padding>
+            <Button text="←" onAction="#goBack" styleClass="header-button" prefWidth="40"/>
+            <Label text="🐾" styleClass="header-logo"/>
+            <VBox spacing="2">
+                <Label text="Pawsome Pet Shop" styleClass="header-title"/>
+                <Label text="Sales History" styleClass="header-subtitle"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Back to Cashier" onAction="#goBack" styleClass="header-button"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="15" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets bottom="20" left="20" right="20" top="20"/>
+            </padding>
+
+            <!-- Summary Cards -->
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <VBox styleClass="summary-card" spacing="5" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);" prefWidth="220">
+                    <Label text="Today's Total" style="-fx-text-fill: rgb(107, 114, 128); -fx-font-size: 12px;"/>
+                    <Label fx:id="todayTotalLabel" text="\$0.00" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                </VBox>
+                <VBox spacing="5" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);" prefWidth="220">
+                    <Label text="Cash Sales" style="-fx-text-fill: rgb(107, 114, 128); -fx-font-size: 12px;"/>
+                    <Label fx:id="cashTotalLabel" text="\$0.00" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: rgb(34, 197, 94);"/>
+                </VBox>
+                <VBox spacing="5" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 15; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);" prefWidth="220">
+                    <Label text="Card Sales" style="-fx-text-fill: rgb(107, 114, 128); -fx-font-size: 12px;"/>
+                    <Label fx:id="cardTotalLabel" text="\$0.00" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: rgb(59, 130, 246);"/>
+                </VBox>
+            </HBox>
+
+            <!-- Filter Buttons -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Filter:" style="-fx-font-weight: bold; -fx-text-fill: rgb(107, 114, 128);"/>
+                <Button fx:id="filterAllBtn" text="All" onAction="#filterAll" styleClass="category-button active" prefWidth="80"/>
+                <Button fx:id="filterTodayBtn" text="Today" onAction="#filterToday" styleClass="category-button" prefWidth="80"/>
+                <Button fx:id="filterWeekBtn" text="This Week" onAction="#filterWeek" styleClass="category-button" prefWidth="100"/>
+                <Button fx:id="filterMonthBtn" text="This Month" onAction="#filterMonth" styleClass="category-button" prefWidth="100"/>
+            </HBox>
+
+            <!-- Sales Table -->
+            <TableView fx:id="salesTableView" prefHeight="400" style="-fx-background-color: white;">
+                <columns>
+                    <TableColumn fx:id="dateColumn" text="Date &amp; Time" prefWidth="180"/>
+                    <TableColumn fx:id="productColumn" text="Product" prefWidth="250"/>
+                    <TableColumn fx:id="qtyColumn" text="Qty" prefWidth="60"/>
+                    <TableColumn fx:id="totalColumn" text="Total" prefWidth="100"/>
+                    <TableColumn fx:id="methodColumn" text="Method" prefWidth="80"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>

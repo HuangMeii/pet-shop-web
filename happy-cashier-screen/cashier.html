@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pet Shop Staff Screen</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Nunito', sans-serif; }
+    .product-card:hover { transform: translateY(-2px); }
+    .category-btn.active { background: #f97316; color: white; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+    .cart-item { animation: slideIn 0.2s ease-out; }
+    .toast { animation: slideIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-content { animation: fadeIn 0.3s ease-out; }
+  </style>
+</head>
+<body class="h-full bg-amber-50">
+  <div id="app" class="h-full flex flex-col overflow-auto">
+    <!-- Header -->
+    <header class="bg-orange-600 text-white px-6 py-4 flex items-center justify-between shadow-lg">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+          <span class="text-2xl">🐾</span>
+        </div>
+        <div>
+          <h1 id="store-name" class="text-xl font-bold">Pawsome Pet Shop</h1>
+          <p id="welcome-msg" class="text-orange-100 text-sm">Welcome, Staff!</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <p class="text-xs text-orange-200">Today's Date</p>
+          <p id="current-date" class="font-semibold"></p>
+        </div>
+        <button onclick="toggleSalesHistory()" class="bg-orange-700 hover:bg-orange-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <i data-lucide="history" class="w-4 h-4"></i> Sales History
+        </button>
+        <a href="history.html" class="bg-orange-700 hover:bg-orange-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <i data-lucide="file-text" class="w-4 h-4"></i> Full History
+        </a>
+        <button onclick="toggleStaffAccount()" class="bg-orange-700 hover:bg-orange-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <i data-lucide="user" class="w-4 h-4"></i> Staff Account
+        </button>
+        <button onclick="handleLogout()" class="bg-orange-800 hover:bg-orange-900 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="flex-1 flex overflow-hidden">
+      <!-- Products Section -->
+      <div class="flex-1 flex flex-col p-4 overflow-hidden">
+        <div class="flex gap-2 mb-4 flex-wrap">
+          <button onclick="filterCategory('all')" class="category-btn active px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="all">🏠 All</button>
+          <button onclick="filterCategory('food')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="food">🍖 Food</button>
+          <button onclick="filterCategory('toys')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="toys">🎾 Toys</button>
+          <button onclick="filterCategory('accessories')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="accessories">🎀 Accessories</button>
+          <button onclick="filterCategory('health')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="health">💊 Health</button>
+          <button onclick="filterCategory('grooming')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="grooming">✨ Grooming</button>
+        </div>
+        <div id="products-grid" class="flex-1 overflow-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 content-start pb-4"></div>
+      </div>
+
+      <!-- Cart Section -->
+      <div class="w-96 bg-white shadow-xl flex flex-col border-l border-gray-200">
+        <div class="p-4 bg-gray-50 border-b border-gray-200">
+          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i data-lucide="shopping-cart" class="w-5 h-5 text-orange-500"></i> Current Order</h2>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-auto p-4 space-y-3">
+          <div id="empty-cart" class="text-center py-12 text-gray-400">
+            <i data-lucide="shopping-bag" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
+            <p>No items in cart</p>
+            <p class="text-sm">Tap products to add them</p>
+          </div>
+        </div>
+        <div class="border-t border-gray-200 p-4 bg-gray-50">
+          <div class="space-y-2 mb-4">
+            <div class="flex justify-between text-gray-600"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+            <div class="flex justify-between text-gray-600"><span>Tax (8%)</span><span id="tax">$0.00</span></div>
+            <div class="flex justify-between text-xl font-bold text-gray-800 pt-2 border-t"><span>Total</span><span id="total">$0.00</span></div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mb-3">
+            <button onclick="processPayment('cash')" class="bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"><i data-lucide="banknote" class="w-5 h-5"></i> Cash</button>
+            <button onclick="processPayment('card')" class="bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"><i data-lucide="credit-card" class="w-5 h-5"></i> Card</button>
+          </div>
+          <button onclick="clearCart()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg font-semibold transition-colors">Clear Cart</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sales History Modal -->
+    <div id="sales-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80%] flex flex-col m-4">
+        <div class="p-4 border-b flex items-center justify-between bg-orange-50 rounded-t-2xl">
+          <h3 class="text-lg font-bold text-gray-800">📊 Sales History</h3>
+          <button onclick="toggleSalesHistory()" class="p-2 hover:bg-orange-100 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div id="sales-history" class="flex-1 overflow-auto p-4">
+          <div id="no-sales" class="text-center py-12 text-gray-400">
+            <i data-lucide="receipt" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
+            <p>No sales recorded yet</p>
+          </div>
+        </div>
+        <div class="p-4 border-t bg-gray-50 rounded-b-2xl flex justify-between items-center">
+          <div class="flex justify-between text-lg font-bold flex-1">
+            <span>Today's Total:</span>
+            <span id="daily-total" class="text-green-600">$0.00</span>
+          </div>
+          <a href="history.html" class="ml-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm font-semibold">View Full History</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Staff Account Modal -->
+    <div id="staff-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 modal-content">
+        <div class="p-4 border-b flex items-center justify-between bg-orange-50 rounded-t-2xl">
+          <h3 class="text-lg font-bold text-gray-800">👤 Staff Account</h3>
+          <button onclick="toggleStaffAccount()" class="p-2 hover:bg-orange-100 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="p-4 space-y-3">
+          <p><span class="text-gray-500 text-sm">Name:</span> <span id="staff-display-name" class="font-semibold"></span></p>
+          <p><span class="text-gray-500 text-sm">Role:</span> <span id="staff-display-role" class="font-semibold"></span></p>
+          <p><span class="text-gray-500 text-sm">Email:</span> <span id="staff-email-display"></span></p>
+          <p><span class="text-gray-500 text-sm">Phone:</span> <span id="staff-phone-display"></span></p>
+          <p><span class="text-gray-500 text-sm">Joined:</span> <span id="staff-joined-display"></span></p>
+        </div>
+        <div class="p-4 border-t bg-gray-50 rounded-b-2xl">
+          <button onclick="toggleEditStaff()" class="w-full py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700">Edit Profile</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Staff Modal -->
+    <div id="edit-staff-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 modal-content">
+        <div class="p-4 border-b flex items-center justify-between bg-orange-50 rounded-t-2xl">
+          <h3 class="text-lg font-bold text-gray-800">Edit Profile</h3>
+          <button onclick="toggleEditStaff()" class="p-2 hover:bg-orange-100 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <form onsubmit="saveStaffProfile(event)" class="p-4 space-y-3">
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Name</label>
+            <input type="text" id="edit-staff-name" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+            <input type="email" id="edit-staff-email" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
+            <input type="tel" id="edit-staff-phone" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Role</label>
+            <select id="edit-staff-role" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none">
+              <option value="Cashier">Cashier</option>
+              <option value="Manager">Manager</option>
+              <option value="Staff">Staff</option>
+            </select>
+          </div>
+          <button type="submit" class="w-full py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700">Save</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden items-center gap-2 toast z-50">
+      <i data-lucide="check-circle" class="w-5 h-5"></i>
+      <span id="toast-message">Sale completed!</span>
+    </div>
+  </div>
+
+  <script>
+    // Auth check
+    if (!sessionStorage.getItem('staffUser') && !localStorage.getItem('staffUser')) {
+      window.location.href = 'login.html';
+    }
+
+    const products = [
+      { id: 1, name: 'Premium Dog Food', price: 45.99, category: 'food', emoji: '🐕' },
+      { id: 2, name: 'Cat Kibble Deluxe', price: 32.99, category: 'food', emoji: '🐱' },
+      { id: 3, name: 'Bird Seed Mix', price: 12.99, category: 'food', emoji: '🐦' },
+      { id: 4, name: 'Fish Flakes', price: 8.99, category: 'food', emoji: '🐠' },
+      { id: 5, name: 'Squeaky Ball', price: 6.99, category: 'toys', emoji: '🎾' },
+      { id: 6, name: 'Catnip Mouse', price: 4.99, category: 'toys', emoji: '🐭' },
+      { id: 7, name: 'Rope Chew Toy', price: 9.99, category: 'toys', emoji: '🪢' },
+      { id: 8, name: 'Feather Wand', price: 7.99, category: 'toys', emoji: '🪶' },
+      { id: 9, name: 'Dog Collar', price: 15.99, category: 'accessories', emoji: '🎀' },
+      { id: 10, name: 'Cat Bed', price: 29.99, category: 'accessories', emoji: '🛏️' },
+      { id: 11, name: 'Pet Carrier', price: 49.99, category: 'accessories', emoji: '👜' },
+      { id: 12, name: 'Food Bowl Set', price: 18.99, category: 'accessories', emoji: '🥣' },
+      { id: 13, name: 'Flea Treatment', price: 24.99, category: 'health', emoji: '💊' },
+      { id: 14, name: 'Vitamins', price: 19.99, category: 'health', emoji: '🧴' },
+      { id: 15, name: 'Pet Shampoo', price: 11.99, category: 'grooming', emoji: '🧴' },
+      { id: 16, name: 'Brush Set', price: 14.99, category: 'grooming', emoji: '🪮' },
+      { id: 17, name: 'Nail Clippers', price: 9.99, category: 'grooming', emoji: '✂️' },
+      { id: 18, name: 'Hamster Food', price: 7.99, category: 'food', emoji: '🐹' },
+    ];
+
+    let cart = [];
+    let salesHistory = [];
+    let currentCategory = 'all';
+    let currentRecordCount = 0;
+
+    const defaultConfig = {
+      store_name: 'Pawsome Pet Shop',
+      welcome_message: 'Welcome, Staff!',
+      primary_color: '#ea580c',
+      secondary_color: '#ffffff',
+      text_color: '#1f2937',
+      accent_color: '#22c55e',
+      surface_color: '#fffbeb'
+    };
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          document.getElementById('store-name').textContent = config.store_name || defaultConfig.store_name;
+          document.getElementById('welcome-msg').textContent = config.welcome_message || defaultConfig.welcome_message;
+          const header = document.querySelector('header');
+          header.style.backgroundColor = config.primary_color || defaultConfig.primary_color;
+          document.body.style.backgroundColor = config.surface_color || defaultConfig.surface_color;
+          document.querySelectorAll('.category-btn.active').forEach(btn => {
+            btn.style.backgroundColor = config.primary_color || defaultConfig.primary_color;
+          });
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+            { get: () => config.secondary_color || defaultConfig.secondary_color, set: (v) => { config.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } },
+            { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+            { get: () => config.primary_color || defaultConfig.primary_color, set: (v) => { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+            { get: () => config.accent_color || defaultConfig.accent_color, set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['store_name', config.store_name || defaultConfig.store_name],
+          ['welcome_message', config.welcome_message || defaultConfig.welcome_message]
+        ])
+      });
+    }
+
+    const dataHandler = {
+      onDataChanged(data) { salesHistory = data; currentRecordCount = data.length; renderSalesHistory(); }
+    };
+    if (window.dataSdk) window.dataSdk.init(dataHandler);
+
+    // Load sales from localStorage when SDK unavailable
+    function loadLocalSales() {
+      const stored = localStorage.getItem('petShopSales');
+      if (stored) salesHistory = JSON.parse(stored);
+    }
+    function saveLocalSales() {
+      localStorage.setItem('petShopSales', JSON.stringify(salesHistory));
+    }
+
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    const staffName = sessionStorage.getItem('staffUser') || localStorage.getItem('staffUser') || 'Staff';
+    document.getElementById('welcome-msg').textContent = `Welcome, ${staffName}!`;
+
+    function renderProducts() {
+      const grid = document.getElementById('products-grid');
+      const filtered = currentCategory === 'all' ? products : products.filter(p => p.category === currentCategory);
+      grid.innerHTML = filtered.map(p => `
+        <div class="product-card bg-white rounded-xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all border border-gray-100" onclick="addToCart(${p.id})">
+          <div class="text-4xl mb-2 text-center">${p.emoji}</div>
+          <h3 class="font-semibold text-gray-800 text-sm mb-1 truncate">${p.name}</h3>
+          <p class="text-orange-600 font-bold">$${p.price.toFixed(2)}</p>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    function filterCategory(category) {
+      currentCategory = category;
+      document.querySelectorAll('.category-btn').forEach(btn => { btn.classList.remove('active'); btn.style.backgroundColor = ''; btn.style.color = ''; });
+      const activeBtn = document.querySelector(`[data-category="${category}"]`);
+      activeBtn.classList.add('active');
+      const config = window.elementSdk?.config || defaultConfig;
+      activeBtn.style.backgroundColor = config.primary_color || defaultConfig.primary_color;
+      activeBtn.style.color = 'white';
+      renderProducts();
+    }
+
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      const existing = cart.find(item => item.id === productId);
+      if (existing) existing.quantity++;
+      else cart.push({ ...product, quantity: 1 });
+      renderCart();
+    }
+
+    function updateQuantity(productId, delta) {
+      const item = cart.find(i => i.id === productId);
+      if (item) { item.quantity += delta; if (item.quantity <= 0) cart = cart.filter(i => i.id !== productId); }
+      renderCart();
+    }
+
+    function renderCart() {
+      const container = document.getElementById('cart-items');
+      const emptyCart = document.getElementById('empty-cart');
+      if (cart.length === 0) {
+        emptyCart.style.display = 'block';
+        container.innerHTML = '';
+        container.appendChild(emptyCart);
+      } else {
+        emptyCart.style.display = 'none';
+        container.innerHTML = cart.map(item => `
+          <div class="cart-item bg-gray-50 rounded-lg p-3 flex items-center gap-3">
+            <span class="text-2xl">${item.emoji}</span>
+            <div class="flex-1 min-w-0">
+              <p class="font-semibold text-gray-800 text-sm truncate">${item.name}</p>
+              <p class="text-orange-600 font-bold">$${(item.price * item.quantity).toFixed(2)}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="updateQuantity(${item.id}, -1)" class="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-100"><i data-lucide="minus" class="w-4 h-4"></i></button>
+              <span class="w-8 text-center font-bold">${item.quantity}</span>
+              <button onclick="updateQuantity(${item.id}, 1)" class="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-100"><i data-lucide="plus" class="w-4 h-4"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+      updateTotals();
+      lucide.createIcons();
+    }
+
+    function updateTotals() {
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const tax = subtotal * 0.08;
+      document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('total').textContent = `$${(subtotal + tax).toFixed(2)}`;
+    }
+
+    async function processPayment(method) {
+      if (cart.length === 0) return;
+      if (currentRecordCount >= 999) { showToast('Maximum sales records reached!', false); return; }
+
+      const payBtn = document.querySelector(`button[onclick="processPayment('${method}')"]`);
+      payBtn.disabled = true;
+      payBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Processing...';
+
+      for (const item of cart) {
+        const sale = {
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          product_name: item.name,
+          quantity: item.quantity,
+          unit_price: item.price,
+          total: item.price * item.quantity,
+          timestamp: new Date().toISOString(),
+          payment_method: method
+        };
+
+        if (window.dataSdk) {
+          const result = await window.dataSdk.create(sale);
+          if (result.isError) {
+            showToast('Error saving sale', false);
+            payBtn.disabled = false;
+            payBtn.innerHTML = method === 'cash' ? '<i data-lucide="banknote" class="w-5 h-5"></i> Cash' : '<i data-lucide="credit-card" class="w-5 h-5"></i> Card';
+            lucide.createIcons();
+            return;
+          }
+        } else {
+          salesHistory.push(sale);
+          saveLocalSales();
+        }
+      }
+
+      cart = [];
+      renderCart();
+      renderSalesHistory();
+      showToast(`Payment received via ${method}!`, true);
+      payBtn.disabled = false;
+      payBtn.innerHTML = method === 'cash' ? '<i data-lucide="banknote" class="w-5 h-5"></i> Cash' : '<i data-lucide="credit-card" class="w-5 h-5"></i> Card';
+      lucide.createIcons();
+    }
+
+    function clearCart() { cart = []; renderCart(); }
+
+    function toggleSalesHistory() {
+      const modal = document.getElementById('sales-modal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+      if (!modal.classList.contains('hidden')) renderSalesHistory();
+    }
+
+    function renderSalesHistory() {
+      const container = document.getElementById('sales-history');
+      const noSales = document.getElementById('no-sales');
+      const todaySales = salesHistory.filter(s => new Date(s.timestamp).toDateString() === new Date().toDateString());
+
+      if (todaySales.length === 0) {
+        container.innerHTML = '';
+        noSales.style.display = 'block';
+        container.appendChild(noSales);
+      } else {
+        noSales.style.display = 'none';
+        const grouped = todaySales.reduce((acc, sale) => {
+          const time = new Date(sale.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          if (!acc[time]) acc[time] = [];
+          acc[time].push(sale);
+          return acc;
+        }, {});
+        container.innerHTML = Object.entries(grouped).reverse().map(([time, sales]) => `
+          <div class="mb-4 bg-gray-50 rounded-lg p-3">
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-semibold text-gray-700">${time}</span>
+              <span class="text-xs px-2 py-1 rounded-full ${sales[0].payment_method === 'cash' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${sales[0].payment_method.toUpperCase()}</span>
+            </div>
+            ${sales.map(s => `<div class="flex justify-between text-sm text-gray-600 py-1"><span>${s.product_name} x${s.quantity}</span><span>$${s.total.toFixed(2)}</span></div>`).join('')}
+          </div>
+        `).join('');
+      }
+      document.getElementById('daily-total').textContent = `$${todaySales.reduce((sum, s) => sum + s.total, 0).toFixed(2)}`;
+      lucide.createIcons();
+    }
+
+    function showToast(message, success = true) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.textContent = message;
+      toast.className = `fixed bottom-4 right-4 ${success ? 'bg-green-500' : 'bg-red-500'} text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 toast z-50`;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 3000);
+      lucide.createIcons();
+    }
+
+    let staffProfile = {
+      name: staffName,
+      email: staffName + '@petshop.com',
+      phone: '555-1234',
+      role: 'Cashier',
+      joined: new Date().toLocaleDateString()
+    };
+
+    function loadStaffProfile() {
+      const saved = localStorage.getItem('staffProfile');
+      if (saved) staffProfile = JSON.parse(saved);
+    }
+
+    function saveStaffProfile(e) {
+      e.preventDefault();
+      staffProfile.name = document.getElementById('edit-staff-name').value;
+      staffProfile.email = document.getElementById('edit-staff-email').value;
+      staffProfile.phone = document.getElementById('edit-staff-phone').value;
+      staffProfile.role = document.getElementById('edit-staff-role').value;
+      localStorage.setItem('staffProfile', JSON.stringify(staffProfile));
+      renderStaffAccount();
+      toggleEditStaff();
+      showToast('Profile updated successfully!', true);
+      lucide.createIcons();
+    }
+
+    function toggleStaffAccount() {
+      const modal = document.getElementById('staff-modal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+      if (!modal.classList.contains('hidden')) renderStaffAccount();
+    }
+
+    function toggleEditStaff() {
+      const modal = document.getElementById('edit-staff-modal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+      if (!modal.classList.contains('hidden')) {
+        document.getElementById('edit-staff-name').value = staffProfile.name;
+        document.getElementById('edit-staff-email').value = staffProfile.email;
+        document.getElementById('edit-staff-phone').value = staffProfile.phone;
+        document.getElementById('edit-staff-role').value = staffProfile.role;
+      }
+    }
+
+    function renderStaffAccount() {
+      document.getElementById('staff-display-name').textContent = staffProfile.name;
+      document.getElementById('staff-display-role').textContent = staffProfile.role;
+      document.getElementById('staff-email-display').textContent = staffProfile.email;
+      document.getElementById('staff-phone-display').textContent = staffProfile.phone;
+      document.getElementById('staff-joined-display').textContent = staffProfile.joined;
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('staffUser');
+      window.location.href = 'login.html';
+    }
+
+    loadStaffProfile();
+    loadLocalSales();
+    renderStaffAccount();
+    renderProducts();
+    renderCart();
+    lucide.createIcons();
+  </script>
+</body>
+</html>

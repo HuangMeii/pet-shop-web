@@ -1,0 +1,30 @@
+{
+    "sourceFile": "server/happy-pet-shop/compose.yaml",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1780204914493,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780204955964,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,21 @@\n       retries: 5\r\n     networks:\r\n       - happy-pet-shop-network\r\n \r\n+  redis:\r\n+    image: redis:7-alpine\r\n+    container_name: happy-pet-shop-redis\r\n+    ports:\r\n+      - \"6379:6379\"\r\n+    healthcheck:\r\n+      test: [\"CMD\", \"redis-cli\", \"ping\"]\r\n+      interval: 5s\r\n+      timeout: 5s\r\n+      retries: 5\r\n+    networks:\r\n+      - happy-pet-shop-network\r\n+\r\n   app:\r\n     build: .\r\n     container_name: happy-pet-shop\r\n     ports:\r\n@@ -26,13 +39,17 @@\n     environment:\r\n       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/happy_pet_shop\r\n       SPRING_DATASOURCE_USERNAME: root\r\n       SPRING_DATASOURCE_PASSWORD: root\r\n+      SPRING_REDIS_HOST: redis\r\n+      SPRING_REDIS_PORT: 6379\r\n       JWT_KEY: ZXZlbnR0aHJlYWRvbGRub25lZmVuY2VmYWlybHl0b3dlcmFiaWxpdHlmaW5kYmFsbHM\\=\r\n       SPRING_PROFILES_ACTIVE: docker\r\n     depends_on:\r\n       postgres:\r\n         condition: service_healthy\r\n+      redis:\r\n+        condition: service_healthy\r\n     networks:\r\n       - happy-pet-shop-network\r\n \r\n volumes:\r\n"
+                },
+                {
+                    "date": 1780206352123,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,8 +9,9 @@\n     ports:\r\n       - \"5432:5432\"\r\n     volumes:\r\n       - postgres_data:/var/lib/postgresql/data\r\n+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql\r\n     healthcheck:\r\n       test: [\"CMD-SHELL\", \"pg_isready -U root -d happy_pet_shop\"]\r\n       interval: 5s\r\n       timeout: 5s\r\n"
+                },
+                {
+                    "date": 1780206643114,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,9 +9,8 @@\n     ports:\r\n       - \"5432:5432\"\r\n     volumes:\r\n       - postgres_data:/var/lib/postgresql/data\r\n-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql\r\n     healthcheck:\r\n       test: [\"CMD-SHELL\", \"pg_isready -U root -d happy_pet_shop\"]\r\n       interval: 5s\r\n       timeout: 5s\r\n"
+                }
+            ],
+            "date": 1780204914493,
+            "name": "Commit-0",
+            "content": "services:\r\n  postgres:\r\n    image: postgres:16-alpine\r\n    container_name: happy-pet-shop-db\r\n    environment:\r\n      POSTGRES_DB: happy_pet_shop\r\n      POSTGRES_USER: root\r\n      POSTGRES_PASSWORD: root\r\n    ports:\r\n      - \"5432:5432\"\r\n    volumes:\r\n      - postgres_data:/var/lib/postgresql/data\r\n    healthcheck:\r\n      test: [\"CMD-SHELL\", \"pg_isready -U root -d happy_pet_shop\"]\r\n      interval: 5s\r\n      timeout: 5s\r\n      retries: 5\r\n    networks:\r\n      - happy-pet-shop-network\r\n\r\n  app:\r\n    build: .\r\n    container_name: happy-pet-shop\r\n    ports:\r\n      - \"8080:8080\"\r\n    environment:\r\n      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/happy_pet_shop\r\n      SPRING_DATASOURCE_USERNAME: root\r\n      SPRING_DATASOURCE_PASSWORD: root\r\n      JWT_KEY: ZXZlbnR0aHJlYWRvbGRub25lZmVuY2VmYWlybHl0b3dlcmFiaWxpdHlmaW5kYmFsbHM\\=\r\n      SPRING_PROFILES_ACTIVE: docker\r\n    depends_on:\r\n      postgres:\r\n        condition: service_healthy\r\n    networks:\r\n      - happy-pet-shop-network\r\n\r\nvolumes:\r\n  postgres_data:\r\n\r\nnetworks:\r\n  happy-pet-shop-network:\r\n    driver: bridge\r\n"
+        }
+    ]
+}

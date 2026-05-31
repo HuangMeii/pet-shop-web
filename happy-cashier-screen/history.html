@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales History - Pet Shop</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Nunito', sans-serif; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .history-row { animation: fadeIn 0.2s ease-out; }
+  </style>
+</head>
+<body class="h-full bg-amber-50 min-h-screen">
+  <!-- Header -->
+  <header class="bg-orange-600 text-white px-6 py-4 shadow-lg">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="cashier.html" class="p-2 hover:bg-orange-700 rounded-lg transition-colors">
+          <i data-lucide="arrow-left" class="w-6 h-6"></i>
+        </a>
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+          <span class="text-2xl">🐾</span>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">Pawsome Pet Shop</h1>
+          <p class="text-orange-100 text-sm">Sales History</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <p class="text-xs text-orange-200">Viewing</p>
+          <p id="filter-label" class="font-semibold">All Sales</p>
+        </div>
+        <a href="cashier.html" class="bg-orange-700 hover:bg-orange-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Back to Cashier
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto p-6">
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+            <i data-lucide="receipt" class="w-6 h-6 text-orange-600"></i>
+          </div>
+          <div>
+            <p class="text-gray-500 text-sm">Today's Total</p>
+            <p id="today-total" class="text-xl font-bold text-gray-800">$0.00</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+            <i data-lucide="banknote" class="w-6 h-6 text-green-600"></i>
+          </div>
+          <div>
+            <p class="text-gray-500 text-sm">Cash Sales</p>
+            <p id="cash-total" class="text-xl font-bold text-gray-800">$0.00</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+            <i data-lucide="credit-card" class="w-6 h-6 text-blue-600"></i>
+          </div>
+          <div>
+            <p class="text-gray-500 text-sm">Card Sales</p>
+            <p id="card-total" class="text-xl font-bold text-gray-800">$0.00</p>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+            <i data-lucide="shopping-bag" class="w-6 h-6 text-amber-600"></i>
+          </div>
+          <div>
+            <p class="text-gray-500 text-sm">Transactions</p>
+            <p id="transaction-count" class="text-xl font-bold text-gray-800">0</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+      <div class="flex flex-wrap gap-2 items-center">
+        <span class="text-gray-600 font-semibold">Filter:</span>
+        <button onclick="filterBy('all')" class="filter-btn active px-4 py-2 rounded-full bg-orange-600 text-white font-semibold text-sm" data-filter="all">All</button>
+        <button onclick="filterBy('today')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-700 font-semibold text-sm hover:bg-gray-200" data-filter="today">Today</button>
+        <button onclick="filterBy('week')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-700 font-semibold text-sm hover:bg-gray-200" data-filter="week">This Week</button>
+        <button onclick="filterBy('month')" class="filter-btn px-4 py-2 rounded-full bg-gray-100 text-gray-700 font-semibold text-sm hover:bg-gray-200" data-filter="month">This Month</button>
+      </div>
+    </div>
+
+    <!-- Sales List -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="p-4 border-b border-gray-200 bg-gray-50">
+        <h2 class="text-lg font-bold text-gray-800">Sales Records</h2>
+      </div>
+      <div id="sales-list" class="divide-y divide-gray-100 max-h-[600px] overflow-auto">
+        <div id="empty-state" class="text-center py-16 text-gray-400">
+          <i data-lucide="receipt" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
+          <p class="text-lg">No sales recorded yet</p>
+          <p class="text-sm mt-1">Sales will appear here after completing transactions</p>
+          <a href="cashier.html" class="inline-block mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700">Go to Cashier</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let salesHistory = [];
+    let currentFilter = 'all';
+
+    function loadSales() {
+      const stored = localStorage.getItem('petShopSales');
+      if (stored) salesHistory = JSON.parse(stored);
+      renderSales();
+    }
+
+    function filterBy(filter) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'bg-orange-600', 'text-white');
+        btn.classList.add('bg-gray-100', 'text-gray-700');
+      });
+      const btn = document.querySelector(`[data-filter="${filter}"]`);
+      btn.classList.add('active', 'bg-orange-600', 'text-white');
+      btn.classList.remove('bg-gray-100', 'text-gray-700');
+      document.getElementById('filter-label').textContent =
+        filter === 'all' ? 'All Sales' : filter === 'today' ? "Today's Sales" : filter === 'week' ? 'This Week' : 'This Month';
+      renderSales();
+    }
+
+    function getFilteredSales() {
+      const now = new Date();
+      return salesHistory.filter(s => {
+        const d = new Date(s.timestamp);
+        if (currentFilter === 'all') return true;
+        if (currentFilter === 'today') return d.toDateString() === now.toDateString();
+        if (currentFilter === 'week') {
+          const weekAgo = new Date(now);
+          weekAgo.setDate(weekAgo.getDate() - 7);
+          return d >= weekAgo;
+        }
+        if (currentFilter === 'month') {
+          const monthAgo = new Date(now);
+          monthAgo.setMonth(monthAgo.getMonth() - 1);
+          return d >= monthAgo;
+        }
+        return true;
+      });
+    }
+
+    function renderSales() {
+      const filtered = getFilteredSales();
+      const container = document.getElementById('sales-list');
+      const emptyState = document.getElementById('empty-state');
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        container.appendChild(emptyState);
+      } else {
+        emptyState.style.display = 'none';
+        const grouped = filtered.reduce((acc, sale) => {
+          const date = new Date(sale.timestamp).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+          const time = new Date(sale.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const key = `${date}|${time}`;
+          if (!acc[key]) acc[key] = { date, time, sales: [] };
+          acc[key].sales.push(sale);
+          return acc;
+        }, {});
+
+        container.innerHTML = Object.values(grouped)
+          .sort((a, b) => new Date(b.sales[0].timestamp) - new Date(a.sales[0].timestamp))
+          .map(group => {
+            const total = group.sales.reduce((s, x) => s + x.total, 0);
+            const method = group.sales[0].payment_method;
+            return `
+              <div class="history-row p-4 hover:bg-gray-50">
+                <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                  <div>
+                    <span class="font-semibold text-gray-800">${group.date} at ${group.time}</span>
+                    <span class="ml-2 text-xs px-2 py-0.5 rounded-full ${method === 'cash' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${method.toUpperCase()}</span>
+                  </div>
+                  <span class="font-bold text-orange-600">$${total.toFixed(2)}</span>
+                </div>
+                <div class="text-sm text-gray-600 space-y-1">
+                  ${group.sales.map(s => `<div class="flex justify-between"><span>${s.product_name} x${s.quantity}</span><span>$${s.total.toFixed(2)}</span></div>`).join('')}
+                </div>
+              </div>
+            `;
+          }).join('');
+      }
+
+      updateSummary(filtered);
+      lucide.createIcons();
+    }
+
+    function updateSummary(filtered) {
+      const today = filtered.filter(s => new Date(s.timestamp).toDateString() === new Date().toDateString());
+      const todayTotal = today.reduce((s, x) => s + x.total, 0);
+      const cashTotal = filtered.filter(s => s.payment_method === 'cash').reduce((s, x) => s + x.total, 0);
+      const cardTotal = filtered.filter(s => s.payment_method === 'card').reduce((s, x) => s + x.total, 0);
+
+      const groups = filtered.reduce((acc, s) => {
+        const key = new Date(s.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(s);
+        return acc;
+      });
+
+      document.getElementById('today-total').textContent = `$${todayTotal.toFixed(2)}`;
+      document.getElementById('cash-total').textContent = `$${cashTotal.toFixed(2)}`;
+      document.getElementById('card-total').textContent = `$${cardTotal.toFixed(2)}`;
+      document.getElementById('transaction-count').textContent = Object.keys(groups).length;
+    }
+
+    loadSales();
+    lucide.createIcons();
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "my-app/src/layouts/AdminLayout.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780208159778,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780208159778,
+            "name": "Commit-0",
+            "content": "import { Outlet } from \"react-router-dom\";\r\nimport AdminSideBar from \"../components/AdminSideBar.tsx\";\r\n\r\nconst AdminLayout = () => {\r\n  return (\r\n      <div className=\"relative\">\r\n        {/* Sidebar cố định */}\r\n        <AdminSideBar />\r\n\r\n        {/* Content */}\r\n        <div className=\"ml-64 min-h-screen bg-slate-100 overflow-y-auto\">\r\n          <main className=\"\">\r\n            <Outlet />\r\n          </main>\r\n        </div>\r\n      </div>\r\n  );\r\n};\r\n\r\nexport default AdminLayout;\r\n"
+        }
+    ]
+}

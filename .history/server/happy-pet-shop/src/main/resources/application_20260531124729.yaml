@@ -1,0 +1,57 @@
+spring:
+    application:
+        name: happy-pet-shop
+
+    datasource:
+        url: ${SPRING_DATASOURCE_URL}
+        username: ${SPRING_DATASOURCE_USERNAME}
+        password: ${SPRING_DATASOURCE_PASSWORD}
+    jpa:
+        hibernate:
+            ddl-auto: none
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
+    flyway:
+        enabled: false
+    redis:
+        host: ${SPRING_REDIS_HOST}
+        port: ${SPRING_REDIS_PORT}
+#        password: root   # Optional
+        timeout: 2000ms
+        lettuce:
+            pool:
+                max-active: 8
+                max-idle: 8
+                min-idle: 0
+                max-wait: -1ms
+    cache:
+        type: redis
+        redis:
+            time-to-live: 600000  # 10 minutes in milliseconds
+            cache-null-values: false
+            use-key-prefix: true
+            key-prefix: "happypetshop:"
+
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        client-id: ${GOOGLE_CLIENT_ID}
+                        client-secret: ${GOOGLE_CLIENT_SECRET}
+                        scope:
+                            - openid
+                            - profile
+                            - email
+
+server:
+    port: 8080
+    servlet:
+        context-path: /happy-pet-shop
+
+jwt:
+    key: ${JWT_KEY}
+    expiration-time: 3600 #seconds
+    refreshExpiration-time: 604800 #seconds

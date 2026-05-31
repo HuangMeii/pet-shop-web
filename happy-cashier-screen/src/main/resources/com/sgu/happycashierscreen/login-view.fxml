@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.sgu.happycashierscreen.controllers.LoginController"
+           prefHeight="500" prefWidth="450"
+           styleClass="login-root">
+    <VBox alignment="CENTER" spacing="20" prefWidth="400">
+        <padding>
+            <Insets bottom="30" left="40" right="40" top="30"/>
+        </padding>
+
+        <!-- Header -->
+        <Label text="🐾" styleClass="login-logo"/>
+        <Label text="Pawsome Pet Shop" styleClass="login-title"/>
+        <Label text="Staff Login" styleClass="login-subtitle"/>
+        <Label text="Sign in to access the cashier screen" styleClass="login-hint"/>
+
+        <!-- Form -->
+        <VBox spacing="12" styleClass="login-form">
+            <Label text="Username" styleClass="field-label"/>
+            <TextField fx:id="usernameField" promptText="Enter your username" prefHeight="36"/>
+
+            <Label text="Password" styleClass="field-label"/>
+            <PasswordField fx:id="passwordField" promptText="Enter your password" prefHeight="36"/>
+
+            <CheckBox fx:id="rememberCheckbox" text="Remember me"/>
+
+            <Button text="Sign In" onAction="#handleSignIn" prefHeight="40" styleClass="primary-button"/>
+        </VBox>
+
+        <Label text="© 2026 Pawsome Pet Shop" styleClass="footer-label"/>
+    </VBox>
+</StackPane>

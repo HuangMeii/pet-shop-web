@@ -1,0 +1,30 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/resources/application.yaml",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1780204932305,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780206213570,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n         username: ${SPRING_DATASOURCE_USERNAME}\r\n         password: ${SPRING_DATASOURCE_PASSWORD}\r\n     jpa:\r\n         hibernate:\r\n-            ddl-auto: validate\r\n+            ddl-auto: none\r\n         show-sql: true\r\n         properties:\r\n             hibernate:\r\n                 format_sql: true\r\n"
+                },
+                {
+                    "date": 1780206449563,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,12 +13,9 @@\n         properties:\r\n             hibernate:\r\n                 format_sql: true\r\n     flyway:\r\n-        enabled: true\r\n-        locations: classpath:db/migration\r\n-        baseline-on-migrate: true\r\n-        baseline-version: 0\r\n+        enabled: false\r\n     redis:\r\n         host: ${SPRING_REDIS_HOST}\r\n         port: ${SPRING_REDIS_PORT}\r\n #        password: root   # Optional\r\n"
+                },
+                {
+                    "date": 1780206634478,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,15 +7,17 @@\n         username: ${SPRING_DATASOURCE_USERNAME}\r\n         password: ${SPRING_DATASOURCE_PASSWORD}\r\n     jpa:\r\n         hibernate:\r\n-            ddl-auto: none\r\n+            ddl-auto: validate\r\n         show-sql: true\r\n         properties:\r\n             hibernate:\r\n                 format_sql: true\r\n     flyway:\r\n-        enabled: false\r\n+        enabled: true\r\n+        baseline-on-migrate: true\r\n+        locations: classpath:db/migration\r\n     redis:\r\n         host: ${SPRING_REDIS_HOST}\r\n         port: ${SPRING_REDIS_PORT}\r\n #        password: root   # Optional\r\n"
+                }
+            ],
+            "date": 1780204932305,
+            "name": "Commit-0",
+            "content": "spring:\r\n    application:\r\n        name: happy-pet-shop\r\n\r\n    datasource:\r\n        url: ${SPRING_DATASOURCE_URL}\r\n        username: ${SPRING_DATASOURCE_USERNAME}\r\n        password: ${SPRING_DATASOURCE_PASSWORD}\r\n    jpa:\r\n        hibernate:\r\n            ddl-auto: validate\r\n        show-sql: true\r\n        properties:\r\n            hibernate:\r\n                format_sql: true\r\n    flyway:\r\n        enabled: true\r\n        locations: classpath:db/migration\r\n        baseline-on-migrate: true\r\n        baseline-version: 0\r\n    redis:\r\n        host: ${SPRING_REDIS_HOST}\r\n        port: ${SPRING_REDIS_PORT}\r\n#        password: root   # Optional\r\n        timeout: 2000ms\r\n        lettuce:\r\n            pool:\r\n                max-active: 8\r\n                max-idle: 8\r\n                min-idle: 0\r\n                max-wait: -1ms\r\n    cache:\r\n        type: redis\r\n        redis:\r\n            time-to-live: 600000  # 10 minutes in milliseconds\r\n            cache-null-values: false\r\n            use-key-prefix: true\r\n            key-prefix: \"happypetshop:\"\r\n\r\n    security:\r\n        oauth2:\r\n            client:\r\n                registration:\r\n                    google:\r\n                        client-id: ${GOOGLE_CLIENT_ID}\r\n                        client-secret: ${GOOGLE_CLIENT_SECRET}\r\n                        scope:\r\n                            - openid\r\n                            - profile\r\n                            - email\r\n\r\nserver:\r\n    port: 8080\r\n    servlet:\r\n        context-path: /happy-pet-shop\r\n\r\njwt:\r\n    key: ${JWT_KEY}\r\n    expiration-time: 3600 #seconds\r\n    refreshExpiration-time: 604800 #seconds\r\n"
+        }
+    ]
+}
