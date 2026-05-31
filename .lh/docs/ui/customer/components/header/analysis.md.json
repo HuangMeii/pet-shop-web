@@ -1,0 +1,162 @@
+{
+    "sourceFile": "docs/ui/customer/components/header/analysis.md",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 36,
+            "patches": [
+                {
+                    "date": 1780218399052,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780218416509,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,3 @@\n Đánh giá hiện tại\r\n+Header\r\n+Màu: Cam chủ đạo\r\n"
+                },
+                {
+                    "date": 1780218448973,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,3 +1,4 @@\n Đánh giá hiện tại\r\n Header\r\n Màu: Cam chủ đạo\r\n+Lỗi font chữ\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780218688140,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,5 @@\n Đánh giá hiện tại\r\n Header\r\n Màu: Cam chủ đạo\r\n-Lỗi font chữ\n\\ No newline at end of file\n+Lỗi font chữ\r\n+Mục tiêu:\r\n"
+                },
+                {
+                    "date": 1780218694813,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,4 +2,5 @@\n Header\r\n Màu: Cam chủ đạo\r\n Lỗi font chữ\r\n Mục tiêu:\r\n+Header gồm: Trang chủ, \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780218711854,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,5 +2,8 @@\n Header\r\n Màu: Cam chủ đạo\r\n Lỗi font chữ\r\n Mục tiêu:\r\n-Header gồm: Trang chủ, \n\\ No newline at end of file\n+Header gồm:\r\n+- Trang chủ\r\n+- Danh sách yêu thích\r\n+- \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780218784793,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,5 +5,5 @@\n Mục tiêu:\r\n Header gồm:\r\n - Trang chủ\r\n - Danh sách yêu thích\r\n-- \n\\ No newline at end of file\n+- 3 gạch ngang ()\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780218791135,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,5 +5,5 @@\n Mục tiêu:\r\n Header gồm:\r\n - Trang chủ\r\n - Danh sách yêu thích\r\n-- 3 gạch ngang ()\n\\ No newline at end of file\n+- 3 gạch ngang (mở sidebar)\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219099635,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,5 +5,5 @@\n Mục tiêu:\r\n Header gồm:\r\n - Trang chủ\r\n - Danh sách yêu thích\r\n-- 3 gạch ngang (mở sidebar)\n\\ No newline at end of file\n+- 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219150303,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,5 +5,5 @@\n Mục tiêu:\r\n Header gồm:\r\n - Trang chủ\r\n - Danh sách yêu thích\r\n-- 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\n\\ No newline at end of file\n+- 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n"
+                },
+                {
+                    "date": 1780219173958,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,4 +6,5 @@\n Header gồm:\r\n - Trang chủ\r\n - Danh sách yêu thích\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n+- Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219233394,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,5 +6,7 @@\n Header gồm:\r\n - Trang chủ\r\n - Danh sách yêu thích\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n-- Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\n\\ No newline at end of file\n+- Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n+- Thông báo\r\n+- Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219245783,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n Lỗi font chữ\r\n Mục tiêu:\r\n Header gồm:\r\n - Trang chủ\r\n-- Danh sách yêu thích\r\n+- Danh sách yêu thích(icon trái ti)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219255765,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,10 @@\n Lỗi font chữ\r\n Mục tiêu:\r\n Header gồm:\r\n - Trang chủ\r\n-- Danh sách yêu thích(icon trái ti)\r\n+- Danh sách yêu thích(icon trái tim)\r\n+- Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219421859,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,10 +4,10 @@\n Lỗi font chữ\r\n Mục tiêu:\r\n Header gồm:\r\n - Trang chủ\r\n+- Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n-- Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219431849,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,8 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n+\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219439982,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n-\r\n+- Cửa hàng (bên trong )\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219445552,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n-- Cửa hàng (bên trong )\r\n+- Cửa hàng (bên trong cửa hàng )\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219450704,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n-- Cửa hàng (bên trong cửa hàng )\r\n+- Cửa hàng (bên trong cửa hàng sẽ chia nhỏ ra thành )\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219459228,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n-- Cửa hàng (bên trong cửa hàng sẽ chia nhỏ ra thành )\r\n+- Cửa hàng (bên trong )\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219471894,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n-- Cửa hàng (bên trong )\r\n+- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang cửa hàng của riêng nó)\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219479423,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n-- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang cửa hàng của riêng nó)\r\n+- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả)\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219487400,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n-- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả)\r\n+- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc thành dịch vụ)\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219496326,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n-- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc thành dịch vụ)\r\n+- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc thành thú cưng, sản phẩm và dịch vụ)\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219503560,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n Header gồm:\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n-- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc thành thú cưng, sản phẩm và dịch vụ)\r\n+- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n - Đăng nhập vào admin (icon khoá)\r\n - 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219514337,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,12 +3,12 @@\n Màu: Cam chủ đạo\r\n Lỗi font chữ\r\n Mục tiêu:\r\n Header gồm:\r\n+- 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n - Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n - Đăng nhập vào admin (icon khoá)\r\n-- 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n - Thông báo\r\n - Giỏ hàng \n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219535164,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,7 +8,7 @@\n - Trang chủ\r\n - Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n - Danh sách yêu thích(icon trái tim)\r\n - Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n-- Đăng nhập vào admin (icon khoá)\r\n - Thông báo\r\n-- Giỏ hàng \n\\ No newline at end of file\n+- Giỏ hàng \r\n+- Đăng nhập vào admin (icon khoá)\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219540579,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,5 +10,6 @@\n - Danh sách yêu thích(icon trái tim)\r\n - Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n - Thông báo\r\n - Giỏ hàng \r\n+- Đăng nhập ()\r\n - Đăng nhập vào admin (icon khoá)\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219556719,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,6 +10,6 @@\n - Danh sách yêu thích(icon trái tim)\r\n - Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n - Thông báo\r\n - Giỏ hàng \r\n-- Đăng nhập ()\r\n+- Đăng nhập (icon key cho user đăng nhập tài khoản khách hàng)\r\n - Đăng nhập vào admin (icon khoá)\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219571073,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,6 +10,6 @@\n - Danh sách yêu thích(icon trái tim)\r\n - Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n - Thông báo\r\n - Giỏ hàng \r\n-- Đăng nhập (icon key cho user đăng nhập tài khoản khách hàng)\r\n+- Đăng nhập (icon key cho user đăng nhập tài khoản khách hàng)-> chuyển thành tài khoản\r\n - Đăng nhập vào admin (icon khoá)\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219579438,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,6 +10,6 @@\n - Danh sách yêu thích(icon trái tim)\r\n - Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n - Thông báo\r\n - Giỏ hàng \r\n-- Đăng nhập (icon key cho user đăng nhập tài khoản khách hàng)-> chuyển thành tài khoản\r\n+- Tài khoản( cho user đăng nhập tài khoản khách hàng)-> chuyển thành tài khoản\r\n - Đăng nhập vào admin (icon khoá)\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219595742,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,6 +10,6 @@\n - Danh sách yêu thích(icon trái tim)\r\n - Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n - Thông báo\r\n - Giỏ hàng \r\n-- Tài khoản( cho user đăng nhập tài khoản khách hàng)-> chuyển thành tài khoản\r\n+- Tài khoản(cho user đăng nhập tài khoản khách hàng)-> nếu chưa đăng nhập thì mở trang đăng nhập\r\n - Đăng nhập vào admin (icon khoá)\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780219961416,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,5 +11,5 @@\n - Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n - Thông báo\r\n - Giỏ hàng \r\n - Tài khoản(cho user đăng nhập tài khoản khách hàng)-> nếu chưa đăng nhập thì mở trang đăng nhập\r\n-- Đăng nhập vào admin (icon khoá)\n\\ No newline at end of file\n+- Đăng nhập vào admin (icon khoá)\r\n"
+                },
+                {
+                    "date": 1780219981962,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,4 +12,5 @@\n - Thông báo\r\n - Giỏ hàng \r\n - Tài khoản(cho user đăng nhập tài khoản khách hàng)-> nếu chưa đăng nhập thì mở trang đăng nhập\r\n - Đăng nhập vào admin (icon khoá)\r\n+Màu: xanh lá/trắng nhẹ\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780220078807,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,16 +1,66 @@\n-Đánh giá hiện tại\r\n-Header\r\n-Màu: Cam chủ đạo\r\n-Lỗi font chữ\r\n-Mục tiêu:\r\n-Header gồm:\r\n-- 3 gạch ngang (mở sidebar hiện danh mục -> lọc theo danh mục)\r\n-- Trang chủ\r\n-- Thanh tìm kiếm (tìm kiếm theo text - ảnh, do user chọn)\r\n-- Danh sách yêu thích(icon trái tim)\r\n-- Cửa hàng (bên trong trang cửa hàng sẽ mở tới trang tất cả, có thể lọc từng cái: thú cưng, sản phẩm và dịch vụ)\r\n-- Thông báo\r\n-- Giỏ hàng \r\n-- Tài khoản(cho user đăng nhập tài khoản khách hàng)-> nếu chưa đăng nhập thì mở trang đăng nhập\r\n-- Đăng nhập vào admin (icon khoá)\r\n-Màu: xanh lá/trắng nhẹ\n\\ No newline at end of file\n+# Header Design Specification\r\n+\r\n+## 🎯 Mục tiêu\r\n+Thiết kế header cho hệ thống bán hàng (pet shop / ecommerce) với khả năng:\r\n+- Điều hướng chính\r\n+- Tìm kiếm sản phẩm/ảnh theo user chọn\r\n+- Hỗ trợ wishlist, cart, auth\r\n+- Phân quyền user & admin\r\n+\r\n+---\r\n+\r\n+## 🎨 Màu sắc\r\n+- Primary: Xanh lá (green) + trắng nhẹ\r\n+- Accent: Cam (chỉ dùng highlight / badge / CTA)\r\n+- Background: Trắng hoặc trắng xám nhẹ\r\n+- Lưu ý: Không dùng đồng thời cam + xanh lá làm chủ đạo ngang nhau\r\n+\r\n+---\r\n+\r\n+## 🧩 Cấu trúc Header\r\n+\r\n+### 1. Menu (Left)\r\n+- ☰ Icon 3 gạch ngang\r\n+  - Mở sidebar\r\n+  - Sidebar chứa danh mục:\r\n+    - Thú cưng\r\n+    - Sản phẩm\r\n+    - Dịch vụ\r\n+\r\n+- 🏠 Trang chủ\r\n+\r\n+---\r\n+\r\n+### 2. Search (Center)\r\n+- Thanh tìm kiếm\r\n+- Cho phép chọn loại tìm kiếm:\r\n+  - Ảnh\r\n+  - Sản phẩm\r\n+  - Dịch vụ\r\n+- Search theo text input\r\n+\r\n+---\r\n+\r\n+### 3. Navigation (Right Group 1)\r\n+- ❤️ Danh sách yêu thích (Wishlist)\r\n+- 🛍️ Cửa hàng\r\n+  - Trang tổng\r\n+  - Filter:\r\n+    - Thú cưng\r\n+    - Sản phẩm\r\n+    - Dịch vụ\r\n+- 🔔 Thông báo\r\n+  - Badge số lượng thông báo\r\n+\r\n+- 🛒 Giỏ hàng\r\n+  - Badge số lượng sản phẩm\r\n+\r\n+---\r\n+\r\n+### 4. User / Auth (Right Group 2)\r\n+- 👤 Tài khoản user\r\n+  - Nếu CHƯA đăng nhập → chuyển trang Login\r\n+  - Nếu ĐÃ đăng nhập → menu profile\r\n+\r\n+- 🔐 Admin login (icon khóa)\r\n+  - Truy cập trang admin login\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1780220090386,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,10 +34,9 @@\n ### 2. Search (Center)\r\n - Thanh tìm kiếm\r\n - Cho phép chọn loại tìm kiếm:\r\n   - Ảnh\r\n-  - Sản phẩm\r\n-  - Dịch vụ\r\n+  - \r\n - Search theo text input\r\n \r\n ---\r\n \r\n"
+                },
+                {
+                    "date": 1780220095619,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,10 +34,9 @@\n ### 2. Search (Center)\r\n - Thanh tìm kiếm\r\n - Cho phép chọn loại tìm kiếm:\r\n   - Ảnh\r\n-  - \r\n-- Search theo text input\r\n+  - Text\r\n \r\n ---\r\n \r\n ### 3. Navigation (Right Group 1)\r\n"
+                }
+            ],
+            "date": 1780218399052,
+            "name": "Commit-0",
+            "content": "Đánh giá hiện tại\r\n"
+        }
+    ]
+}
