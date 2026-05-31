@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 33,
+            "activePatchIndex": 34,
             "patches": [
                 {
                     "date": 1780207948673,
@@ -140,6 +140,10 @@
                 {
                     "date": 1780224760871,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -285,10 +285,13 @@\n \r\n                 {/* 🔔 Notification */}\r\n                 <Link\r\n                   to=\"/user/notifications\"\r\n-                  className=\"relative flex items-center gap-1 px-3 py-2 rounded-full\r\n-                            hover:bg-gray-100 transition text-gray-600\"\r\n+                  className={`relative flex items-center gap-1 px-3 py-2 rounded-full transition ${\r\n+                      isActive(\"/user/notifications\")\r\n+                          ? \"bg-green-500 text-white shadow\"\r\n+                          : \"text-gray-600 hover:bg-gray-100\"\r\n+                  }`}\r\n                   title=\"Thông báo\"\r\n                 >\r\n                   <span className=\"text-lg leading-none\">🔔</span>\r\n \r\n"
+                },
+                {
+                    "date": 1780224999076,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,15 +83,8 @@\n   };\r\n \r\n   return (\r\n       <>\r\n-        <style>\r\n-          {`\r\n-              header {\r\n-                font-family: Fredoka, sans-serif;\r\n-              }\r\n-            `}\r\n-        </style>\r\n         <header\r\n             className=\"sticky top-0 w-full z-50 bg-white border-b border-gray-200 text-gray-800 shadow-sm\"\r\n         >\r\n           <nav className=\"max-w-7xl mx-auto px-6\">\r\n"
                 }
             ],
             "date": 1780207948673,
