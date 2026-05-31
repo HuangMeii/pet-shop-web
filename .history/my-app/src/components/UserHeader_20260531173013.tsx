@@ -28,6 +28,10 @@ export default function UserHeader() {
   // Cart items count
   const cartItems = user?.cart?.cartItems ?? [];
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = cartItems.reduce(
+      (sum, item) => sum + (item.product?.price ?? item.inventory?.product?.price ?? 0) * item.quantity,
+      0
+  );
 
   // Mock notifications
   const notifications = [
@@ -49,11 +53,14 @@ export default function UserHeader() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Click outside to close search suggestions
+  // Click outside to close dropdowns
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
         setShowSuggestions(false);
+      }
+      if (cartRef.current && !cartRef.current.contains(e.target as Node)) {
+        setShowCartPreview(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -253,7 +260,16 @@ export default function UserHeader() {
                   ❤️
                 </Link>
 
-                {/*  Notification - link đến trang riêng */}
+                {/* 🛍️ Store - link thẳng đến trang tất cả */}
+                <Link
+                    to="/user/products"
+                    className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-lg text-gray-600"
+                    title="Cửa hàng"
+                >
+                  🛍️
+                </Link>
+
+                {/* 🔔 Notification - link đến trang riêng */}
                 <Link
                     to="/user/notifications"
                     className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-lg text-gray-600"

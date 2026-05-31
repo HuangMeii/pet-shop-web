@@ -25,21 +25,11 @@ export default function UserHeader() {
 
   const activeItem = "bg-green-500 text-white shadow";
 
-  // Cart items count
-  const cartItems = user?.cart?.cartItems ?? [];
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
-  // Mock notifications
-  const notifications = [
-    {id: 1, type: "order", message: "Đơn hàng #123 đã được xác nhận", time: "2 phút trước"},
-    {id: 2, type: "system", message: "Khuyến mãi cuối tuần - Giảm 15%", time: "1 giờ trước"},
-    {id: 3, type: "order", message: "Đơn hàng #120 đang được giao", time: "3 giờ trước"},
-  ];
-
   // Debounce 300ms
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchQuery.trim()) {
+        // TODO: call API search suggestions
         setShowSuggestions(true);
       } else {
         setShowSuggestions(false);
@@ -49,7 +39,7 @@ export default function UserHeader() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Click outside to close search suggestions
+  // Click outside to close suggestions
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -160,7 +150,7 @@ export default function UserHeader() {
               </div>
 
               {/* Center Section: Search */}
-              <div ref={searchRef} className="flex-1 max-w-lg hidden md:block relative">
+              <div ref={searchRef} className="flex-1 max-w-md hidden md:block relative">
                 <form onSubmit={handleSearch} className="relative">
                   <div
                       className="flex items-center bg-gray-100 rounded-full border border-gray-200 focus-within:border-green-400 focus-within:ring-2 focus-within:ring-green-100 transition-all overflow-hidden">
@@ -232,10 +222,18 @@ export default function UserHeader() {
                 )}
               </div>
 
-              {/* Right Section: Actions */}
-              <div className="flex items-center gap-2 shrink-0">
+              {/* Logo */}
+              <Link
+                  to="/user/products"
+                  className="flex items-center gap-2 text-2xl font-bold tracking-wide hover:scale-105 transition text-green-600 shrink-0"
+              >
+                🐾 <span className="hidden sm:inline">Happy Pet Shop</span>
+              </Link>
 
-                {/* 🔐 Admin */}
+              {/* Desktop Menu (Right) */}
+              <div className="hidden md:flex items-center gap-4 shrink-0">
+
+                {/* Admin button */}
                 <Link
                     to="/admin/login"
                     className="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition text-lg"
@@ -244,51 +242,20 @@ export default function UserHeader() {
                   🔐
                 </Link>
 
-                {/* ❤️ Wishlist */}
-                <Link
-                    to="/user/wishlist"
-                    className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-red-50 hover:text-red-500 transition text-lg text-gray-600"
-                    title="Yêu thích"
-                >
-                  ❤️
-                </Link>
-
-                {/*  Notification - link đến trang riêng */}
-                <Link
-                    to="/user/notifications"
-                    className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-lg text-gray-600"
-                    title="Thông báo"
-                >
-                  🔔
-                  {notifications.length > 0 && (
-                      <span
-                          className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow">
-                      {notifications.length}
-                    </span>
-                  )}
-                </Link>
-
-                {/* 🛒 Cart - link đến trang CartPage */}
                 <Link
                     to="/user/cart"
-                    className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-lg text-gray-600"
-                    title="Giỏ hàng"
+                    className={`${navItem} ${
+                        isActive("/user/cart") ? activeItem : "hover:bg-gray-100"
+                    }`}
                 >
-                  🛒
-                  {cartCount > 0 && (
-                      <span
-                          className="absolute -top-0.5 -right-0.5 bg-green-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow">
-                      {cartCount > 99 ? "99+" : cartCount}
-                    </span>
-                  )}
+                  🛒 Giỏ hàng
                 </Link>
 
-                {/* Auth */}
                 {user ? (
-                    <div className="flex items-center gap-1">
+                    <>
                       <Link
                           to="/user/invoices"
-                          className={`${navItem} hidden lg:flex ${
+                          className={`${navItem} ${
                               isActive("/user/invoices") ? activeItem : "hover:bg-gray-100"
                           }`}
                       >
@@ -302,7 +269,7 @@ export default function UserHeader() {
                       >
                         🐶 Tài khoản
                       </Link>
-                    </div>
+                    </>
                 ) : (
                     <Link
                         to="/login"
