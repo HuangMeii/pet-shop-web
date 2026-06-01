@@ -12,4 +12,5 @@ public class ChatRequest {
     String sessionId;
     String message;
     String customerId;
+    String imageUrl;
 }

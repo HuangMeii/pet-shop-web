@@ -29,7 +29,8 @@ public class ChatController {
         ChatResponse response = chatService.processMessage(
                 request.getSessionId(),
                 request.getMessage(),
-                request.getCustomerId()
+                request.getCustomerId(),
+                request.getImageUrl()
         );
         return ResponseEntity.ok(response);
     }

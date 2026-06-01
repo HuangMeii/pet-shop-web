@@ -552,6 +552,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     session_id VARCHAR(255) NOT NULL,
     sender_type VARCHAR(10) NOT NULL,
     content TEXT NOT NULL,
+    image_url TEXT,
     metadata JSONB DEFAULT '{}',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

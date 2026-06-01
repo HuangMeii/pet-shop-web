@@ -34,17 +34,18 @@ public class ChatService {
      * Customer sends a message → creates a support ticket → notifies staff
      */
     @Transactional
-    public ChatResponse processMessage(String sessionId, String message, String customerId) {
+    public ChatResponse processMessage(String sessionId, String message, String customerId, String imageUrl) {
         // 1. Save customer message
         ChatMessage customerMsg = ChatMessage.builder()
                 .sessionId(sessionId)
                 .senderType("CUSTOMER")
-                .content(message)
+                .content(message != null ? message : "")
+                .imageUrl(imageUrl)
                 .build();
         chatMessageRepository.save(customerMsg);
 
         // 2. Create a support ticket for staff to handle
-        createSupportTicket(sessionId, customerId, message);
+        createSupportTicket(sessionId, customerId, message != null ? message : (imageUrl != null ? "[Hình ảnh]" : ""));
 
         // 3. Return response indicating the message was sent to staff
         return ChatResponse.builder()
@@ -102,18 +103,20 @@ public class ChatService {
      * Staff sends a message to a customer session
      */
     @Transactional
-    public ChatResponse staffSendMessage(String sessionId, String message, UUID staffId) {
+    public ChatResponse staffSendMessage(String sessionId, String message, UUID staffId, String imageUrl) {
         ChatMessage staffMsg = ChatMessage.builder()
                 .sessionId(sessionId)
                 .senderType("STAFF")
-                .content(message)
+                .content(message != null ? message : "")
+                .imageUrl(imageUrl)
                 .build();
         chatMessageRepository.save(staffMsg);
 
         // Send to customer via WebSocket
         Map<String, Object> staffPayload = Map.of(
                 "senderType", "STAFF",
-                "content", message,
+                "content", message != null ? message : "",
+                "imageUrl", imageUrl != null ? imageUrl : "",
                 "timestamp", LocalDateTime.now().toString()
         );
         messagingTemplate.convertAndSend("/queue/chat/" + sessionId, (Object) staffPayload);
@@ -121,7 +124,8 @@ public class ChatService {
         return ChatResponse.builder()
                 .sessionId(sessionId)
                 .senderType("STAFF")
-                .content(message)
+                .content(message != null ? message : "")
+                .imageUrl(imageUrl)
                 .timestamp(LocalDateTime.now())
                 .build();
     }

@@ -22,7 +22,9 @@ const ChatManagementPage: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [staffId, setStaffId] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const stompClientRef = useRef<Client | null>(null);
 
   const scrollToBottom = useCallback(() => {
@@ -109,6 +111,7 @@ const ChatManagementPage: React.FC = () => {
           sessionId,
           senderType: payload.senderType || "CUSTOMER",
           content: payload.content,
+          imageUrl: payload.imageUrl || undefined,
           createdAt: payload.timestamp,
         };
         setMessages((prev) => [...prev, newMsg]);
@@ -187,9 +190,37 @@ const ChatManagementPage: React.FC = () => {
     }
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Vui lòng chọn file ảnh");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ảnh không được quá 5MB");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setSelectedImage(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleSendMessage = async () => {
     const text = inputText.trim();
-    if (!text || !selectedTicket || !staffId) return;
+    if ((!text && !selectedImage) || !selectedTicket || !staffId) return;
 
     try {
       const response = await fetch(
@@ -199,8 +230,9 @@ const ChatManagementPage: React.FC = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             sessionId: selectedTicket.sessionId,
-            message: text,
+            message: text || (selectedImage ? "[Hình ảnh]" : ""),
             staffId,
+            imageUrl: selectedImage || undefined,
           }),
         }
       );
@@ -209,11 +241,13 @@ const ChatManagementPage: React.FC = () => {
         const staffMsg: ChatMessage = {
           sessionId: selectedTicket.sessionId,
           senderType: "STAFF",
-          content: text,
+          content: text || (selectedImage ? "[Hình ảnh]" : ""),
+          imageUrl: selectedImage || undefined,
           createdAt: new Date().toISOString(),
         };
         setMessages((prev) => [...prev, staffMsg]);
         setInputText("");
+        setSelectedImage(null);
       }
     } catch (err) {
       console.error("Failed to send message:", err);
@@ -395,7 +429,19 @@ const ChatManagementPage: React.FC = () => {
                             👤 Khách hàng
                           </p>
                         )}
-                        <p className="text-sm">{msg.content}</p>
+                        {msg.imageUrl && (
+                          <div className="mb-2">
+                            <img
+                              src={msg.imageUrl}
+                              alt="Hình ảnh đính kèm"
+                              className="max-w-full rounded-lg max-h-48 object-cover cursor-pointer"
+                              onClick={() => window.open(msg.imageUrl, "_blank")}
+                            />
+                          </div>
+                        )}
+                        {msg.content && (
+                          <p className="text-sm">{msg.content}</p>
+                        )}
                         <p className="text-xs mt-1 opacity-70">
                           {msg.createdAt
                             ? new Date(msg.createdAt).toLocaleTimeString(
@@ -410,9 +456,44 @@ const ChatManagementPage: React.FC = () => {
                 <div ref={messagesEndRef} />
               </div>
 
+              {/* Image Preview */}
+              {selectedImage && (
+                <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                  <div className="relative inline-block">
+                    <img
+                      src={selectedImage}
+                      alt="Preview"
+                      className="h-16 w-16 object-cover rounded-lg border border-gray-200"
+                    />
+                    <button
+                      onClick={handleRemoveImage}
+                      className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600 transition"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Input */}
               <div className="p-4 border-t bg-white rounded-b-lg">
                 <div className="flex gap-2">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageSelect}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-3 py-2 bg-gray-100 text-gray-500 rounded-full hover:bg-gray-200 transition flex items-center justify-center"
+                    title="Đính kèm ảnh"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </button>
                   <input
                     type="text"
                     value={inputText}
@@ -423,7 +504,7 @@ const ChatManagementPage: React.FC = () => {
                   />
                   <button
                     onClick={handleSendMessage}
-                    disabled={!inputText.trim()}
+                    disabled={!inputText.trim() && !selectedImage}
                     className="px-4 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition text-sm"
                   >
                     Gửi

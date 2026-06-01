@@ -14,5 +14,6 @@ public class ChatResponse {
     String sessionId;
     String senderType;  // CUSTOMER, STAFF, SYSTEM
     String content;
+    String imageUrl;
     LocalDateTime timestamp;
 }

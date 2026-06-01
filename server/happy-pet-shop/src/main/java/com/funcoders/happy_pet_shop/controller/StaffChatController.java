@@ -65,7 +65,8 @@ public class StaffChatController {
         return ResponseEntity.ok(chatService.staffSendMessage(
                 body.get("sessionId"),
                 body.get("message"),
-                UUID.fromString(body.get("staffId"))
+                UUID.fromString(body.get("staffId")),
+                body.get("imageUrl")
         ));
     }
 }

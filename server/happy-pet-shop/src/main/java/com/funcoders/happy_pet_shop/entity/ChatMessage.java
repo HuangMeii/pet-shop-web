@@ -30,6 +30,9 @@ public class ChatMessage {
     @Column(nullable = false, columnDefinition = "TEXT")
     String content;
 
+    @Column(name = "image_url", columnDefinition = "TEXT")
+    String imageUrl;
+
     @Column(columnDefinition = "TEXT")
     String metadata;
 
