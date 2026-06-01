@@ -249,8 +249,14 @@ const ChatManagementPage: React.FC = () => {
         setInputText("");
         setSelectedImage(null);
       }
-    } catch (err) {
-      console.error("Failed to send message:", err);
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      if (error?.message?.includes("Image moderation failed")) {
+        alert("⚠️ Ảnh chứa nội dung không phù hợp, vui lòng chọn ảnh khác.");
+      } else {
+        console.error("Failed to send message:", err);
+        alert("❌ Gửi tin nhắn thất bại, vui lòng thử lại.");
+      }
     }
   };
 

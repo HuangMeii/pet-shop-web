@@ -165,11 +165,22 @@ const ChatPage: React.FC = () => {
         content: response.content,
       };
       setMessages((prev) => [...prev, systemMessage]);
-    } catch {
+    } catch (error: unknown) {
+      let errorContent = "❌ Rất tiếc, đã xảy ra lỗi kết nối. Vui lòng thử lại sau.";
+      
+      // Check if it's a moderation error (image contains sensitive content)
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
+      if (err?.response?.data?.message?.includes("Image moderation failed") ||
+          err?.message?.includes("Image moderation failed")) {
+        errorContent = "⚠️ Ảnh chứa nội dung không phù hợp, vui lòng chọn ảnh khác.";
+        // Restore the selected image so user can try again
+        setSelectedImage(selectedImage);
+      }
+      
       const errorMessage: ChatMessage = {
         sessionId,
         senderType: "SYSTEM",
-        content: "❌ Rất tiếc, đã xảy ra lỗi kết nối. Vui lòng thử lại sau.",
+        content: errorContent,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {

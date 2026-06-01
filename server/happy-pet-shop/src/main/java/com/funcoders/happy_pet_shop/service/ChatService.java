@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -29,12 +30,18 @@ public class ChatService {
     SupportTicketRepository supportTicketRepository;
     CustomerRepository customerRepository;
     SimpMessagingTemplate messagingTemplate;
+    ModerationService moderationService;
 
     /**
      * Customer sends a message → creates a support ticket → notifies staff
      */
     @Transactional
     public ChatResponse processMessage(String sessionId, String message, String customerId, String imageUrl) {
+        // 0. Check image moderation if image is provided
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            moderationService.checkImages(Collections.singletonList(imageUrl));
+        }
+
         // 1. Save customer message
         ChatMessage customerMsg = ChatMessage.builder()
                 .sessionId(sessionId)
@@ -104,6 +111,11 @@ public class ChatService {
      */
     @Transactional
     public ChatResponse staffSendMessage(String sessionId, String message, UUID staffId, String imageUrl) {
+        // Check image moderation if image is provided
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            moderationService.checkImages(Collections.singletonList(imageUrl));
+        }
+
         ChatMessage staffMsg = ChatMessage.builder()
                 .sessionId(sessionId)
                 .senderType("STAFF")
