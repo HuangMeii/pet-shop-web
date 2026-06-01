@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/java/com/funcoders/happy_pet_shop/repository/ChatMessageRepository.java",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780298608131,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780298608131,
+            "name": "Commit-0",
+            "content": "package com.funcoders.happy_pet_shop.repository;\r\n\r\nimport com.funcoders.happy_pet_shop.entity.ChatMessage;\r\nimport org.springframework.data.jpa.repository.JpaRepository;\r\nimport org.springframework.stereotype.Repository;\r\n\r\nimport java.util.List;\r\nimport java.util.UUID;\r\n\r\n@Repository\r\npublic interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> {\r\n\r\n    List<ChatMessage> findBySessionIdOrderByCreatedAtAsc(String sessionId);\r\n\r\n    void deleteBySessionId(String sessionId);\r\n}\r\n"
+        }
+    ]
+}

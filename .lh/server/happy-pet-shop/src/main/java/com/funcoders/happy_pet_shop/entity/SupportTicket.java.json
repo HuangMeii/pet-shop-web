@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/java/com/funcoders/happy_pet_shop/entity/SupportTicket.java",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780298579464,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780298579464,
+            "name": "Commit-0",
+            "content": "package com.funcoders.happy_pet_shop.entity;\r\n\r\nimport jakarta.persistence.*;\r\nimport lombok.*;\r\nimport lombok.experimental.FieldDefaults;\r\n\r\nimport java.time.LocalDateTime;\r\nimport java.util.UUID;\r\n\r\n@Entity\r\n@Table(name = \"support_tickets\")\r\n@Data\r\n@Builder\r\n@AllArgsConstructor\r\n@NoArgsConstructor\r\n@FieldDefaults(level = AccessLevel.PRIVATE)\r\npublic class SupportTicket {\r\n\r\n    @Id\r\n    @GeneratedValue(strategy = GenerationType.UUID)\r\n    UUID id;\r\n\r\n    @Column(name = \"session_id\", nullable = false)\r\n    String sessionId;\r\n\r\n    @ManyToOne(fetch = FetchType.LAZY)\r\n    @JoinColumn(name = \"customer_id\")\r\n    Customer customer;\r\n\r\n    @ManyToOne(fetch = FetchType.LAZY)\r\n    @JoinColumn(name = \"staff_id\")\r\n    Staff staff;\r\n\r\n    @Column(nullable = false, length = 20)\r\n    @Builder.Default\r\n    String status = \"PENDING\";\r\n\r\n    @Column(length = 10)\r\n    @Builder.Default\r\n    String priority = \"NORMAL\";\r\n\r\n    @Column(length = 50)\r\n    String category;\r\n\r\n    @Column(name = \"customer_message\", columnDefinition = \"TEXT\")\r\n    String customerMessage;\r\n\r\n    @Column(name = \"created_at\", nullable = false, updatable = false)\r\n    LocalDateTime createdAt;\r\n\r\n    @Column(name = \"assigned_at\")\r\n    LocalDateTime assignedAt;\r\n\r\n    @Column(name = \"closed_at\")\r\n    LocalDateTime closedAt;\r\n\r\n    @PrePersist\r\n    protected void onCreate() {\r\n        createdAt = LocalDateTime.now();\r\n    }\r\n}\r\n"
+        }
+    ]
+}

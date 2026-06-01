@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/java/com/funcoders/happy_pet_shop/controller/StaffChatController.java",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780298775650,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780298775650,
+            "name": "Commit-0",
+            "content": "package com.funcoders.happy_pet_shop.controller;\r\n\r\nimport com.funcoders.happy_pet_shop.dto.response.ChatResponse;\r\nimport com.funcoders.happy_pet_shop.dto.response.TicketResponse;\r\nimport com.funcoders.happy_pet_shop.service.ChatService;\r\nimport com.funcoders.happy_pet_shop.service.StaffAssignmentService;\r\nimport lombok.AccessLevel;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.experimental.FieldDefaults;\r\nimport org.springframework.http.ResponseEntity;\r\nimport org.springframework.web.bind.annotation.*;\r\n\r\nimport java.util.List;\r\nimport java.util.Map;\r\nimport java.util.UUID;\r\n\r\n@RestController\r\n@RequestMapping(\"/api/staff/chat\")\r\n@RequiredArgsConstructor\r\n@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)\r\npublic class StaffChatController {\r\n\r\n    ChatService chatService;\r\n    StaffAssignmentService staffAssignmentService;\r\n\r\n    /**\r\n     * Get all pending support tickets\r\n     */\r\n    @GetMapping(\"/tickets/pending\")\r\n    public ResponseEntity<List<TicketResponse>> getPendingTickets() {\r\n        return ResponseEntity.ok(staffAssignmentService.getPendingTickets());\r\n    }\r\n\r\n    /**\r\n     * Get tickets assigned to a specific staff\r\n     */\r\n    @GetMapping(\"/tickets/my/{staffId}\")\r\n    public ResponseEntity<List<TicketResponse>> getMyTickets(@PathVariable UUID staffId) {\r\n        return ResponseEntity.ok(staffAssignmentService.getStaffTickets(staffId));\r\n    }\r\n\r\n    /**\r\n     * Staff accepts a ticket\r\n     */\r\n    @PostMapping(\"/tickets/{ticketId}/accept\")\r\n    public ResponseEntity<TicketResponse> acceptTicket(\r\n            @PathVariable UUID ticketId,\r\n            @RequestBody Map<String, UUID> body) {\r\n        return ResponseEntity.ok(staffAssignmentService.acceptTicket(ticketId, body.get(\"staffId\")));\r\n    }\r\n\r\n    /**\r\n     * Close a ticket\r\n     */\r\n    @PostMapping(\"/tickets/{ticketId}/close\")\r\n    public ResponseEntity<TicketResponse> closeTicket(@PathVariable UUID ticketId) {\r\n        return ResponseEntity.ok(staffAssignmentService.closeTicket(ticketId));\r\n    }\r\n\r\n    /**\r\n     * Staff sends a message to a customer session\r\n     */\r\n    @PostMapping(\"/send\")\r\n    public ResponseEntity<ChatResponse> staffSendMessage(@RequestBody Map<String, String> body) {\r\n        return ResponseEntity.ok(chatService.staffSendMessage(\r\n                body.get(\"sessionId\"),\r\n                body.get(\"message\"),\r\n                UUID.fromString(body.get(\"staffId\"))\r\n        ));\r\n    }\r\n}\r\n"
+        }
+    ]
+}

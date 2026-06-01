@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1780294042899,
@@ -12,6 +12,10 @@
                 {
                     "date": 1780294121521,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,9 +52,9 @@\n     private static String[] PUBLIC_GET_ENDPOINT = {\r\n             \"/products/**\",\r\n             \"/categories/**\",\r\n             \"/pets/**\",\r\n-            \"/reviews/**\"\r\n+            \"/api/reviews/**\"\r\n     };\r\n \r\n     @NonFinal\r\n     @Value(\"${jwt.key}\")\r\n"
+                },
+                {
+                    "date": 1780298823374,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,10 +44,17 @@\n \r\n             // google login\r\n             \"/oauth2/**\",\r\n             \"/login/oauth2/**\",\r\n-            \"/user\"\r\n+            \"/user\",\r\n \r\n+            // WebSocket\r\n+            \"/ws/**\",\r\n+\r\n+            // Chat endpoints\r\n+            \"/api/chat/**\",\r\n+            \"/api/staff/chat/**\"\r\n+\r\n     };\r\n \r\n     private static String[] PUBLIC_GET_ENDPOINT = {\r\n             \"/products/**\",\r\n"
                 }
             ],
             "date": 1780294042899,

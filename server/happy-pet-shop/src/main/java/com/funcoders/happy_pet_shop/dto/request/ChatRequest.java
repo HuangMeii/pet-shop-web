@@ -1,0 +1,15 @@
+package com.funcoders.happy_pet_shop.dto.request;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ChatRequest {
+    String sessionId;
+    String message;
+    String customerId;
+}

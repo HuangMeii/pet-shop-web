@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/resources/db/migration/V7__create_chat_tables.sql",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780298558719,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780298558719,
+            "name": "Commit-0",
+            "content": "-- ============================================================\r\n-- Chatbot Support System\r\n-- ============================================================\r\n\r\n-- 1. Knowledge base for vector search (FAQ, policies, products)\r\nCREATE TABLE IF NOT EXISTS knowledge_embeddings (\r\n    id UUID PRIMARY KEY,\r\n    content TEXT NOT NULL,\r\n    metadata JSONB DEFAULT '{}',\r\n    embedding VECTOR(1536),\r\n    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\r\n);\r\n\r\n-- 2. Support tickets (when AI hands off to staff)\r\nCREATE TABLE IF NOT EXISTS support_tickets (\r\n    id UUID PRIMARY KEY,\r\n    session_id VARCHAR(255) NOT NULL,\r\n    customer_id UUID REFERENCES customers(id),\r\n    staff_id UUID REFERENCES staffs(id),\r\n    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',  -- PENDING, ACTIVE, CLOSED\r\n    priority VARCHAR(10) DEFAULT 'NORMAL',           -- LOW, NORMAL, HIGH\r\n    category VARCHAR(50),\r\n    customer_message TEXT,\r\n    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    assigned_at TIMESTAMP,\r\n    closed_at TIMESTAMP\r\n);\r\n\r\n-- 3. Chat messages (full conversation history)\r\nCREATE TABLE IF NOT EXISTS chat_messages (\r\n    id UUID PRIMARY KEY,\r\n    session_id VARCHAR(255) NOT NULL,\r\n    sender_type VARCHAR(10) NOT NULL,  -- CUSTOMER, AI, STAFF\r\n    content TEXT NOT NULL,\r\n    metadata JSONB DEFAULT '{}',\r\n    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\r\n);\r\n\r\n-- Indexes\r\nCREATE INDEX IF NOT EXISTS idx_support_tickets_session ON support_tickets(session_id);\r\nCREATE INDEX IF NOT EXISTS idx_support_tickets_staff ON support_tickets(staff_id);\r\nCREATE INDEX IF NOT EXISTS idx_support_tickets_status ON support_tickets(status);\r\nCREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id);\r\nCREATE INDEX IF NOT EXISTS idx_knowledge_embeddings ON knowledge_embeddings USING ivfflat (embedding vector_cosine_ops);\r\n"
+        }
+    ]
+}

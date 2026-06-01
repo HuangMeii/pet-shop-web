@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/java/com/funcoders/happy_pet_shop/dto/request/ChatRequest.java",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780298618090,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780298618090,
+            "name": "Commit-0",
+            "content": "package com.funcoders.happy_pet_shop.dto.request;\r\n\r\nimport lombok.*;\r\nimport lombok.experimental.FieldDefaults;\r\n\r\n@Data\r\n@Builder\r\n@AllArgsConstructor\r\n@NoArgsConstructor\r\n@FieldDefaults(level = AccessLevel.PRIVATE)\r\npublic class ChatRequest {\r\n    String sessionId;\r\n    String message;\r\n    String customerId;\r\n}\r\n"
+        }
+    ]
+}

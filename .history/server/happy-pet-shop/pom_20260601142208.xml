@@ -85,6 +85,11 @@
         </dependency>
 
 <!--        DATABASE-->
+<!--        <dependency>-->
+<!--            <groupId>com.mysql</groupId>-->
+<!--            <artifactId>mysql-connector-j</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -144,6 +149,32 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <!-- WEBSOCKET -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+        <!-- OPEN AI -->
+        <dependency>
+            <groupId>com.theokanning.openai-gpt3-java</groupId>
+            <artifactId>service</artifactId>
+            <version>0.18.2</version>
+        </dependency>
+
+        <!-- PGVECTOR -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-pgvector-store</artifactId>
+            <version>1.0.0-M6</version>
+        </dependency>
+
+    </dependencies>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
