@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1780292794505,
@@ -16,6 +16,10 @@
                 {
                     "date": 1780293073875,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n @AllArgsConstructor\r\n @NoArgsConstructor\r\n @FieldDefaults(level = AccessLevel.PRIVATE)\r\n public class ReviewCreationRequest {\r\n-    @NotBlank(message = \"Product ID is required\")\r\n+    @NotNull(message = \"Product ID is required\")\r\n     UUID productId;\r\n \r\n     @Min(value = 1, message = \"Rating must be at least 1\")\r\n     @Max(value = 5, message = \"Rating must be at most 5\")\r\n"
+                },
+                {
+                    "date": 1780296089205,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n import jakarta.validation.constraints.NotNull;\r\n import lombok.*;\r\n import lombok.experimental.FieldDefaults;\r\n \r\n+import java.util.List;\r\n import java.util.UUID;\r\n \r\n @Data\r\n @Builder\r\n@@ -21,5 +22,7 @@\n     @Max(value = 5, message = \"Rating must be at most 5\")\r\n     int rating;\r\n \r\n     String comment;\r\n+\r\n+    List<String> imageUrls;\r\n }\r\n"
                 }
             ],
             "date": 1780292794505,

@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1780292829572,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780296096427,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,8 +4,9 @@\n import lombok.*;\r\n import lombok.experimental.FieldDefaults;\r\n \r\n import java.time.LocalDateTime;\r\n+import java.util.List;\r\n import java.util.UUID;\r\n \r\n @Data\r\n @Builder\r\n@@ -20,7 +21,8 @@\n     UUID customerId;\r\n     String customerName;\r\n     int rating;\r\n     String comment;\r\n+    List<String> imageUrls;\r\n     LocalDateTime createdAt;\r\n     LocalDateTime updatedAt;\r\n }\r\n"
                 }
             ],
             "date": 1780292829572,

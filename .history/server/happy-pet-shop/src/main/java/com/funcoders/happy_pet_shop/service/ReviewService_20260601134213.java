@@ -59,7 +59,7 @@ public class ReviewService {
             review.setImages(images);
         }
 
-        reviewRepository.save(review);
+        review = reviewRepository.save(review);
         return reviewMapper.toResponse(review);
     }
 

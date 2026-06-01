@@ -45,6 +45,3 @@ export_*.sql
 server/happy-pet-shop/db/
 .history/
 .lh/
-
-.history/
-.lh/

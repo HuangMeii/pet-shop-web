@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1780292899891,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780296173780,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,16 +5,18 @@\n   customerId: string;\r\n   customerName?: string;\r\n   rating: number;\r\n   comment?: string;\r\n+  imageUrls?: string[];\r\n   createdAt: string;\r\n   updatedAt?: string;\r\n }\r\n \r\n export interface ReviewCreationRequest {\r\n   productId: string;\r\n   rating: number;\r\n   comment?: string;\r\n+  imageUrls?: string[];\r\n }\r\n \r\n export interface ReviewStatsResponse {\r\n   averageRating: number;\r\n"
                 }
             ],
             "date": 1780292899891,
