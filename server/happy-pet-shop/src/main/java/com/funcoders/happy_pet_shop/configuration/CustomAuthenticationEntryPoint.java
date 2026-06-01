@@ -22,7 +22,8 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                 .message("unauthorized")
                 .build();
 
-        response.setStatus(errorType.getErrorCode());
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         ObjectMapper objectMapper = new ObjectMapper();
