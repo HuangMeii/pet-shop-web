@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class VectorService {
 
     KnowledgeEmbeddingRepository knowledgeEmbeddingRepository;
-    OpenAIService openAIService;
+    GeminiService geminiService;
     ObjectMapper objectMapper;
 
     /**
@@ -30,8 +30,8 @@ public class VectorService {
     @Transactional
     public void indexDocument(String content, Map<String, String> metadata) {
         try {
-            List<Double> embedding = openAIService.generateEmbedding(content);
-            String vectorStr = openAIService.embeddingToVectorString(embedding);
+            List<Double> embedding = geminiService.generateEmbedding(content);
+            String vectorStr = geminiService.embeddingToVectorString(embedding);
             String metadataJson = objectMapper.writeValueAsString(metadata);
 
             KnowledgeEmbedding doc = KnowledgeEmbedding.builder()
@@ -52,8 +52,8 @@ public class VectorService {
      */
     public List<Map<String, Object>> similaritySearch(String query, int limit) {
         try {
-            List<Double> queryEmbedding = openAIService.generateEmbedding(query);
-            String vectorStr = openAIService.embeddingToVectorString(queryEmbedding);
+            List<Double> queryEmbedding = geminiService.generateEmbedding(query);
+            String vectorStr = geminiService.embeddingToVectorString(queryEmbedding);
 
             List<KnowledgeEmbedding> results = knowledgeEmbeddingRepository.findSimilarByEmbedding(vectorStr, limit);
 

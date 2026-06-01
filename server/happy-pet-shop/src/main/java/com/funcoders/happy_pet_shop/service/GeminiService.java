@@ -17,43 +17,45 @@ import java.util.Map;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
-public class OpenAIService {
+public class GeminiService {
 
     final ObjectMapper objectMapper;
 
-    @Value("${openai.api-key}")
+    @Value("${gemini.api-key}")
     String apiKey;
 
-    @Value("${openai.model:gpt-4o-mini}")
+    @Value("${gemini.model:gemini-2.0-flash}")
     String model;
 
+    @Value("${gemini.embedding-model:text-embedding-004}")
+    String embeddingModel;
+
     RestClient restClient = RestClient.builder()
-            .baseUrl("https://api.openai.com/v1")
+            .baseUrl("https://generativelanguage.googleapis.com/v1beta")
             .build();
 
     /**
-     * Generate embedding vector for a text using OpenAI Embedding API
+     * Generate embedding vector for a text using Gemini Embedding API
      */
     public List<Double> generateEmbedding(String text) {
         try {
             String response = restClient.post()
-                    .uri("/embeddings")
-                    .header("Authorization", "Bearer " + apiKey)
+                    .uri("/models/" + embeddingModel + ":embedContent?key=" + apiKey)
                     .header("Content-Type", "application/json")
                     .body(Map.of(
-                            "model", "text-embedding-3-small",
-                            "input", text
+                            "model", "models/" + embeddingModel,
+                            "content", Map.of("parts", List.of(Map.of("text", text)))
                     ))
                     .retrieve()
                     .body(String.class);
 
             JsonNode root = objectMapper.readTree(response);
-            JsonNode embeddingArray = root.get("data").get(0).get("embedding");
+            JsonNode embeddingArray = root.get("embedding").get("values");
 
             return objectMapper.convertValue(embeddingArray, List.class);
         } catch (Exception e) {
             log.error("Failed to generate embedding: {}", e.getMessage());
-            throw new RuntimeException("OpenAI embedding failed", e);
+            throw new RuntimeException("Gemini embedding failed", e);
         }
     }
 
@@ -76,23 +78,22 @@ public class OpenAIService {
     public String chatCompletion(String systemPrompt, String userMessage) {
         try {
             String response = restClient.post()
-                    .uri("/chat/completions")
-                    .header("Authorization", "Bearer " + apiKey)
+                    .uri("/models/" + model + ":generateContent?key=" + apiKey)
                     .header("Content-Type", "application/json")
                     .body(Map.of(
-                            "model", model,
-                            "messages", List.of(
-                                    Map.of("role", "system", "content", systemPrompt),
-                                    Map.of("role", "user", "content", userMessage)
+                            "contents", List.of(
+                                    Map.of("role", "user", "parts", List.of(Map.of("text", systemPrompt + "\n\n" + userMessage)))
                             ),
-                            "temperature", 0.7,
-                            "max_tokens", 500
+                            "generationConfig", Map.of(
+                                    "temperature", 0.7,
+                                    "maxOutputTokens", 500
+                            )
                     ))
                     .retrieve()
                     .body(String.class);
 
             JsonNode root = objectMapper.readTree(response);
-            return root.get("choices").get(0).get("message").get("content").asText();
+            return root.get("candidates").get(0).get("content").get("parts").get(0).get("text").asText();
         } catch (Exception e) {
             log.error("Failed to get chat completion: {}", e.getMessage());
             return "Xin lỗi, tôi đang gặp sự cố kết nối. Vui lòng thử lại sau.";

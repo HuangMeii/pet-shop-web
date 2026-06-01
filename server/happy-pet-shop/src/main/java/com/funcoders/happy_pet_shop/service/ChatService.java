@@ -29,7 +29,7 @@ public class ChatService {
     SupportTicketRepository supportTicketRepository;
     CustomerRepository customerRepository;
     VectorService vectorService;
-    OpenAIService openAIService;
+    GeminiService geminiService;
     SimpMessagingTemplate messagingTemplate;
 
     /**
@@ -49,7 +49,7 @@ public class ChatService {
         String systemPrompt = vectorService.buildContextPrompt(message);
 
         // 3. Get AI response
-        String aiResponse = openAIService.chatCompletion(systemPrompt, message);
+        String aiResponse = geminiService.chatCompletion(systemPrompt, message);
 
         // 4. Check if handoff is needed
         boolean handoffRequired = aiResponse.toLowerCase().contains("chuyển sang nhân viên")
