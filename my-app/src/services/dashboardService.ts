@@ -2,11 +2,46 @@ import { apiClient } from "../utils/apiClient";
 import { API_CONFIG } from "../config/apiConfig";
 import type { ApiResponse } from "../types/apiResponse";
 
+export interface RevenueTrendItem {
+  date: string;
+  revenue: number;
+  orderCount: number;
+}
+
+export interface NewVsReturningCustomers {
+  newCustomers: number;
+  returningCustomers: number;
+  newPercent: number;
+  returningPercent: number;
+}
+
+export interface TopItem {
+  id: string;
+  name: string;
+  totalSold: number;
+  totalRevenue: number;
+  imageUrl?: string;
+}
+
+export interface LowStockItem {
+  id: string;
+  name: string;
+  currentStock: number;
+  type: string;
+}
+
 export interface DashboardStatsResponse {
   totalOrders: number;
   totalRevenue: number;
   newCustomers: number;
   totalProducts: number;
+  revenueTrend?: RevenueTrendItem[];
+  orderStatusDistribution?: Record<string, number>;
+  productTypeDistribution?: Record<string, number>;
+  newVsReturning?: NewVsReturningCustomers;
+  topPets?: TopItem[];
+  topProducts?: TopItem[];
+  lowStockAlerts?: LowStockItem[];
 }
 
 export const getDashboardStats = async (): Promise<DashboardStatsResponse> => {

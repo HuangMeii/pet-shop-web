@@ -34,6 +34,8 @@ import CustomerPage from "./pages/admin/CustomerPage/CustomerPage.tsx";
 import SupplierPage from "./pages/admin/SupplierPage/SupplierPage.tsx";
 import ManagePetsPage from "./pages/admin/ManagePetsPage/ManagePetsPage.tsx";
 import ChatManagementPage from "./pages/admin/ChatManagementPage/ChatManagementPage.tsx";
+import RevenueStatisticsPage from "./pages/admin/RevenueStatisticsPage/RevenueStatisticsPage.tsx";
+import ReviewStatisticsPage from "./pages/admin/ReviewStatisticsPage/ReviewStatisticsPage.tsx";
 
 const App: React.FC = () => {
   return (
@@ -93,6 +95,8 @@ const App: React.FC = () => {
               <Route path="promotions/add" element={<AddPromotionPage />} />
               <Route path="promotions" element={<PromotionManagementPage />} />
               <Route path="chat" element={<ChatManagementPage />} />
+              <Route path="revenue-statistics" element={<RevenueStatisticsPage />} />
+              <Route path="review-statistics" element={<ReviewStatisticsPage />} />
             </Route>
           </Routes>
         </AuthProvider>

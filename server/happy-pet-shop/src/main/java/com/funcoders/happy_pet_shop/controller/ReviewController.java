@@ -4,6 +4,7 @@ import com.funcoders.happy_pet_shop.dto.request.ReviewCreationRequest;
 import com.funcoders.happy_pet_shop.dto.response.ApiResponse;
 import com.funcoders.happy_pet_shop.dto.response.ProductReviewResponse;
 import com.funcoders.happy_pet_shop.dto.response.ReviewStatsResponse;
+import com.funcoders.happy_pet_shop.dto.response.ReviewStatisticsResponse;
 import com.funcoders.happy_pet_shop.dto.response.SentimentStatsResponse;
 import com.funcoders.happy_pet_shop.service.ReviewService;
 import jakarta.validation.Valid;
@@ -104,6 +105,15 @@ public class ReviewController {
     public ApiResponse<SentimentStatsResponse> getSentimentStats() {
         SentimentStatsResponse stats = reviewService.getSentimentStats();
         return ApiResponse.<SentimentStatsResponse>builder()
+                .success(true)
+                .data(stats)
+                .build();
+    }
+
+    @GetMapping("/statistics")
+    public ApiResponse<ReviewStatisticsResponse> getReviewStatistics() {
+        ReviewStatisticsResponse stats = reviewService.getReviewStatistics();
+        return ApiResponse.<ReviewStatisticsResponse>builder()
                 .success(true)
                 .data(stats)
                 .build();

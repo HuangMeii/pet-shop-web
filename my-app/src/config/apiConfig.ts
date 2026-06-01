@@ -110,6 +110,7 @@ export const API_CONFIG = {
             GET_BY_CUSTOMER: (customerId: string) => `/reviews/customer/${customerId}`,
             GET_ALL: "/reviews/all",
             GET_SENTIMENT_STATS: "/reviews/sentiment-stats",
+            GET_STATISTICS: "/reviews/statistics",
         },
 
         CHAT: {

@@ -5,6 +5,10 @@ import {getAllReviews, getSentimentStats} from "@/services/reviewService.ts";
 import type {ProductReviewResponse, SentimentStatsResponse} from "@/types/reviewTypes.ts";
 import {getDashboardStats} from "@/services/dashboardService.ts";
 import type {DashboardStatsResponse} from "@/services/dashboardService.ts";
+import {
+  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend
+} from "recharts";
 
 const getSentimentBadge = (label?: string) => {
   switch (label) {
@@ -17,53 +21,39 @@ const getSentimentBadge = (label?: string) => {
   }
 };
 
-const SentimentDonutChart: FC<{ stats: SentimentStatsResponse }> = ({stats}) => {
-  const total = stats.totalReviews || 1;
-  const positiveDeg = (stats.positive / total) * 360;
-  const neutralDeg = (stats.neutral / total) * 360;
-  const negativeDeg = (stats.negative / total) * 360;
+const COLORS = ["#22c55e", "#9ca3af", "#ef4444"];
 
-  // Build conic gradient
-  const gradientParts: string[] = [];
-  let currentDeg = 0;
+const SentimentPieChart: FC<{ stats: SentimentStatsResponse }> = ({stats}) => {
+  const data = [
+    {name: "Tích cực", value: stats.positive},
+    {name: "Trung tính", value: stats.neutral},
+    {name: "Tiêu cực", value: stats.negative},
+  ].filter(d => d.value > 0);
 
-  if (stats.positive > 0) {
-    gradientParts.push(`#22c55e ${currentDeg}deg ${currentDeg + positiveDeg}deg`);
-    currentDeg += positiveDeg;
+  if (data.length === 0) {
+    return <p className="text-gray-400 text-sm text-center py-8">Chưa có dữ liệu</p>;
   }
-  if (stats.neutral > 0) {
-    gradientParts.push(`#9ca3af ${currentDeg}deg ${currentDeg + neutralDeg}deg`);
-    currentDeg += neutralDeg;
-  }
-  if (stats.negative > 0) {
-    gradientParts.push(`#ef4444 ${currentDeg}deg ${currentDeg + negativeDeg}deg`);
-  }
-
-  const conicGradient = gradientParts.length > 0
-      ? `conic-gradient(${gradientParts.join(", ")})`
-      : "conic-gradient(#e5e7eb 0deg 360deg)";
 
   return (
-      <div className="flex flex-col items-center">
-        <div
-            className="w-32 h-32 rounded-full mb-3"
-            style={{background: conicGradient}}
-        />
-        <div className="flex gap-4 text-sm">
-          <div className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-green-500 inline-block"/>
-            <span>{stats.positivePercent.toFixed(1)}%</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-gray-400 inline-block"/>
-            <span>{stats.neutralPercent.toFixed(1)}%</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-red-500 inline-block"/>
-            <span>{stats.negativePercent.toFixed(1)}%</span>
-          </div>
-        </div>
-      </div>
+      <ResponsiveContainer width="100%" height={220}>
+        <PieChart>
+          <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={55}
+              outerRadius={85}
+              paddingAngle={3}
+              dataKey="value"
+          >
+            {data.map((_, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
+            ))}
+          </Pie>
+          <Tooltip formatter={(value: any) => `${(value as number).toLocaleString("vi-VN")}`}/>
+          <Legend/>
+        </PieChart>
+      </ResponsiveContainer>
   );
 };
 
@@ -84,7 +74,7 @@ const AdminDashboard: FC = () => {
           getDashboardStats(),
         ]);
         setRecentOrders(invoices);
-        setRecentReviews(reviews.slice(0, 10)); // Top 10 recent
+        setRecentReviews(reviews.slice(0, 10));
         setSentimentStats(sStats);
         setDashboardStats(dStats);
       } catch (err) {
@@ -105,8 +95,36 @@ const AdminDashboard: FC = () => {
     );
   }
 
+  // Prepare revenue trend data for chart
+  const revenueTrendData = dashboardStats?.revenueTrend?.map(item => ({
+    date: item.date,
+    doanhThu: item.revenue,
+    đơnHàng: item.orderCount,
+  })) ?? [];
+
+  // Prepare order status data for pie chart
+  const orderStatusData = dashboardStats?.orderStatusDistribution
+      ? Object.entries(dashboardStats.orderStatusDistribution).map(([status, count]) => ({
+        name: status === "COMPLETED" ? "Hoàn thành" : status === "PENDING" ? "Đang xử lý" : "Đã huỷ",
+        value: count,
+      }))
+      : [];
+
+  // Prepare product type distribution
+  const productTypeData = dashboardStats?.productTypeDistribution
+      ? Object.entries(dashboardStats.productTypeDistribution).map(([type, count]) => ({
+        name: type === "PRODUCT" ? "Sản phẩm" : "Thú cưng",
+        value: count,
+      }))
+      : [];
+
+  // Prepare top items data
+  const topItemsData = [...(dashboardStats?.topProducts ?? []), ...(dashboardStats?.topPets ?? [])]
+      .sort((a, b) => b.totalSold - a.totalSold)
+      .slice(0, 5);
+
   return (
-      <div className="p-8 bg-slate-100">
+      <div className="p-8 bg-slate-100 min-h-screen">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-800">
@@ -117,7 +135,7 @@ const AdminDashboard: FC = () => {
           </p>
         </div>
 
-        {/* Stats */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
           <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300">
             <p className="text-gray-500 text-sm">Tổng đơn hàng</p>
@@ -132,7 +150,7 @@ const AdminDashboard: FC = () => {
             </h2>
           </div>
           <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300">
-            <p className="text-gray-500 text-sm">Khách hàng</p>
+            <p className="text-gray-500 text-sm">Khách hàng mới</p>
             <h2 className="text-2xl font-bold mt-2 text-gray-800">
               {dashboardStats?.newCustomers.toLocaleString("vi-VN") ?? "0"}
             </h2>
@@ -145,6 +163,120 @@ const AdminDashboard: FC = () => {
           </div>
         </div>
 
+        {/* Charts Row 1 */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10">
+          {/* Revenue Trend Chart */}
+          <div className="bg-white rounded-2xl shadow-md p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+              📈 Xu hướng doanh thu
+            </h2>
+            {revenueTrendData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={280}>
+                  <LineChart data={revenueTrendData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
+                    <XAxis dataKey="date" tick={{fontSize: 12}}/>
+                    <YAxis tick={{fontSize: 12}}/>
+                    <Tooltip formatter={(value: number) => value.toLocaleString("vi-VN")}/>
+                    <Line type="monotone" dataKey="doanhThu" stroke="#6366f1" strokeWidth={2} dot={{r: 4}}/>
+                  </LineChart>
+                </ResponsiveContainer>
+            ) : (
+                <p className="text-gray-400 text-sm text-center py-8">Chưa có dữ liệu</p>
+            )}
+          </div>
+
+          {/* Order Status Distribution */}
+          <div className="bg-white rounded-2xl shadow-md p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+              🥧 Phân bố trạng thái đơn hàng
+            </h2>
+            {orderStatusData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={280}>
+                  <PieChart>
+                    <Pie
+                        data={orderStatusData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={90}
+                        dataKey="value"
+                        label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {orderStatusData.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={["#22c55e", "#eab308", "#ef4444"][index % 3]}/>
+                      ))}
+                    </Pie>
+                    <Tooltip/>
+                  </PieChart>
+                </ResponsiveContainer>
+            ) : (
+                <p className="text-gray-400 text-sm text-center py-8">Chưa có dữ liệu</p>
+            )}
+          </div>
+        </div>
+
+        {/* Charts Row 2 */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10">
+          {/* Product Type Distribution */}
+          <div className="bg-white rounded-2xl shadow-md p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+              📊 Phân bố sản phẩm
+            </h2>
+            {productTypeData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={productTypeData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
+                    <XAxis dataKey="name"/>
+                    <YAxis/>
+                    <Tooltip/>
+                    <Bar dataKey="value" fill="#6366f1" radius={[6, 6, 0, 0]}/>
+                  </BarChart>
+                </ResponsiveContainer>
+            ) : (
+                <p className="text-gray-400 text-sm text-center py-8">Chưa có dữ liệu</p>
+            )}
+          </div>
+
+          {/* Top Selling Items */}
+          <div className="bg-white rounded-2xl shadow-md p-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+              🏆 Top sản phẩm bán chạy
+            </h2>
+            {topItemsData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={280}>
+                  <BarChart data={topItemsData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
+                    <XAxis type="number"/>
+                    <YAxis type="category" dataKey="name" width={150} tick={{fontSize: 12}}/>
+                    <Tooltip formatter={(value: number) => value.toLocaleString("vi-VN")}/>
+                    <Bar dataKey="totalSold" fill="#f59e0b" radius={[0, 6, 6, 0]}/>
+                  </BarChart>
+                </ResponsiveContainer>
+            ) : (
+                <p className="text-gray-400 text-sm text-center py-8">Chưa có dữ liệu</p>
+            )}
+          </div>
+        </div>
+
+        {/* Low Stock Alerts */}
+        {dashboardStats?.lowStockAlerts && dashboardStats.lowStockAlerts.length > 0 && (
+            <div className="bg-white rounded-2xl shadow-md p-6 mb-10">
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">
+                ⚠️ Cảnh báo tồn kho thấp
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {dashboardStats.lowStockAlerts.map((item, idx) => (
+                    <div key={idx} className="bg-red-50 border border-red-200 rounded-xl p-4">
+                      <p className="font-medium text-gray-800">{item.name}</p>
+                      <p className="text-sm text-red-600 mt-1">
+                        Tồn kho: <strong>{item.currentStock}</strong>
+                      </p>
+                      <p className="text-xs text-gray-500">{item.type === "PRODUCT" ? "Sản phẩm" : "Thú cưng"}</p>
+                    </div>
+                ))}
+              </div>
+            </div>
+        )}
+
         {/* Sentiment Overview + Recent Reviews */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-10">
           {/* Sentiment Chart */}
@@ -154,7 +286,7 @@ const AdminDashboard: FC = () => {
             </h2>
             {sentimentStats ? (
                 <>
-                  <SentimentDonutChart stats={sentimentStats}/>
+                  <SentimentPieChart stats={sentimentStats}/>
                   <div className="mt-4 text-center text-sm text-gray-500">
                     Tổng số đánh giá: <strong>{sentimentStats.totalReviews}</strong>
                   </div>
@@ -174,7 +306,7 @@ const AdminDashboard: FC = () => {
                   </div>
                 </>
             ) : (
-                <p className="text-gray-400 text-sm">Chưa có dữ liệu</p>
+                <p className="text-gray-400 text-sm text-center py-8">Chưa có dữ liệu</p>
             )}
           </div>
 
@@ -270,22 +402,15 @@ const AdminDashboard: FC = () => {
                       key={order.id}
                       className="border-b hover:bg-gray-50 transition"
                   >
-                    {/* Mã đơn */}
                     <td className="py-4 font-medium text-indigo-600">
                       {order.id}
                     </td>
-
-                    {/* Khách hàng */}
                     <td className="py-4">
                       {order.customerName ?? "Khách lẻ"}
                     </td>
-
-                    {/* Tổng tiền */}
                     <td className="py-4">
                       {order.realAmount.toLocaleString("vi-VN")} ₫
                     </td>
-
-                    {/* Trạng thái */}
                     <td className="py-4">
                       <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${

@@ -3,6 +3,8 @@ package com.funcoders.happy_pet_shop.service;
 import com.funcoders.happy_pet_shop.dto.request.ReviewCreationRequest;
 import com.funcoders.happy_pet_shop.dto.response.ProductReviewResponse;
 import com.funcoders.happy_pet_shop.dto.response.ReviewStatsResponse;
+import com.funcoders.happy_pet_shop.dto.response.ReviewStatisticsResponse;
+import com.funcoders.happy_pet_shop.dto.response.ReviewStatisticsResponse.*;
 import com.funcoders.happy_pet_shop.dto.response.SentimentStatsResponse;
 import com.funcoders.happy_pet_shop.entity.Customer;
 import com.funcoders.happy_pet_shop.entity.Product;
@@ -171,5 +173,115 @@ public class ReviewService {
                 .neutralPercent(neutralPercent)
                 .negativePercent(negativePercent)
                 .build();
+    }
+
+    // ========== Review Statistics for Dashboard ==========
+
+    @Transactional(readOnly = true)
+    public ReviewStatisticsResponse getReviewStatistics() {
+        List<MonthlyTrendItem> monthlyTrend = getMonthlyTrend();
+        Map<Integer, SentimentStatsResponse> sentimentByRating = getSentimentByRating();
+        List<SentimentMonthlyTrendItem> sentimentMonthlyTrend = getSentimentMonthlyTrend();
+
+        return ReviewStatisticsResponse.builder()
+                .monthlyTrend(monthlyTrend)
+                .sentimentByRating(sentimentByRating)
+                .sentimentMonthlyTrend(sentimentMonthlyTrend)
+                .build();
+    }
+
+    private List<MonthlyTrendItem> getMonthlyTrend() {
+        List<Review> allReviews = reviewRepository.findAllOrderByCreatedAtDesc();
+        Map<String, List<Review>> groupedByMonth = allReviews.stream()
+                .filter(r -> r.getCreatedAt() != null)
+                .collect(Collectors.groupingBy(r -> r.getCreatedAt().getYear() + "-" + r.getCreatedAt().getMonthValue()));
+
+        List<MonthlyTrendItem> trend = new ArrayList<>();
+        for (Map.Entry<String, List<Review>> entry : groupedByMonth.entrySet()) {
+            String[] parts = entry.getKey().split("-");
+            int year = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+            List<Review> reviews = entry.getValue();
+            double avgRating = reviews.stream()
+                    .mapToInt(Review::getRating)
+                    .average()
+                    .orElse(0.0);
+            trend.add(MonthlyTrendItem.builder()
+                    .year(year)
+                    .month(month)
+                    .reviewCount(reviews.size())
+                    .averageRating(Math.round(avgRating * 10.0) / 10.0)
+                    .build());
+        }
+        trend.sort((a, b) -> {
+            int cmp = Integer.compare(a.getYear(), b.getYear());
+            if (cmp == 0) cmp = Integer.compare(a.getMonth(), b.getMonth());
+            return cmp;
+        });
+        return trend;
+    }
+
+    private Map<Integer, SentimentStatsResponse> getSentimentByRating() {
+        Map<Integer, SentimentStatsResponse> result = new LinkedHashMap<>();
+        List<Review> allReviews = reviewRepository.findAllOrderByCreatedAtDesc();
+        for (int rating = 1; rating <= 5; rating++) {
+            final int currentRating = rating;
+            List<Review> reviewsForRating = allReviews.stream()
+                    .filter(r -> r.getRating() == currentRating)
+                    .collect(Collectors.toList());
+
+            long total = reviewsForRating.size();
+            long positive = reviewsForRating.stream().filter(r -> "POSITIVE".equals(r.getSentimentLabel())).count();
+            long negative = reviewsForRating.stream().filter(r -> "NEGATIVE".equals(r.getSentimentLabel())).count();
+            long neutral = total - positive - negative;
+
+            double posPct = total > 0 ? Math.round((double) positive / total * 1000.0) / 10.0 : 0;
+            double neuPct = total > 0 ? Math.round((double) neutral / total * 1000.0) / 10.0 : 0;
+            double negPct = total > 0 ? Math.round((double) negative / total * 1000.0) / 10.0 : 0;
+
+            result.put(rating, SentimentStatsResponse.builder()
+                    .totalReviews(total)
+                    .positive(positive)
+                    .neutral(neutral)
+                    .negative(negative)
+                    .positivePercent(posPct)
+                    .neutralPercent(neuPct)
+                    .negativePercent(negPct)
+                    .build());
+        }
+        return result;
+    }
+
+    private List<SentimentMonthlyTrendItem> getSentimentMonthlyTrend() {
+        List<Review> allReviews = reviewRepository.findAllOrderByCreatedAtDesc();
+        Map<String, List<Review>> groupedByMonth = allReviews.stream()
+                .filter(r -> r.getCreatedAt() != null)
+                .collect(Collectors.groupingBy(r -> r.getCreatedAt().getYear() + "-" + r.getCreatedAt().getMonthValue()));
+
+        List<SentimentMonthlyTrendItem> trend = new ArrayList<>();
+        for (Map.Entry<String, List<Review>> entry : groupedByMonth.entrySet()) {
+            String[] parts = entry.getKey().split("-");
+            int year = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]);
+            List<Review> reviews = entry.getValue();
+
+            long positive = reviews.stream().filter(r -> "POSITIVE".equals(r.getSentimentLabel())).count();
+            long negative = reviews.stream().filter(r -> "NEGATIVE".equals(r.getSentimentLabel())).count();
+            long neutral = reviews.size() - positive - negative;
+
+            trend.add(SentimentMonthlyTrendItem.builder()
+                    .year(year)
+                    .month(month)
+                    .positive(positive)
+                    .neutral(neutral)
+                    .negative(negative)
+                    .build());
+        }
+        trend.sort((a, b) -> {
+            int cmp = Integer.compare(a.getYear(), b.getYear());
+            if (cmp == 0) cmp = Integer.compare(a.getMonth(), b.getMonth());
+            return cmp;
+        });
+        return trend;
     }
 }

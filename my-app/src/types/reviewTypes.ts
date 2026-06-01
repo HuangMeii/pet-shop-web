@@ -34,3 +34,29 @@ export interface SentimentStatsResponse {
   neutralPercent: number;
   negativePercent: number;
 }
+
+export interface MonthlyTrendItem {
+  year: number;
+  month: number;
+  reviewCount: number;
+  averageRating: number;
+}
+
+export interface SentimentMonthlyTrendItem {
+  year: number;
+  month: number;
+  positive: number;
+  neutral: number;
+  negative: number;
+}
+
+export interface ReviewStatisticsResponse {
+  monthlyTrend: MonthlyTrendItem[];
+  sentimentByRating: Record<number, SentimentStatsResponse>;
+  sentimentMonthlyTrend: SentimentMonthlyTrendItem[];
+  totalReviews?: number;
+  averageRating?: number;
+  productsWithReviews?: number;
+  ratingDistribution?: Record<string, number>;
+  monthlyReviewCounts?: Record<string, number>;
+}

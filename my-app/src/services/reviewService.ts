@@ -1,7 +1,7 @@
 import { apiClient } from "../utils/apiClient";
 import { API_CONFIG } from "../config/apiConfig";
 import type { ApiResponse } from "../types/apiResponse";
-import type { ProductReviewResponse, ReviewCreationRequest, ReviewStatsResponse, SentimentStatsResponse } from "../types/reviewTypes";
+import type { ProductReviewResponse, ReviewCreationRequest, ReviewStatsResponse, ReviewStatisticsResponse, SentimentStatsResponse } from "../types/reviewTypes";
 
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
@@ -101,6 +101,17 @@ export const getSentimentStats = async (): Promise<SentimentStatsResponse> => {
   const api = res.data;
   if (!api.success || api.data == null) {
     throw new Error(api.message ?? "Failed to fetch sentiment stats");
+  }
+  return api.data;
+};
+
+export const getReviewStatistics = async (): Promise<ReviewStatisticsResponse> => {
+  const res = await apiClient.get<ApiResponse<ReviewStatisticsResponse>>(
+    API_CONFIG.ENDPOINTS.REVIEW.GET_STATISTICS
+  );
+  const api = res.data;
+  if (!api.success || api.data == null) {
+    throw new Error(api.message ?? "Failed to fetch review statistics");
   }
   return api.data;
 };
