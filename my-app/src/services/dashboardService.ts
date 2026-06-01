@@ -45,10 +45,15 @@ export interface DashboardStatsResponse {
 }
 
 export const getDashboardStats = async (): Promise<DashboardStatsResponse> => {
+  console.log("[DashboardService] Calling API:", API_CONFIG.ENDPOINTS.DASHBOARD.GET_STATS);
   const res = await apiClient.get<ApiResponse<DashboardStatsResponse>>(
     API_CONFIG.ENDPOINTS.DASHBOARD.GET_STATS
   );
+  console.log("[DashboardService] Raw response:", res);
   const api = res.data;
+  console.log("[DashboardService] API response data:", api);
+  console.log("[DashboardService] api.success:", api?.success);
+  console.log("[DashboardService] api.data:", api?.data);
   if (!api.success || api.data == null) {
     throw new Error(api.message ?? "Failed to fetch dashboard stats");
   }

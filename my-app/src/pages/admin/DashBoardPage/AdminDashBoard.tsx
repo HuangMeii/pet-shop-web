@@ -67,21 +67,30 @@ const AdminDashboard: FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [invoices, reviews, sStats, dStats] = await Promise.all([
+        // Fetch invoices and dashboard stats (these are critical)
+        const [invoices, dStats] = await Promise.all([
           getAllInvoices(),
-          getAllReviews(),
-          getSentimentStats(),
           getDashboardStats(),
         ]);
         setRecentOrders(invoices);
-        setRecentReviews(reviews.slice(0, 10));
-        setSentimentStats(sStats);
         setDashboardStats(dStats);
       } catch (err) {
-        console.error("Failed to fetch dashboard data:", err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to fetch critical dashboard data:", err);
       }
+
+      // Fetch reviews separately (these endpoints may not exist yet)
+      try {
+        const [reviews, sStats] = await Promise.all([
+          getAllReviews(),
+          getSentimentStats(),
+        ]);
+        setRecentReviews(reviews.slice(0, 10));
+        setSentimentStats(sStats);
+      } catch (err) {
+        console.warn("Failed to fetch review data (non-critical):", err);
+      }
+
+      setLoading(false);
     };
 
     fetchData();
