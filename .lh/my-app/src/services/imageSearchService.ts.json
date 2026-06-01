@@ -1,0 +1,22 @@
+{
+    "sourceFile": "my-app/src/services/imageSearchService.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1780245673333,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780246565594,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,8 @@\n-const IMAGE_SEARCH_BASE_URL = \"http://localhost:3002\";\r\n+// Use relative path so Vite proxy handles it in dev, or direct URL in production\r\n+const IMAGE_SEARCH_BASE_URL = import.meta.env.DEV\r\n+  ? \"/api/image-search\"\r\n+  : \"http://localhost:3002\";\r\n \r\n export interface ImageSearchResult {\r\n   id: number;\r\n   name: string;\r\n"
+                }
+            ],
+            "date": 1780245673333,
+            "name": "Commit-0",
+            "content": "const IMAGE_SEARCH_BASE_URL = \"http://localhost:3002\";\r\n\r\nexport interface ImageSearchResult {\r\n  id: number;\r\n  name: string;\r\n  imageUrl: string;\r\n  price: number;\r\n  type: \"product\" | \"pet\";\r\n  description: string;\r\n  category: string;\r\n  similarity: number;\r\n}\r\n\r\n/**\r\n * Search for similar products/pets by uploading an image file.\r\n */\r\nexport async function searchByImage(\r\n  file: File,\r\n  topK: number = 20\r\n): Promise<ImageSearchResult[]> {\r\n  const formData = new FormData();\r\n  formData.append(\"file\", file);\r\n  formData.append(\"top_k\", String(topK));\r\n\r\n  const res = await fetch(\r\n    `${IMAGE_SEARCH_BASE_URL}/api/v1/search/image`,\r\n    {\r\n      method: \"POST\",\r\n      body: formData,\r\n    }\r\n  );\r\n  if (!res.ok) throw new Error(\"Failed to search by image\");\r\n  return res.json();\r\n}\r\n\r\n/**\r\n * Search for similar products/pets by image URL.\r\n */\r\nexport async function searchByImageUrl(\r\n  imageUrl: string,\r\n  topK: number = 20\r\n): Promise<ImageSearchResult[]> {\r\n  const res = await fetch(\r\n    `${IMAGE_SEARCH_BASE_URL}/api/v1/search/image-url`,\r\n    {\r\n      method: \"POST\",\r\n      headers: { \"Content-Type\": \"application/json\" },\r\n      body: JSON.stringify({ image_url: imageUrl, top_k: topK }),\r\n    }\r\n  );\r\n  if (!res.ok) throw new Error(\"Failed to search by image URL\");\r\n  return res.json();\r\n}\r\n\r\n/**\r\n * Search for products/pets by text description using CLIP.\r\n */\r\nexport async function searchByText(\r\n  text: string,\r\n  topK: number = 20\r\n): Promise<ImageSearchResult[]> {\r\n  const res = await fetch(\r\n    `${IMAGE_SEARCH_BASE_URL}/api/v1/search/text`,\r\n    {\r\n      method: \"POST\",\r\n      headers: { \"Content-Type\": \"application/json\" },\r\n      body: JSON.stringify({ text, top_k: topK }),\r\n    }\r\n  );\r\n  if (!res.ok) throw new Error(\"Failed to search by text\");\r\n  return res.json();\r\n}\r\n\r\n/**\r\n * Get server health status.\r\n */\r\nexport async function getImageSearchHealth(): Promise<boolean> {\r\n  try {\r\n    const res = await fetch(`${IMAGE_SEARCH_BASE_URL}/`);\r\n    return res.ok;\r\n  } catch {\r\n    return false;\r\n  }\r\n}\r\n"
+        }
+    ]
+}

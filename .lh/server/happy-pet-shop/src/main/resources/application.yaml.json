@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 7,
             "patches": [
                 {
                     "date": 1780204932305,
@@ -20,6 +20,22 @@
                 {
                     "date": 1780206634478,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,15 +7,17 @@\n         username: ${SPRING_DATASOURCE_USERNAME}\r\n         password: ${SPRING_DATASOURCE_PASSWORD}\r\n     jpa:\r\n         hibernate:\r\n-            ddl-auto: none\r\n+            ddl-auto: validate\r\n         show-sql: true\r\n         properties:\r\n             hibernate:\r\n                 format_sql: true\r\n     flyway:\r\n-        enabled: false\r\n+        enabled: true\r\n+        baseline-on-migrate: true\r\n+        locations: classpath:db/migration\r\n     redis:\r\n         host: ${SPRING_REDIS_HOST}\r\n         port: ${SPRING_REDIS_PORT}\r\n #        password: root   # Optional\r\n"
+                },
+                {
+                    "date": 1780243952438,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,4 +56,8 @@\n jwt:\r\n     key: ${JWT_KEY}\r\n     expiration-time: 3600 #seconds\r\n     refreshExpiration-time: 604800 #seconds\r\n+\r\n+recommendation:\r\n+    service:\r\n+        url: ${RECOMMENDATION_SERVICE_URL:http://localhost:8000}\r\n"
+                },
+                {
+                    "date": 1780291069280,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,8 +12,10 @@\n         show-sql: true\r\n         properties:\r\n             hibernate:\r\n                 format_sql: true\r\n+                jdbc:\r\n+                    time_zone: UTC\r\n     flyway:\r\n         enabled: true\r\n         baseline-on-migrate: true\r\n         locations: classpath:db/migration\r\n"
+                },
+                {
+                    "date": 1780291315846,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,9 @@\n                     time_zone: UTC\r\n     flyway:\r\n         enabled: true\r\n         baseline-on-migrate: true\r\n+        baseline-version: 1\r\n         locations: classpath:db/migration\r\n     redis:\r\n         host: ${SPRING_REDIS_HOST}\r\n         port: ${SPRING_REDIS_PORT}\r\n"
+                },
+                {
+                    "date": 1780291327122,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,12 +15,9 @@\n                 format_sql: true\r\n                 jdbc:\r\n                     time_zone: UTC\r\n     flyway:\r\n-        enabled: true\r\n-        baseline-on-migrate: true\r\n-        baseline-version: 1\r\n-        locations: classpath:db/migration\r\n+        enabled: false\r\n     redis:\r\n         host: ${SPRING_REDIS_HOST}\r\n         port: ${SPRING_REDIS_PORT}\r\n #        password: root   # Optional\r\n"
                 }
             ],
             "date": 1780204932305,

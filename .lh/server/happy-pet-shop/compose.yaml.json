@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1780204914493,
@@ -20,6 +20,10 @@
                 {
                     "date": 1780206643114,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,9 +9,8 @@\n     ports:\r\n       - \"5432:5432\"\r\n     volumes:\r\n       - postgres_data:/var/lib/postgresql/data\r\n-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql\r\n     healthcheck:\r\n       test: [\"CMD-SHELL\", \"pg_isready -U root -d happy_pet_shop\"]\r\n       interval: 5s\r\n       timeout: 5s\r\n"
+                },
+                {
+                    "date": 1780243927691,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -43,16 +43,43 @@\n       SPRING_REDIS_HOST: redis\r\n       SPRING_REDIS_PORT: 6379\r\n       JWT_KEY: ZXZlbnR0aHJlYWRvbGRub25lZmVuY2VmYWlybHl0b3dlcmFiaWxpdHlmaW5kYmFsbHM\\=\r\n       SPRING_PROFILES_ACTIVE: docker\r\n+      RECOMMENDATION_SERVICE_URL: http://recommendation-api:8000\r\n     depends_on:\r\n       postgres:\r\n         condition: service_healthy\r\n       redis:\r\n         condition: service_healthy\r\n     networks:\r\n       - happy-pet-shop-network\r\n \r\n+  recommendation-api:\r\n+    build:\r\n+      context: ../../recommendation-server\r\n+      dockerfile: Dockerfile\r\n+    container_name: happy-pet-shop-recommendation\r\n+    ports:\r\n+      - \"8000:8000\"\r\n+    environment:\r\n+      DATABASE_URL: postgresql://root:root@postgres:5432/happy_pet_shop\r\n+      REDIS_URL: redis://redis:6379/0\r\n+      ALS_FACTORS: \"64\"\r\n+      ALS_REGULARIZATION: \"0.01\"\r\n+      ALS_ITERATIONS: \"15\"\r\n+      WEIGHT_BESTSELLER: \"0.3\"\r\n+      WEIGHT_RATING: \"0.2\"\r\n+      WEIGHT_CATEGORY: \"0.2\"\r\n+      WEIGHT_COPURCHASE: \"0.2\"\r\n+      WEIGHT_SESSION: \"0.1\"\r\n+    depends_on:\r\n+      postgres:\r\n+        condition: service_healthy\r\n+      redis:\r\n+        condition: service_healthy\r\n+    networks:\r\n+      - happy-pet-shop-network\r\n+\r\n volumes:\r\n   postgres_data:\r\n \r\n networks:\r\n"
                 }
             ],
             "date": 1780204914493,
