@@ -102,13 +102,6 @@ export const API_CONFIG = {
         INVENTORY: {
             GET: "/inventories",
         },
-
-        REVIEW: {
-            CREATE: (customerId: string) => `/reviews/customer/${customerId}`,
-            GET_BY_PRODUCT: (productId: string) => `/reviews/product/${productId}`,
-            GET_STATS: (productId: string) => `/reviews/product/${productId}/stats`,
-            GET_BY_CUSTOMER: (customerId: string) => `/reviews/customer/${customerId}`,
-        },
     },
 } as const;
 

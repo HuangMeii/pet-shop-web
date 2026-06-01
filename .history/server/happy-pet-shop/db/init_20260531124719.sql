@@ -500,4 +500,7 @@ ON CONFLICT (id) DO NOTHING;
 -- ==================== INVALIDATED_TOKENS ====================
 INSERT INTO invalidated_token (id, expiry_time) VALUES
 ('2167ebfb-b87f-4e44-9b13-971ff9fe7e6a', '2026-03-11 03:47:23'),
-('c151
+('c151c7c0-78a2-4d4c-8834-a0a8761bf290', '2026-03-17 15:04:37'),
+('cef20b2c-ea35-401b-b5e7-4c009ca421dc', '2026-03-21 12:59:58'),
+('60205e36-2361-4e1d-9a44-9fc9b150ccc2', '2026-03-21 23:58:06')
+ON CONFLICT (id) DO NOTHING;

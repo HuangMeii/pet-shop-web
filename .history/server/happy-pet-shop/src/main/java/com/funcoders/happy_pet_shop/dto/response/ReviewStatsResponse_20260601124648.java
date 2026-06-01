@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
-import java.util.Set;
+import java.util.Map;
 
 @Data
 @Builder
@@ -13,10 +12,8 @@ import java.util.Set;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReviewResponse {
-    String customerName;
-    String shippingAddress;
-    BigDecimal totalAmount;
-    BigDecimal realAmount;
-    Set<ReviewDetailResponse> reviewDetails;
+public class ReviewStatsResponse {
+    double averageRating;
+    long totalReviews;
+    Map<Integer, Long> ratingDistribution;
 }

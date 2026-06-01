@@ -53,7 +53,7 @@ public class SecurityConfig {
             "/products/**",
             "/categories/**",
             "/pets/**",
-            "/api/reviews/**"
+            "/reviews/**"
     };
 
     @NonFinal

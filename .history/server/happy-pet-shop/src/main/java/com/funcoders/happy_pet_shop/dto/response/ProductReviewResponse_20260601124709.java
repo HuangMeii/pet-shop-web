@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -13,10 +13,14 @@ import java.util.Set;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReviewResponse {
+public class ProductReviewResponse {
+    UUID id;
+    UUID productId;
+    String productName;
+    UUID customerId;
     String customerName;
-    String shippingAddress;
-    BigDecimal totalAmount;
-    BigDecimal realAmount;
-    Set<ReviewDetailResponse> reviewDetails;
+    int rating;
+    String comment;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }

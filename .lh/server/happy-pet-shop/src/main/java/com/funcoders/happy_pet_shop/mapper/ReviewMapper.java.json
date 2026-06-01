@@ -1,0 +1,22 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/java/com/funcoders/happy_pet_shop/mapper/ReviewMapper.java",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1780292851501,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780293027240,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n \r\n     @Mapping(target = \"productId\", source = \"product.id\")\r\n     @Mapping(target = \"productName\", source = \"product.name\")\r\n     @Mapping(target = \"customerId\", source = \"customer.id\")\r\n-    @Mapping(target = \"customerName\", source = \"customer.user.lastName\")\r\n+    @Mapping(target = \"customerName\", expression = \"java(review.getCustomer().getUser().getFirstName() + \\\" \\\" + review.getCustomer().getUser().getLastName())\")\r\n     ProductReviewResponse toResponse(Review review);\r\n \r\n     List<ProductReviewResponse> toResponseList(List<Review> reviews);\r\n }\r\n"
+                }
+            ],
+            "date": 1780292851501,
+            "name": "Commit-0",
+            "content": "package com.funcoders.happy_pet_shop.mapper;\r\n\r\nimport com.funcoders.happy_pet_shop.dto.response.ProductReviewResponse;\r\nimport com.funcoders.happy_pet_shop.entity.Review;\r\nimport org.mapstruct.Mapper;\r\nimport org.mapstruct.Mapping;\r\n\r\nimport java.util.List;\r\n\r\n@Mapper(componentModel = \"spring\")\r\npublic interface ReviewMapper {\r\n\r\n    @Mapping(target = \"productId\", source = \"product.id\")\r\n    @Mapping(target = \"productName\", source = \"product.name\")\r\n    @Mapping(target = \"customerId\", source = \"customer.id\")\r\n    @Mapping(target = \"customerName\", source = \"customer.user.lastName\")\r\n    ProductReviewResponse toResponse(Review review);\r\n\r\n    List<ProductReviewResponse> toResponseList(List<Review> reviews);\r\n}\r\n"
+        }
+    ]
+}

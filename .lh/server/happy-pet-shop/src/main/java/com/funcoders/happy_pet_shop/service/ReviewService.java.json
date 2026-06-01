@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/java/com/funcoders/happy_pet_shop/service/ReviewService.java",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780292867279,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780292867279,
+            "name": "Commit-0",
+            "content": "package com.funcoders.happy_pet_shop.service;\r\n\r\nimport com.funcoders.happy_pet_shop.dto.request.ReviewCreationRequest;\r\nimport com.funcoders.happy_pet_shop.dto.response.ProductReviewResponse;\r\nimport com.funcoders.happy_pet_shop.dto.response.ReviewStatsResponse;\r\nimport com.funcoders.happy_pet_shop.entity.Customer;\r\nimport com.funcoders.happy_pet_shop.entity.Product;\r\nimport com.funcoders.happy_pet_shop.entity.Review;\r\nimport com.funcoders.happy_pet_shop.mapper.ReviewMapper;\r\nimport com.funcoders.happy_pet_shop.repository.CustomerRepository;\r\nimport com.funcoders.happy_pet_shop.repository.ProductRepository;\r\nimport com.funcoders.happy_pet_shop.repository.ReviewRepository;\r\nimport lombok.RequiredArgsConstructor;\r\nimport org.springframework.stereotype.Service;\r\nimport org.springframework.transaction.annotation.Transactional;\r\n\r\nimport java.util.*;\r\nimport java.util.stream.Collectors;\r\n\r\n@Service\r\n@RequiredArgsConstructor\r\npublic class ReviewService {\r\n\r\n    private final ReviewRepository reviewRepository;\r\n    private final ReviewMapper reviewMapper;\r\n    private final ProductRepository productRepository;\r\n    private final CustomerRepository customerRepository;\r\n\r\n    @Transactional\r\n    public ProductReviewResponse createReview(UUID customerId, ReviewCreationRequest request) {\r\n        Product product = productRepository.findById(request.getProductId())\r\n                .orElseThrow(() -> new RuntimeException(\"Product not found\"));\r\n\r\n        Customer customer = customerRepository.findById(customerId)\r\n                .orElseThrow(() -> new RuntimeException(\"Customer not found\"));\r\n\r\n        if (reviewRepository.existsByProductIdAndCustomerId(product.getId(), customerId)) {\r\n            throw new RuntimeException(\"You have already reviewed this product\");\r\n        }\r\n\r\n        Review review = Review.builder()\r\n                .product(product)\r\n                .customer(customer)\r\n                .rating(request.getRating())\r\n                .comment(request.getComment())\r\n                .build();\r\n\r\n        review = reviewRepository.save(review);\r\n        return reviewMapper.toResponse(review);\r\n    }\r\n\r\n    @Transactional(readOnly = true)\r\n    public List<ProductReviewResponse> getReviewsByProductId(UUID productId) {\r\n        return reviewMapper.toResponseList(\r\n                reviewRepository.findByProductIdOrderByCreatedAtDesc(productId)\r\n        );\r\n    }\r\n\r\n    @Transactional(readOnly = true)\r\n    public ReviewStatsResponse getReviewStats(UUID productId) {\r\n        double averageRating = reviewRepository.findAverageRatingByProductId(productId);\r\n        long totalReviews = reviewRepository.countByProductId(productId);\r\n        List<Object[]> distribution = reviewRepository.findRatingDistributionByProductId(productId);\r\n\r\n\r\n"
+        }
+    ]
+}

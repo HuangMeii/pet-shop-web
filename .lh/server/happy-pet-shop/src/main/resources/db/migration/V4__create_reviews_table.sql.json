@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/resources/db/migration/V4__create_reviews_table.sql",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780292775089,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780292775089,
+            "name": "Commit-0",
+            "content": "-- ============================================================\r\n-- V4__create_reviews_table.sql\r\n-- Happy Pet Shop - Product Reviews Table\r\n-- ============================================================\r\n\r\nCREATE TABLE IF NOT EXISTS reviews (\r\n    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),\r\n    product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,\r\n    customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,\r\n    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),\r\n    comment TEXT,\r\n    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\r\n    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\r\n);\r\n\r\nCREATE INDEX IF NOT EXISTS idx_reviews_product_id ON reviews(product_id);\r\nCREATE INDEX IF NOT EXISTS idx_reviews_customer_id ON reviews(customer_id);\r\n"
+        }
+    ]
+}

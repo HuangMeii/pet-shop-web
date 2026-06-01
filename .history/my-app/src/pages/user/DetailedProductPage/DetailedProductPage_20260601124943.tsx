@@ -337,11 +337,6 @@ export default function DetailedProductPage() {
           </div>
         </div>
 
-        {/* Product Reviews */}
-        <div className="mb-8">
-          <ReviewSection productId={product.id} />
-        </div>
-
         {/* Similar Products */}
         {similarProducts.length > 0 && (
           <div className="mb-8">

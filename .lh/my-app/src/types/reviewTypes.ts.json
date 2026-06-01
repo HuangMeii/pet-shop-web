@@ -1,0 +1,18 @@
+{
+    "sourceFile": "my-app/src/types/reviewTypes.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780292899891,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780292899891,
+            "name": "Commit-0",
+            "content": "export interface ProductReviewResponse {\r\n  id: string;\r\n  productId: string;\r\n  productName?: string;\r\n  customerId: string;\r\n  customerName?: string;\r\n  rating: number;\r\n  comment?: string;\r\n  createdAt: string;\r\n  updatedAt?: string;\r\n}\r\n\r\nexport interface ReviewCreationRequest {\r\n  productId: string;\r\n  rating: number;\r\n  comment?: string;\r\n}\r\n\r\nexport interface ReviewStatsResponse {\r\n  averageRating: number;\r\n  totalReviews: number;\r\n  ratingDistribution: Record<number, number>;\r\n}\r\n"
+        }
+    ]
+}

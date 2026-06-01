@@ -52,8 +52,7 @@ public class SecurityConfig {
     private static String[] PUBLIC_GET_ENDPOINT = {
             "/products/**",
             "/categories/**",
-            "/pets/**",
-            "/api/reviews/**"
+            "/pets/**"
     };
 
     @NonFinal

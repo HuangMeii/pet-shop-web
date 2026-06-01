@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/java/com/funcoders/happy_pet_shop/entity/Review.java",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780292785613,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780292785613,
+            "name": "Commit-0",
+            "content": "package com.funcoders.happy_pet_shop.entity;\r\n\r\nimport jakarta.persistence.*;\r\nimport lombok.*;\r\nimport lombok.experimental.FieldDefaults;\r\n\r\nimport java.time.LocalDateTime;\r\nimport java.util.UUID;\r\n\r\n@Entity\r\n@Table(name = \"reviews\")\r\n@Data\r\n@Builder\r\n@AllArgsConstructor\r\n@NoArgsConstructor\r\n@FieldDefaults(level = AccessLevel.PRIVATE)\r\npublic class Review {\r\n\r\n    @Id\r\n    @GeneratedValue(strategy = GenerationType.UUID)\r\n    UUID id;\r\n\r\n    @ManyToOne(fetch = FetchType.LAZY)\r\n    @JoinColumn(name = \"product_id\", nullable = false)\r\n    Product product;\r\n\r\n    @ManyToOne(fetch = FetchType.LAZY)\r\n    @JoinColumn(name = \"customer_id\", nullable = false)\r\n    Customer customer;\r\n\r\n    @Column(nullable = false)\r\n    Integer rating;\r\n\r\n    @Column(columnDefinition = \"TEXT\")\r\n    String comment;\r\n\r\n    @Column(name = \"created_at\", nullable = false, updatable = false)\r\n    LocalDateTime createdAt;\r\n\r\n    @Column(name = \"updated_at\", nullable = false)\r\n    LocalDateTime updatedAt;\r\n\r\n    @PrePersist\r\n    protected void onCreate() {\r\n        createdAt = LocalDateTime.now();\r\n        updatedAt = LocalDateTime.now();\r\n    }\r\n\r\n    @PreUpdate\r\n    protected void onUpdate() {\r\n        updatedAt = LocalDateTime.now();\r\n    }\r\n}\r\n"
+        }
+    ]
+}
