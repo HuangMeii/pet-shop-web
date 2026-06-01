@@ -49,9 +49,6 @@ public class ReviewService {
                 .comment(request.getComment())
                 .build();
 
-        // Check comment against toxic classification server
-        toxicService.checkComment(request.getComment());
-
         // Check images against moderation server first
         if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
             moderationService.checkImages(request.getImageUrls());
