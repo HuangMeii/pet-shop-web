@@ -136,12 +136,8 @@ const AdminDashboard: FC = () => {
       <div className="p-8 bg-slate-100 min-h-screen">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Tổng quan Dashboard
-          </h1>
-          <p className="text-gray-500 mt-2">
-            Chào mừng bạn quay trở lại 👋
-          </p>
+          
+          
         </div>
 
         {/* Stats Cards */}
@@ -252,11 +248,11 @@ const AdminDashboard: FC = () => {
             </h2>
             {topItemsData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={280}>
-                  <BarChart data={topItemsData} layout="vertical">
+                  <BarChart data={topItemsData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
-                    <XAxis type="number"/>
-                    <YAxis type="category" dataKey="name" width={150} tick={{fontSize: 12}}/>
-                    <Tooltip formatter={(value: number) => value.toLocaleString("vi-VN")}/>
+                    <XAxis dataKey="name" tick={{fontSize: 11}} angle={-20} textAnchor="end" height={60}/>
+                    <YAxis/>
+                    <Tooltip />
                     <Bar dataKey="totalSold" fill="#f59e0b" radius={[0, 6, 6, 0]}/>
                   </BarChart>
                 </ResponsiveContainer>

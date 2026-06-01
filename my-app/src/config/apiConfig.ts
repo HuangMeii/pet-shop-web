@@ -104,13 +104,13 @@ export const API_CONFIG = {
         },
 
         REVIEW: {
-            CREATE: (customerId: string) => `/reviews/customer/${customerId}`,
-            GET_BY_PRODUCT: (productId: string) => `/reviews/product/${productId}`,
-            GET_STATS: (productId: string) => `/reviews/product/${productId}/stats`,
-            GET_BY_CUSTOMER: (customerId: string) => `/reviews/customer/${customerId}`,
-            GET_ALL: "/reviews/all",
-            GET_SENTIMENT_STATS: "/reviews/sentiment-stats",
-            GET_STATISTICS: "/reviews/statistics",
+            CREATE: (customerId: string) => `/api/reviews/customer/${customerId}`,
+            GET_BY_PRODUCT: (productId: string) => `/api/reviews/product/${productId}`,
+            GET_STATS: (productId: string) => `/api/reviews/product/${productId}/stats`,
+            GET_BY_CUSTOMER: (customerId: string) => `/api/reviews/customer/${customerId}`,
+            GET_ALL: "/api/reviews/all",
+            GET_SENTIMENT_STATS: "/api/reviews/sentiment-stats",
+            GET_STATISTICS: "/api/reviews/statistics",
         },
 
         CHAT: {

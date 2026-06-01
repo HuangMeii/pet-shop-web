@@ -15,9 +15,15 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReviewStatisticsResponse {
 
+    Long totalReviews;
+    Double averageRating;
+    Long productsWithReviews;
+    Map<String, Long> ratingDistribution;
+    Map<String, Long> monthlyReviewCounts;
     List<MonthlyTrendItem> monthlyTrend;
     Map<Integer, SentimentStatsResponse> sentimentByRating;
     List<SentimentMonthlyTrendItem> sentimentMonthlyTrend;
+
 
     @Data
     @Builder

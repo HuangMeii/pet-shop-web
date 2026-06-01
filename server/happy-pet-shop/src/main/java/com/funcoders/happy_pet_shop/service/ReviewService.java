@@ -183,12 +183,52 @@ public class ReviewService {
         Map<Integer, SentimentStatsResponse> sentimentByRating = getSentimentByRating();
         List<SentimentMonthlyTrendItem> sentimentMonthlyTrend = getSentimentMonthlyTrend();
 
+        // Compute summary statistics
+        List<Review> allReviews = reviewRepository.findAllOrderByCreatedAtDesc();
+        long totalReviews = allReviews.size();
+
+        double avgRating = allReviews.stream()
+                .mapToInt(Review::getRating)
+                .average()
+                .orElse(0.0);
+        double averageRating = Math.round(avgRating * 10.0) / 10.0;
+
+        long productsWithReviews = allReviews.stream()
+                .map(r -> r.getProduct().getId())
+                .distinct()
+                .count();
+
+        // Rating distribution
+        Map<String, Long> ratingDistribution = new LinkedHashMap<>();
+        for (int i = 1; i <= 5; i++) {
+            final int rating = i;
+            long count = allReviews.stream()
+                    .filter(r -> r.getRating() == rating)
+                    .count();
+            ratingDistribution.put(String.valueOf(i), count);
+        }
+
+        // Monthly review counts
+        Map<String, Long> monthlyReviewCounts = new LinkedHashMap<>();
+        Map<String, List<Review>> groupedByMonth = allReviews.stream()
+                .filter(r -> r.getCreatedAt() != null)
+                .collect(Collectors.groupingBy(r -> r.getCreatedAt().getYear() + "-" + String.format("%02d", r.getCreatedAt().getMonthValue())));
+        groupedByMonth.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> monthlyReviewCounts.put(entry.getKey(), (long) entry.getValue().size()));
+
         return ReviewStatisticsResponse.builder()
+                .totalReviews(totalReviews)
+                .averageRating(averageRating)
+                .productsWithReviews(productsWithReviews)
+                .ratingDistribution(ratingDistribution)
+                .monthlyReviewCounts(monthlyReviewCounts)
                 .monthlyTrend(monthlyTrend)
                 .sentimentByRating(sentimentByRating)
                 .sentimentMonthlyTrend(sentimentMonthlyTrend)
                 .build();
     }
+
 
     private List<MonthlyTrendItem> getMonthlyTrend() {
         List<Review> allReviews = reviewRepository.findAllOrderByCreatedAtDesc();

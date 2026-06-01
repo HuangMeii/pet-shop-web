@@ -18,6 +18,8 @@ spring:
                     time_zone: UTC
     flyway:
         enabled: false
+
+
     redis:
         host: ${SPRING_REDIS_HOST}
         port: ${SPRING_REDIS_PORT}
