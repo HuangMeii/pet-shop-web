@@ -48,10 +48,8 @@ public class ReviewService {
                 .comment(request.getComment())
                 .build();
 
-        // Check images against moderation server first
+        // Add images if provided
         if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
-            moderationService.checkImages(request.getImageUrls());
-
             List<ReviewImage> images = IntStream.range(0, request.getImageUrls().size())
                     .mapToObj(i -> ReviewImage.builder()
                             .review(review)

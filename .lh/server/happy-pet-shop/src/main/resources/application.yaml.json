@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 7,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1780204932305,
@@ -36,6 +36,10 @@
                 {
                     "date": 1780291327122,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,12 +15,9 @@\n                 format_sql: true\r\n                 jdbc:\r\n                     time_zone: UTC\r\n     flyway:\r\n-        enabled: true\r\n-        baseline-on-migrate: true\r\n-        baseline-version: 1\r\n-        locations: classpath:db/migration\r\n+        enabled: false\r\n     redis:\r\n         host: ${SPRING_REDIS_HOST}\r\n         port: ${SPRING_REDIS_PORT}\r\n #        password: root   # Optional\r\n"
+                },
+                {
+                    "date": 1780296947552,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -60,4 +60,7 @@\n \r\n recommendation:\r\n     service:\r\n         url: ${RECOMMENDATION_SERVICE_URL:http://localhost:8000}\r\n+\r\n+moderation:\r\n+    base-url: ${MODERATION_SERVICE_URL:http://localhost:8888}\r\n"
                 }
             ],
             "date": 1780204932305,

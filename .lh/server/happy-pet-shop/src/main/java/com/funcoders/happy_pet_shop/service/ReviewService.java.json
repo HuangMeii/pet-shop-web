@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1780292867279,
@@ -16,6 +16,14 @@
                 {
                     "date": 1780296144322,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -58,9 +58,9 @@\n                     .collect(Collectors.toList());\r\n             review.setImages(images);\r\n         }\r\n \r\n-        review = reviewRepository.save(review);\r\n+        reviewRepository.save(review);\r\n         return reviewMapper.toResponse(review);\r\n     }\r\n \r\n     @Transactional(readOnly = true)\r\n@@ -75,5 +75,28 @@\n         double averageRating = reviewRepository.findAverageRatingByProductId(productId);\r\n         long totalReviews = reviewRepository.countByProductId(productId);\r\n         List<Object[]> distribution = reviewRepository.findRatingDistributionByProductId(productId);\r\n \r\n+        Map<Integer, Long> ratingDistribution = new HashMap<>();\r\n+        for (int i = 1; i <= 5; i++) {\r\n+            ratingDistribution.put(i, 0L);\r\n+        }\r\n+        for (Object[] row : distribution) {\r\n+            Integer rating = (Integer) row[0];\r\n+            Long count = (Long) row[1];\r\n+            ratingDistribution.put(rating, count);\r\n+        }\r\n \r\n+        return ReviewStatsResponse.builder()\r\n+                .averageRating(Math.round(averageRating * 10.0) / 10.0)\r\n+                .totalReviews(totalReviews)\r\n+                .ratingDistribution(ratingDistribution)\r\n+                .build();\r\n+    }\r\n+\r\n+    @Transactional(readOnly = true)\r\n+    public List<ProductReviewResponse> getReviewsByCustomerId(UUID customerId) {\r\n+        return reviewMapper.toResponseList(\r\n+                reviewRepository.findByCustomerIdOrderByCreatedAtDesc(customerId)\r\n+        );\r\n+    }\r\n+}\r\n"
+                },
+                {
+                    "date": 1780296957915,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,8 +26,9 @@\n     private final ReviewRepository reviewRepository;\r\n     private final ReviewMapper reviewMapper;\r\n     private final ProductRepository productRepository;\r\n     private final CustomerRepository customerRepository;\r\n+    private final ModerationService moderationService;\r\n \r\n     @Transactional\r\n     public ProductReviewResponse createReview(UUID customerId, ReviewCreationRequest request) {\r\n         Product product = productRepository.findById(request.getProductId())\r\n"
+                },
+                {
+                    "date": 1780296968122,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -47,10 +47,12 @@\n                 .rating(request.getRating())\r\n                 .comment(request.getComment())\r\n                 .build();\r\n \r\n-        // Add images if provided\r\n+        // Check images against moderation server first\r\n         if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {\r\n+            moderationService.checkImages(request.getImageUrls());\r\n+\r\n             List<ReviewImage> images = IntStream.range(0, request.getImageUrls().size())\r\n                     .mapToObj(i -> ReviewImage.builder()\r\n                             .review(review)\r\n                             .imageUrl(request.getImageUrls().get(i))\r\n"
                 }
             ],
             "date": 1780292867279,
