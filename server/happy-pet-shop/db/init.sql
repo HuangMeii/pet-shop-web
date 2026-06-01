@@ -2,6 +2,8 @@
 -- Happy Pet Shop - Database Initialization Script
 -- ============================================================
 
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- ==================== 1. ROLES ====================
 CREATE TABLE IF NOT EXISTS roles (
     role_name VARCHAR(50) NOT NULL,
@@ -504,14 +506,71 @@ CREATE TABLE IF NOT EXISTS reviews (
     customer_id UUID NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
     rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
     comment TEXT,
+    sentiment_label VARCHAR(20) DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_reviews_product_id ON reviews(product_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_customer_id ON reviews(customer_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_sentiment_label ON reviews(sentiment_label);
+
+
+-- ==================== 21. REVIEW_IMAGES ====================
+CREATE TABLE IF NOT EXISTS review_images (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    review_id UUID NOT NULL REFERENCES reviews(id) ON DELETE CASCADE,
+    image_url TEXT NOT NULL,
+    sort_order INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_review_images_review_id ON review_images(review_id);
+
+-- ==================== 22. KNOWLEDGE_EMBEDDINGS ====================
+CREATE TABLE IF NOT EXISTS knowledge_embeddings (
+    id UUID PRIMARY KEY,
+    content TEXT NOT NULL,
+    metadata JSONB DEFAULT '{}',
+    embedding VECTOR(1536),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ==================== 23. SUPPORT_TICKETS ====================
+
+CREATE TABLE IF NOT EXISTS support_tickets (
+    id UUID PRIMARY KEY,
+    session_id VARCHAR(255) NOT NULL,
+    customer_id UUID REFERENCES customers(id),
+    staff_id UUID REFERENCES staffs(id),
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    priority VARCHAR(10) DEFAULT 'NORMAL',
+    category VARCHAR(50),
+    customer_message TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    assigned_at TIMESTAMP,
+    closed_at TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_support_tickets_session ON support_tickets(session_id);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_staff ON support_tickets(staff_id);
+CREATE INDEX IF NOT EXISTS idx_support_tickets_status ON support_tickets(status);
+
+-- ==================== 24. CHAT_MESSAGES ====================
+CREATE TABLE IF NOT EXISTS chat_messages (
+
+    id UUID PRIMARY KEY,
+    session_id VARCHAR(255) NOT NULL,
+    sender_type VARCHAR(10) NOT NULL,
+    content TEXT NOT NULL,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id);
+CREATE INDEX IF NOT EXISTS idx_knowledge_embeddings ON knowledge_embeddings USING ivfflat (embedding vector_cosine_ops);
 
 -- ==================== INVALIDATED_TOKENS ====================
+
 INSERT INTO invalidated_token (id, expiry_time) VALUES
 ('2167ebfb-b87f-4e44-9b13-971ff9fe7e6a', '2026-03-11 03:47:23'),
 ('c151c7c0-78a2-4d4c-8834-a0a8761bf290', '2026-03-17 15:04:37'),

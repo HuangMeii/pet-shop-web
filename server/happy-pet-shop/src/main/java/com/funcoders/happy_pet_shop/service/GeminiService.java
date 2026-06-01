@@ -3,8 +3,8 @@ package com.funcoders.happy_pet_shop.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
 public class GeminiService {
 
-    final ObjectMapper objectMapper;
+    final ObjectMapper objectMapper = new ObjectMapper();
+
 
     @Value("${gemini.api-key}")
     String apiKey;

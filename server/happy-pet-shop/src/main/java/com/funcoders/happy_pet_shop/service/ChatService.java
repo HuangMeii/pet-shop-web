@@ -101,13 +101,13 @@ public class ChatService {
 
         // Notify staff via WebSocket
         try {
-            messagingTemplate.convertAndSend("/topic/staff/chat-requests",
-                    Map.of(
-                            "ticketId", ticket.getId().toString(),
-                            "sessionId", sessionId,
-                            "customerMessage", customerMessage,
-                            "timestamp", LocalDateTime.now().toString()
-                    ));
+            Map<String, Object> payload = Map.of(
+                    "ticketId", ticket.getId().toString(),
+                    "sessionId", sessionId,
+                    "customerMessage", customerMessage,
+                    "timestamp", LocalDateTime.now().toString()
+            );
+            messagingTemplate.convertAndSend("/topic/staff/chat-requests", (Object) payload);
             log.info("Notified staff about ticket: {}", ticket.getId());
         } catch (Exception e) {
             log.error("Failed to notify staff: {}", e.getMessage());
@@ -134,12 +134,12 @@ public class ChatService {
         chatMessageRepository.save(staffMsg);
 
         // Send to customer via WebSocket
-        messagingTemplate.convertAndSend("/queue/chat/" + sessionId,
-                Map.of(
-                        "senderType", "STAFF",
-                        "content", message,
-                        "timestamp", LocalDateTime.now().toString()
-                ));
+        Map<String, Object> staffPayload = Map.of(
+                "senderType", "STAFF",
+                "content", message,
+                "timestamp", LocalDateTime.now().toString()
+        );
+        messagingTemplate.convertAndSend("/queue/chat/" + sessionId, (Object) staffPayload);
 
         return ChatResponse.builder()
                 .sessionId(sessionId)
