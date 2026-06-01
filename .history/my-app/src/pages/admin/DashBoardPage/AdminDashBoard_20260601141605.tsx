@@ -71,22 +71,19 @@ const AdminDashboard: FC = () => {
   const [recentOrders, setRecentOrders] = useState<InvoiceResponse[]>([]);
   const [recentReviews, setRecentReviews] = useState<ProductReviewResponse[]>([]);
   const [sentimentStats, setSentimentStats] = useState<SentimentStatsResponse | null>(null);
-  const [dashboardStats, setDashboardStats] = useState<DashboardStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [invoices, reviews, sStats, dStats] = await Promise.all([
+        const [invoices, reviews, sStats] = await Promise.all([
           getAllInvoices(),
           getAllReviews(),
           getSentimentStats(),
-          getDashboardStats(),
         ]);
         setRecentOrders(invoices);
         setRecentReviews(reviews.slice(0, 10)); // Top 10 recent
         setSentimentStats(sStats);
-        setDashboardStats(dStats);
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
       } finally {
@@ -119,30 +116,20 @@ const AdminDashboard: FC = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-          <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300">
-            <p className="text-gray-500 text-sm">Tổng đơn hàng</p>
-            <h2 className="text-2xl font-bold mt-2 text-gray-800">
-              {dashboardStats?.totalOrders.toLocaleString("vi-VN") ?? "0"}
-            </h2>
-          </div>
-          <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300">
-            <p className="text-gray-500 text-sm">Doanh thu</p>
-            <h2 className="text-2xl font-bold mt-2 text-gray-800">
-              {dashboardStats ? `${dashboardStats.totalRevenue.toLocaleString("vi-VN")} ₫` : "0 ₫"}
-            </h2>
-          </div>
-          <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300">
-            <p className="text-gray-500 text-sm">Khách hàng</p>
-            <h2 className="text-2xl font-bold mt-2 text-gray-800">
-              {dashboardStats?.newCustomers.toLocaleString("vi-VN") ?? "0"}
-            </h2>
-          </div>
-          <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300">
-            <p className="text-gray-500 text-sm">Sản phẩm</p>
-            <h2 className="text-2xl font-bold mt-2 text-gray-800">
-              {dashboardStats?.totalProducts.toLocaleString("vi-VN") ?? "0"}
-            </h2>
-          </div>
+          {stats.map((item, index) => (
+              <div
+                  key={index}
+                  className="bg-white rounded-2xl shadow-md p-6 hover:shadow-xl transition duration-300"
+              >
+                <p className="text-gray-500 text-sm">{item.title}</p>
+                <h2 className="text-2xl font-bold mt-2 text-gray-800">
+                  {item.value}
+                </h2>
+                <span className="text-green-500 text-sm font-medium">
+              {item.growth} so với tháng trước
+            </span>
+              </div>
+          ))}
         </div>
 
         {/* Sentiment Overview + Recent Reviews */}

@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/java/com/funcoders/happy_pet_shop/controller/DashboardController.java",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780298135334,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780298135334,
+            "name": "Commit-0",
+            "content": "package com.funcoders.happy_pet_shop.controller;\r\n\r\nimport com.funcoders.happy_pet_shop.dto.response.ApiResponse;\r\nimport com.funcoders.happy_pet_shop.dto.response.DashboardStatsResponse;\r\nimport com.funcoders.happy_pet_shop.service.DashboardService;\r\nimport lombok.AccessLevel;\r\nimport lombok.RequiredArgsConstructor;\r\nimport lombok.experimental.FieldDefaults;\r\nimport org.springframework.web.bind.annotation.GetMapping;\r\nimport org.springframework.web.bind.annotation.RequestMapping;\r\nimport org.springframework.web.bind.annotation.RestController;\r\n\r\n@RestController\r\n@RequestMapping(\"/dashboard\")\r\n@RequiredArgsConstructor\r\n@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)\r\npublic class DashboardController {\r\n\r\n    DashboardService dashboardService;\r\n\r\n    @GetMapping(\"/stats\")\r\n    public ApiResponse<DashboardStatsResponse> getStats() {\r\n        DashboardStatsResponse stats = dashboardService.getStats();\r\n        return new ApiResponse<>(stats, \"Get dashboard stats successfully\");\r\n    }\r\n}\r\n"
+        }
+    ]
+}
