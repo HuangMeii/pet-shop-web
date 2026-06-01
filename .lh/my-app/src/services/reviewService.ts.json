@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1780292907262,
@@ -24,6 +24,14 @@
                 {
                     "date": 1780296185109,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,8 +2,34 @@\n import { API_CONFIG } from \"../config/apiConfig\";\r\n import type { ApiResponse } from \"../types/apiResponse\";\r\n import type { ProductReviewResponse, ReviewCreationRequest, ReviewStatsResponse } from \"../types/reviewTypes\";\r\n \r\n+const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;\r\n+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;\r\n+const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;\r\n+\r\n+/**\r\n+ * Upload a single image file to Cloudinary using unsigned upload.\r\n+ * Returns the secure URL of the uploaded image.\r\n+ */\r\n+export async function uploadReviewImage(file: File): Promise<string> {\r\n+  const formData = new FormData();\r\n+  formData.append(\"file\", file);\r\n+  formData.append(\"upload_preset\", CLOUDINARY_UPLOAD_PRESET);\r\n+\r\n+  const res = await fetch(CLOUDINARY_URL, {\r\n+    method: \"POST\",\r\n+    body: formData,\r\n+  });\r\n+\r\n+  if (!res.ok) {\r\n+    throw new Error(\"Upload ảnh thất bại\");\r\n+  }\r\n+\r\n+  const data = await res.json();\r\n+  return data.secure_url as string;\r\n+}\r\n+\r\n export const createReview = async (\r\n   customerId: string,\r\n   request: ReviewCreationRequest\r\n ): Promise<ProductReviewResponse> => {\r\n"
+                },
+                {
+                    "date": 1780297832900,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { apiClient } from \"../utils/apiClient\";\r\n import { API_CONFIG } from \"../config/apiConfig\";\r\n import type { ApiResponse } from \"../types/apiResponse\";\r\n-import type { ProductReviewResponse, ReviewCreationRequest, ReviewStatsResponse } from \"../types/reviewTypes\";\r\n+import type { ProductReviewResponse, ReviewCreationRequest, ReviewStatsResponse, SentimentStatsResponse } from \"../types/reviewTypes\";\r\n \r\n const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;\r\n const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;\r\n const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;\r\n"
+                },
+                {
+                    "date": 1780297842980,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -81,4 +81,26 @@\n     throw new Error(api.message ?? \"Failed to fetch customer reviews\");\r\n   }\r\n   return api.data;\r\n };\r\n+\r\n+export const getAllReviews = async (): Promise<ProductReviewResponse[]> => {\r\n+  const res = await apiClient.get<ApiResponse<ProductReviewResponse[]>>(\r\n+    API_CONFIG.ENDPOINTS.REVIEW.GET_ALL\r\n+  );\r\n+  const api = res.data;\r\n+  if (!api.success || api.data == null) {\r\n+    throw new Error(api.message ?? \"Failed to fetch all reviews\");\r\n+  }\r\n+  return api.data;\r\n+};\r\n+\r\n+export const getSentimentStats = async (): Promise<SentimentStatsResponse> => {\r\n+  const res = await apiClient.get<ApiResponse<SentimentStatsResponse>>(\r\n+    API_CONFIG.ENDPOINTS.REVIEW.GET_SENTIMENT_STATS\r\n+  );\r\n+  const api = res.data;\r\n+  if (!api.success || api.data == null) {\r\n+    throw new Error(api.message ?? \"Failed to fetch sentiment stats\");\r\n+  }\r\n+  return api.data;\r\n+};\r\n"
                 }
             ],
             "date": 1780292907262,

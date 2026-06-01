@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1780292890817,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780297823356,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -107,8 +107,10 @@\n             CREATE: (customerId: string) => `/reviews/customer/${customerId}`,\r\n             GET_BY_PRODUCT: (productId: string) => `/reviews/product/${productId}`,\r\n             GET_STATS: (productId: string) => `/reviews/product/${productId}/stats`,\r\n             GET_BY_CUSTOMER: (customerId: string) => `/reviews/customer/${customerId}`,\r\n+            GET_ALL: \"/reviews/all\",\r\n+            GET_SENTIMENT_STATS: \"/reviews/sentiment-stats\",\r\n         },\r\n     },\r\n } as const;\r\n \r\n"
                 }
             ],
             "date": 1780292890817,

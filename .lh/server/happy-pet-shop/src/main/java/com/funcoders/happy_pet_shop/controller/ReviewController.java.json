@@ -3,11 +3,19 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1780292873619,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780297775750,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,8 +3,9 @@\n import com.funcoders.happy_pet_shop.dto.request.ReviewCreationRequest;\r\n import com.funcoders.happy_pet_shop.dto.response.ApiResponse;\r\n import com.funcoders.happy_pet_shop.dto.response.ProductReviewResponse;\r\n import com.funcoders.happy_pet_shop.dto.response.ReviewStatsResponse;\r\n+import com.funcoders.happy_pet_shop.dto.response.SentimentStatsResponse;\r\n import com.funcoders.happy_pet_shop.service.ReviewService;\r\n import jakarta.validation.Valid;\r\n import lombok.RequiredArgsConstructor;\r\n import org.springframework.web.bind.annotation.*;\r\n"
+                },
+                {
+                    "date": 1780297785473,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -87,5 +87,25 @@\n                 .success(true)\r\n                 .data(reviews)\r\n                 .build();\r\n     }\r\n+\r\n+    // ========== Admin endpoints ==========\r\n+\r\n+    @GetMapping(\"/all\")\r\n+    public ApiResponse<List<ProductReviewResponse>> getAllReviews() {\r\n+        List<ProductReviewResponse> reviews = reviewService.getAllReviews();\r\n+        return ApiResponse.<List<ProductReviewResponse>>builder()\r\n+                .success(true)\r\n+                .data(reviews)\r\n+                .build();\r\n+    }\r\n+\r\n+    @GetMapping(\"/sentiment-stats\")\r\n+    public ApiResponse<SentimentStatsResponse> getSentimentStats() {\r\n+        SentimentStatsResponse stats = reviewService.getSentimentStats();\r\n+        return ApiResponse.<SentimentStatsResponse>builder()\r\n+                .success(true)\r\n+                .data(stats)\r\n+                .build();\r\n+    }\r\n }\r\n"
                 }
             ],
             "date": 1780292873619,

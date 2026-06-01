@@ -31,7 +31,6 @@ public class ReviewService {
     private final CustomerRepository customerRepository;
     private final ModerationService moderationService;
     private final ToxicService toxicService;
-    private final SentimentService sentimentService;
 
     @Transactional
     public ProductReviewResponse createReview(UUID customerId, ReviewCreationRequest request) {
@@ -70,18 +69,6 @@ public class ReviewService {
         }
 
         reviewRepository.save(review);
-
-        // Analyze sentiment of the comment
-        try {
-            SentimentResult sentiment = sentimentService.analyze(request.getComment());
-            if (sentiment != null) {
-                review.setSentimentLabel(sentiment.getSentimentType());
-                reviewRepository.save(review);
-            }
-        } catch (Exception e) {
-            System.err.println("Failed to analyze sentiment: " + e.getMessage());
-        }
-
         return reviewMapper.toResponse(review);
     }
 
@@ -120,56 +107,5 @@ public class ReviewService {
         return reviewMapper.toResponseList(
                 reviewRepository.findByCustomerIdOrderByCreatedAtDesc(customerId)
         );
-    }
-
-    // ========== Admin methods ==========
-
-    @Transactional(readOnly = true)
-    public List<ProductReviewResponse> getAllReviews() {
-        return reviewMapper.toResponseList(
-                reviewRepository.findAllOrderByCreatedAtDesc()
-        );
-    }
-
-    @Transactional(readOnly = true)
-    public SentimentStatsResponse getSentimentStats() {
-        List<Object[]> results = reviewRepository.countBySentimentLabel();
-        long total = 0;
-        long positive = 0;
-        long neutral = 0;
-        long negative = 0;
-
-        for (Object[] row : results) {
-            String label = (String) row[0];
-            Long count = (Long) row[1];
-            total += count;
-            if ("POSITIVE".equals(label)) {
-                positive = count;
-            } else if ("NEGATIVE".equals(label)) {
-                negative = count;
-            } else {
-                neutral += count;
-            }
-        }
-
-        // Also count reviews with null sentiment label as neutral
-        long totalReviews = reviewRepository.count();
-        long nullLabelCount = totalReviews - total;
-        neutral += nullLabelCount;
-        total = totalReviews;
-
-        double positivePercent = total > 0 ? Math.round((double) positive / total * 1000.0) / 10.0 : 0.0;
-        double neutralPercent = total > 0 ? Math.round((double) neutral / total * 1000.0) / 10.0 : 0.0;
-        double negativePercent = total > 0 ? Math.round((double) negative / total * 1000.0) / 10.0 : 0.0;
-
-        return SentimentStatsResponse.builder()
-                .totalReviews(total)
-                .positive(positive)
-                .neutral(neutral)
-                .negative(negative)
-                .positivePercent(positivePercent)
-                .neutralPercent(neutralPercent)
-                .negativePercent(negativePercent)
-                .build();
     }
 }

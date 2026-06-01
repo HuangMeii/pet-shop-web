@@ -88,24 +88,4 @@ public class ReviewController {
                 .data(reviews)
                 .build();
     }
-
-    // ========== Admin endpoints ==========
-
-    @GetMapping("/all")
-    public ApiResponse<List<ProductReviewResponse>> getAllReviews() {
-        List<ProductReviewResponse> reviews = reviewService.getAllReviews();
-        return ApiResponse.<List<ProductReviewResponse>>builder()
-                .success(true)
-                .data(reviews)
-                .build();
-    }
-
-    @GetMapping("/sentiment-stats")
-    public ApiResponse<SentimentStatsResponse> getSentimentStats() {
-        SentimentStatsResponse stats = reviewService.getSentimentStats();
-        return ApiResponse.<SentimentStatsResponse>builder()
-                .success(true)
-                .data(stats)
-                .build();
-    }
 }

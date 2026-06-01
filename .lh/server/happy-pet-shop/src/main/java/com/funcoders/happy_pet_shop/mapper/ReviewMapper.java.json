@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1780292851501,
@@ -16,6 +16,10 @@
                 {
                     "date": 1780296116698,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,17 +4,30 @@\n import com.funcoders.happy_pet_shop.entity.Review;\r\n import org.mapstruct.Mapper;\r\n import org.mapstruct.Mapping;\r\n \r\n+import java.util.Collections;\r\n import java.util.List;\r\n+import java.util.stream.Collectors;\r\n \r\n @Mapper(componentModel = \"spring\")\r\n public interface ReviewMapper {\r\n \r\n     @Mapping(target = \"productId\", source = \"product.id\")\r\n     @Mapping(target = \"productName\", source = \"product.name\")\r\n     @Mapping(target = \"customerId\", source = \"customer.id\")\r\n     @Mapping(target = \"customerName\", expression = \"java(review.getCustomer().getUser().getFirstName() + \\\" \\\" + review.getCustomer().getUser().getLastName())\")\r\n+    @Mapping(target = \"imageUrls\", expression = \"java(mapImages(review))\")\r\n     ProductReviewResponse toResponse(Review review);\r\n \r\n     List<ProductReviewResponse> toResponseList(List<Review> reviews);\r\n+\r\n+    default List<String> mapImages(Review review) {\r\n+        if (review.getImages() == null || review.getImages().isEmpty()) {\r\n+            return Collections.emptyList();\r\n+        }\r\n+        return review.getImages().stream()\r\n+                .sorted((a, b) -> Integer.compare(a.getSortOrder(), b.getSortOrder()))\r\n+                .map(img -> img.getImageUrl())\r\n+                .collect(Collectors.toList());\r\n+    }\r\n }\r\n"
+                },
+                {
+                    "date": 1780297709785,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,8 +16,9 @@\n     @Mapping(target = \"productName\", source = \"product.name\")\r\n     @Mapping(target = \"customerId\", source = \"customer.id\")\r\n     @Mapping(target = \"customerName\", expression = \"java(review.getCustomer().getUser().getFirstName() + \\\" \\\" + review.getCustomer().getUser().getLastName())\")\r\n     @Mapping(target = \"imageUrls\", expression = \"java(mapImages(review))\")\r\n+    @Mapping(target = \"sentimentLabel\", source = \"sentimentLabel\")\r\n     ProductReviewResponse toResponse(Review review);\r\n \r\n     List<ProductReviewResponse> toResponseList(List<Review> reviews);\r\n \r\n"
                 }
             ],
             "date": 1780292851501,

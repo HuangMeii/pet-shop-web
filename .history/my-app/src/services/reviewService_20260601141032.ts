@@ -82,25 +82,3 @@ export const getReviewsByCustomerId = async (
   }
   return api.data;
 };
-
-export const getAllReviews = async (): Promise<ProductReviewResponse[]> => {
-  const res = await apiClient.get<ApiResponse<ProductReviewResponse[]>>(
-    API_CONFIG.ENDPOINTS.REVIEW.GET_ALL
-  );
-  const api = res.data;
-  if (!api.success || api.data == null) {
-    throw new Error(api.message ?? "Failed to fetch all reviews");
-  }
-  return api.data;
-};
-
-export const getSentimentStats = async (): Promise<SentimentStatsResponse> => {
-  const res = await apiClient.get<ApiResponse<SentimentStatsResponse>>(
-    API_CONFIG.ENDPOINTS.REVIEW.GET_SENTIMENT_STATS
-  );
-  const api = res.data;
-  if (!api.success || api.data == null) {
-    throw new Error(api.message ?? "Failed to fetch sentiment stats");
-  }
-  return api.data;
-};

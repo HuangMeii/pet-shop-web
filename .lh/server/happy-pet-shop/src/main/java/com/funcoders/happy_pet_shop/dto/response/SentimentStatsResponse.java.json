@@ -1,0 +1,18 @@
+{
+    "sourceFile": "server/happy-pet-shop/src/main/java/com/funcoders/happy_pet_shop/dto/response/SentimentStatsResponse.java",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780297689155,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780297689155,
+            "name": "Commit-0",
+            "content": "package com.funcoders.happy_pet_shop.dto.response;\r\n\r\nimport com.fasterxml.jackson.annotation.JsonInclude;\r\nimport lombok.*;\r\nimport lombok.experimental.FieldDefaults;\r\n\r\n@Data\r\n@Builder\r\n@AllArgsConstructor\r\n@NoArgsConstructor\r\n@FieldDefaults(level = AccessLevel.PRIVATE)\r\n@JsonInclude(JsonInclude.Include.NON_NULL)\r\npublic class SentimentStatsResponse {\r\n    long totalReviews;\r\n    long positive;\r\n    long neutral;\r\n    long negative;\r\n    double positivePercent;\r\n    double neutralPercent;\r\n    double negativePercent;\r\n}\r\n"
+        }
+    ]
+}

@@ -24,13 +24,3 @@ export interface ReviewStatsResponse {
   totalReviews: number;
   ratingDistribution: Record<number, number>;
 }
-
-export interface SentimentStatsResponse {
-  totalReviews: number;
-  positive: number;
-  neutral: number;
-  negative: number;
-  positivePercent: number;
-  neutralPercent: number;
-  negativePercent: number;
-}

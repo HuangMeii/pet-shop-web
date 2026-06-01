@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1780204932305,
@@ -44,6 +44,10 @@
                 {
                     "date": 1780297223304,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,4 +63,7 @@\n         url: ${RECOMMENDATION_SERVICE_URL:http://localhost:8000}\r\n \r\n moderation:\r\n     base-url: ${MODERATION_SERVICE_URL:http://localhost:8888}\r\n+\r\n+toxic:\r\n+    base-url: ${TOXIC_SERVICE_URL:http://localhost:8000}\r\n"
+                },
+                {
+                    "date": 1780297796882,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -66,4 +66,7 @@\n     base-url: ${MODERATION_SERVICE_URL:http://localhost:8888}\r\n \r\n toxic:\r\n     base-url: ${TOXIC_SERVICE_URL:http://localhost:8000}\r\n+\r\n+sentiment:\r\n+    base-url: ${SENTIMENT_SERVICE_URL:http://localhost:5000}\r\n"
                 }
             ],
             "date": 1780204932305,

@@ -40,9 +40,6 @@ public class Review {
     String sentimentLabel;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Builder.Default
-    List<ReviewImage> images = new ArrayList<>();
-
     @Column(name = "created_at", nullable = false, updatable = false)
     LocalDateTime createdAt;
 

@@ -11,7 +11,6 @@ export interface ProductReviewResponse {
   createdAt: string;
   updatedAt?: string;
 }
-
 export interface ReviewCreationRequest {
   productId: string;
   rating: number;
@@ -23,14 +22,4 @@ export interface ReviewStatsResponse {
   averageRating: number;
   totalReviews: number;
   ratingDistribution: Record<number, number>;
-}
-
-export interface SentimentStatsResponse {
-  totalReviews: number;
-  positive: number;
-  neutral: number;
-  negative: number;
-  positivePercent: number;
-  neutralPercent: number;
-  negativePercent: number;
 }
