@@ -526,16 +526,6 @@ CREATE TABLE IF NOT EXISTS review_images (
 
 CREATE INDEX IF NOT EXISTS idx_review_images_review_id ON review_images(review_id);
 
--- ==================== 22. KNOWLEDGE_EMBEDDINGS ====================
-CREATE TABLE IF NOT EXISTS knowledge_embeddings (
-    id UUID PRIMARY KEY,
-    content TEXT NOT NULL,
-    metadata JSONB DEFAULT '{}',
-    embedding VECTOR(1536),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- ==================== 23. SUPPORT_TICKETS ====================
 
 CREATE TABLE IF NOT EXISTS support_tickets (
     id UUID PRIMARY KEY,
@@ -567,7 +557,6 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 );
 
 CREATE INDEX IF NOT EXISTS idx_chat_messages_session ON chat_messages(session_id);
-CREATE INDEX IF NOT EXISTS idx_knowledge_embeddings ON knowledge_embeddings USING ivfflat (embedding vector_cosine_ops);
 
 -- ==================== INVALIDATED_TOKENS ====================
 

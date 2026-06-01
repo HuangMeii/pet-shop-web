@@ -5,6 +5,7 @@ import ProductsPage from "./pages/user/ProductsPage/ProductsPage";
 import AllProductsPage from "./pages/user/AllProductsPage/AllProductsPage";
 import ServicesPage from "./pages/user/ServicesPage/ServicesPage";
 import ImageSearchPage from "./pages/user/ImageSearchPage/ImageSearchPage";
+import ChatPage from "./pages/user/ChatPage/ChatPage";
 import DetailedProductPage from "./pages/user/DetailedProductPage/DetailedProductPage";
 import ReviewPage from "./pages/user/ReviewPage/ReviewPage";
 import PetsPage from "./pages/user/PetsPage/PetsPage";
@@ -32,7 +33,7 @@ import StaffPage from "./pages/admin/StaffPage/StaffPage.tsx";
 import CustomerPage from "./pages/admin/CustomerPage/CustomerPage.tsx";
 import SupplierPage from "./pages/admin/SupplierPage/SupplierPage.tsx";
 import ManagePetsPage from "./pages/admin/ManagePetsPage/ManagePetsPage.tsx";
-import ChatWidget from "./components/ChatWidget";
+import ChatManagementPage from "./pages/admin/ChatManagementPage/ChatManagementPage.tsx";
 
 const App: React.FC = () => {
   return (
@@ -67,6 +68,7 @@ const App: React.FC = () => {
               <Route path="review" element={<ReviewPage />} />
               <Route path="invoices/:invoiceId" element={<InvoiceDetailPage />} />
               <Route path="invoices" element={<PaidInvoicesPage />} />
+              <Route path="chat" element={<ChatPage />} />
             </Route>
 
             <Route path="/admin" element={<AdminLayout />}>
@@ -90,9 +92,9 @@ const App: React.FC = () => {
               <Route path="purchases" element={<PurchasePage />} />
               <Route path="promotions/add" element={<AddPromotionPage />} />
               <Route path="promotions" element={<PromotionManagementPage />} />
+              <Route path="chat" element={<ChatManagementPage />} />
             </Route>
           </Routes>
-          <ChatWidget />
         </AuthProvider>
       </BrowserRouter>
   );

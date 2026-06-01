@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChatResponse {
     String sessionId;
-    String senderType;  // AI, STAFF, SYSTEM
+    String senderType;  // CUSTOMER, STAFF, SYSTEM
     String content;
-    boolean handoffRequired;
     LocalDateTime timestamp;
 }

@@ -1,5 +1,6 @@
 package com.funcoders.happy_pet_shop.entity;
 
+import com.funcoders.happy_pet_shop.configuration.JsonbConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -29,7 +30,7 @@ public class ChatMessage {
     @Column(nullable = false, columnDefinition = "TEXT")
     String content;
 
-    @Column(columnDefinition = "JSONB")
+    @Column(columnDefinition = "TEXT")
     String metadata;
 
     @Column(name = "created_at", nullable = false, updatable = false)

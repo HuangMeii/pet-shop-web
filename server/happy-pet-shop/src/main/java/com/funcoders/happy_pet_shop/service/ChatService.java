@@ -28,12 +28,10 @@ public class ChatService {
     ChatMessageRepository chatMessageRepository;
     SupportTicketRepository supportTicketRepository;
     CustomerRepository customerRepository;
-    VectorService vectorService;
-    GeminiService geminiService;
     SimpMessagingTemplate messagingTemplate;
 
     /**
-     * Process a customer message: vector search → AI → respond or handoff
+     * Customer sends a message → creates a support ticket → notifies staff
      */
     @Transactional
     public ChatResponse processMessage(String sessionId, String message, String customerId) {
@@ -45,35 +43,14 @@ public class ChatService {
                 .build();
         chatMessageRepository.save(customerMsg);
 
-        // 2. Build context from vector search
-        String systemPrompt = vectorService.buildContextPrompt(message);
+        // 2. Create a support ticket for staff to handle
+        createSupportTicket(sessionId, customerId, message);
 
-        // 3. Get AI response
-        String aiResponse = geminiService.chatCompletion(systemPrompt, message);
-
-        // 4. Check if handoff is needed
-        boolean handoffRequired = aiResponse.toLowerCase().contains("chuyển sang nhân viên")
-                || aiResponse.toLowerCase().contains("nhân viên hỗ trợ");
-
-        // 5. Save AI response
-        ChatMessage aiMsg = ChatMessage.builder()
-                .sessionId(sessionId)
-                .senderType("AI")
-                .content(aiResponse)
-                .metadata("{\"handoffRequired\": " + handoffRequired + "}")
-                .build();
-        chatMessageRepository.save(aiMsg);
-
-        // 6. If handoff required, create ticket and notify staff
-        if (handoffRequired) {
-            createHandoffTicket(sessionId, customerId, message);
-        }
-
+        // 3. Return response indicating the message was sent to staff
         return ChatResponse.builder()
                 .sessionId(sessionId)
-                .senderType("AI")
-                .content(aiResponse)
-                .handoffRequired(handoffRequired)
+                .senderType("SYSTEM")
+                .content("Đã gửi yêu cầu tư vấn. Nhân viên sẽ phản hồi trong thời gian sớm nhất.")
                 .timestamp(LocalDateTime.now())
                 .build();
     }
@@ -81,7 +58,7 @@ public class ChatService {
     /**
      * Create a support ticket and notify staff via WebSocket
      */
-    private void createHandoffTicket(String sessionId, String customerId, String customerMessage) {
+    private void createSupportTicket(String sessionId, String customerId, String customerMessage) {
         SupportTicket ticket = SupportTicket.builder()
                 .sessionId(sessionId)
                 .customerMessage(customerMessage)
@@ -145,7 +122,6 @@ public class ChatService {
                 .sessionId(sessionId)
                 .senderType("STAFF")
                 .content(message)
-                .handoffRequired(false)
                 .timestamp(LocalDateTime.now())
                 .build();
     }

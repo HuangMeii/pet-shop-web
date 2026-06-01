@@ -9,14 +9,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -27,7 +22,7 @@ public class ChatController {
     ChatService chatService;
 
     /**
-     * REST endpoint: Send a message to the AI chatbot
+     * REST endpoint: Customer sends a message (creates a support ticket)
      */
     @PostMapping("/message")
     public ResponseEntity<ChatResponse> sendMessage(@Valid @RequestBody ChatRequest request) {
@@ -45,18 +40,5 @@ public class ChatController {
     @GetMapping("/history/{sessionId}")
     public ResponseEntity<List<ChatMessage>> getHistory(@PathVariable String sessionId) {
         return ResponseEntity.ok(chatService.getHistory(sessionId));
-    }
-
-    /**
-     * WebSocket endpoint: Customer sends a message
-     */
-    @MessageMapping("/chat.send")
-    @SendTo("/topic/chat")
-    public ChatResponse handleWebSocketMessage(@Payload Map<String, String> payload) {
-        return chatService.processMessage(
-                payload.get("sessionId"),
-                payload.get("message"),
-                payload.get("customerId")
-        );
     }
 }

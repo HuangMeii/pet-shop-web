@@ -1,7 +1,7 @@
 export interface ChatMessage {
   id?: string;
   sessionId: string;
-  senderType: 'CUSTOMER' | 'AI' | 'STAFF' | 'SYSTEM';
+  senderType: 'CUSTOMER' | 'STAFF' | 'SYSTEM';
   content: string;
   createdAt?: string;
 }
@@ -14,8 +14,7 @@ export interface ChatRequest {
 
 export interface ChatResponse {
   sessionId: string;
-  senderType: 'AI' | 'STAFF' | 'SYSTEM';
+  senderType: 'CUSTOMER' | 'STAFF' | 'SYSTEM';
   content: string;
-  handoffRequired: boolean;
   timestamp: string;
 }

@@ -46,7 +46,6 @@ services:
       JWT_KEY: ZXZlbnR0aHJlYWRvbGRub25lZmVuY2VmYWlybHl0b3dlcmFiaWxpdHlmaW5kYmFsbHM\=
       SPRING_PROFILES_ACTIVE: docker
       RECOMMENDATION_SERVICE_URL: http://recommendation-api:8000
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
     depends_on:
       postgres:
         condition: service_healthy

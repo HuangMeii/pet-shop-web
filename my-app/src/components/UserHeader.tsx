@@ -365,6 +365,20 @@ export default function UserHeader() {
               {/* Right Section: Actions */}
               <div className="flex items-center gap-2 shrink-0">
 
+                {/* 🎧 Hỗ trợ */}
+                <Link
+                  to="/user/chat"
+                  className={`flex items-center gap-1 px-3 py-2 rounded-full transition ${
+                      isActive("/user/chat")
+                          ? "bg-green-500 text-white shadow"
+                          : "text-gray-600 hover:bg-indigo-50 hover:text-indigo-500"
+                  }`}
+                  title="Hỗ trợ trực tuyến"
+                >
+                  <span className="text-lg leading-none">🎧</span>
+                  <span className="text-sm">Hỗ trợ</span>
+                </Link>
+
                 {/* 🔐 Admin */}
                 <Link
                     to="/admin/login"
