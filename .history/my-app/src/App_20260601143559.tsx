@@ -92,7 +92,6 @@ const App: React.FC = () => {
               <Route path="promotions" element={<PromotionManagementPage />} />
             </Route>
           </Routes>
-          <ChatWidget />
         </AuthProvider>
       </BrowserRouter>
   );

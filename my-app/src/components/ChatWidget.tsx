@@ -1,0 +1,412 @@
+import { useState, useRef, useEffect, useCallback } from "react";
+import { chatService } from "../services/chatService";
+import type { ChatMessage } from "../types/chatTypes";
+
+// Generate a simple UUID v4
+const generateSessionId = (): string => {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
+const SESSION_KEY = "chat_session_id";
+
+const getSessionId = (): string => {
+  let sessionId = sessionStorage.getItem(SESSION_KEY);
+  if (!sessionId) {
+    sessionId = generateSessionId();
+    sessionStorage.setItem(SESSION_KEY, sessionId);
+  }
+  return sessionId;
+};
+
+const WELCOME_MESSAGE: ChatMessage = {
+  sessionId: "",
+  senderType: "AI",
+  content:
+    "👋 Xin chào! Tôi là trợ lý ảo của HappyPetShop. Tôi có thể giúp gì cho bạn? Hãy hỏi tôi về sản phẩm, dịch vụ, hoặc bất kỳ thắc mắc nào!",
+};
+
+const ChatWidget: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE]);
+  const [inputText, setInputText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Scroll to bottom when messages change
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      scrollToBottom();
+      // Focus input when chat opens
+      setTimeout(() => inputRef.current?.focus(), 300);
+    }
+  }, [isOpen, messages, scrollToBottom]);
+
+  const handleSendMessage = async () => {
+    const text = inputText.trim();
+    if (!text || isLoading) return;
+
+    const sessionId = getSessionId();
+
+    // Add user message
+    const userMessage: ChatMessage = {
+      sessionId,
+      senderType: "CUSTOMER",
+      content: text,
+    };
+    setMessages((prev) => [...prev, userMessage]);
+    setInputText("");
+    setIsLoading(true);
+
+    try {
+      const response = await chatService.sendMessage({
+        sessionId,
+        message: text,
+      });
+
+      const botMessage: ChatMessage = {
+        sessionId: response.sessionId,
+        senderType: response.senderType,
+        content: response.content,
+      };
+      setMessages((prev) => [...prev, botMessage]);
+
+      // If handoff required, show system message
+      if (response.handoffRequired) {
+        const systemMessage: ChatMessage = {
+          sessionId: response.sessionId,
+          senderType: "SYSTEM",
+          content:
+            "🔄 Đã chuyển sang nhân viên hỗ trợ. Vui lòng đợi trong giây lát...",
+        };
+        setMessages((prev) => [...prev, systemMessage]);
+      }
+    } catch {
+      const errorMessage: ChatMessage = {
+        sessionId,
+        senderType: "SYSTEM",
+        content:
+          "❌ Rất tiếc, đã xảy ra lỗi kết nối. Vui lòng thử lại sau.",
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  return (
+    <>
+      {/* Floating Chat Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="chat-fab"
+        aria-label="Chat với HappyPetShop"
+        style={{
+          position: "fixed",
+          bottom: "24px",
+          right: "24px",
+          width: "60px",
+          height: "60px",
+          borderRadius: "50%",
+          backgroundColor: "#4f46e5",
+          color: "white",
+          border: "none",
+          cursor: "pointer",
+          boxShadow: "0 4px 20px rgba(79, 70, 229, 0.4)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "28px",
+          zIndex: 9999,
+          transition: "transform 0.2s, box-shadow 0.2s",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "scale(1.1)";
+          e.currentTarget.style.boxShadow = "0 6px 25px rgba(79, 70, 229, 0.5)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+          e.currentTarget.style.boxShadow = "0 4px 20px rgba(79, 70, 229, 0.4)";
+        }}
+      >
+        {isOpen ? "✕" : "💬"}
+      </button>
+
+      {/* Chat Box */}
+      {isOpen && (
+        <div
+          className="chat-box"
+          style={{
+            position: "fixed",
+            bottom: "96px",
+            right: "24px",
+            width: "360px",
+            height: "520px",
+            backgroundColor: "white",
+            borderRadius: "16px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.15)",
+            display: "flex",
+            flexDirection: "column",
+            zIndex: 9998,
+            overflow: "hidden",
+            animation: "slideUp 0.3s ease-out",
+          }}
+        >
+          {/* Header */}
+          <div
+            style={{
+              padding: "16px 20px",
+              backgroundColor: "#4f46e5",
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <span style={{ fontSize: "24px" }}>🤖</span>
+            <div>
+              <div style={{ fontWeight: 600, fontSize: "15px" }}>
+                HappyPet Bot
+              </div>
+              <div style={{ fontSize: "12px", opacity: 0.8 }}>
+                Trợ lý ảo • Online
+              </div>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              padding: "16px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px",
+              backgroundColor: "#f8fafc",
+            }}
+          >
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                style={{
+                  display: "flex",
+                  justifyContent:
+                    msg.senderType === "CUSTOMER" ? "flex-end" : "flex-start",
+                  maxWidth: "85%",
+                  alignSelf:
+                    msg.senderType === "CUSTOMER"
+                      ? "flex-end"
+                      : "flex-start",
+                }}
+              >
+                <div
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius:
+                      msg.senderType === "CUSTOMER"
+                        ? "16px 16px 4px 16px"
+                        : "16px 16px 16px 4px",
+                    backgroundColor:
+                      msg.senderType === "CUSTOMER"
+                        ? "#4f46e5"
+                        : msg.senderType === "SYSTEM"
+                        ? "#fef3c7"
+                        : "white",
+                    color:
+                      msg.senderType === "CUSTOMER"
+                        ? "white"
+                        : msg.senderType === "SYSTEM"
+                        ? "#92400e"
+                        : "#1e293b",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    fontSize: "14px",
+                    lineHeight: 1.5,
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+
+            {/* Loading indicator */}
+            {isLoading && (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-start",
+                  maxWidth: "85%",
+                }}
+              >
+                <div
+                  style={{
+                    padding: "12px 16px",
+                    borderRadius: "16px 16px 16px 4px",
+                    backgroundColor: "white",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    display: "flex",
+                    gap: "4px",
+                  }}
+                >
+                  <span
+                    className="dot-pulse"
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      backgroundColor: "#94a3b8",
+                      animation: "pulse 1.4s infinite ease-in-out",
+                    }}
+                  />
+                  <span
+                    className="dot-pulse"
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      backgroundColor: "#94a3b8",
+                      animation: "pulse 1.4s infinite ease-in-out",
+                      animationDelay: "0.2s",
+                    }}
+                  />
+                  <span
+                    className="dot-pulse"
+                    style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      backgroundColor: "#94a3b8",
+                      animation: "pulse 1.4s infinite ease-in-out",
+                      animationDelay: "0.4s",
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input */}
+          <div
+            style={{
+              padding: "12px 16px",
+              borderTop: "1px solid #e2e8f0",
+              display: "flex",
+              gap: "8px",
+              backgroundColor: "white",
+            }}
+          >
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Nhập tin nhắn..."
+              disabled={isLoading}
+              style={{
+                flex: 1,
+                padding: "10px 14px",
+                border: "1px solid #e2e8f0",
+                borderRadius: "24px",
+                outline: "none",
+                fontSize: "14px",
+                backgroundColor: "#f1f5f9",
+                transition: "border-color 0.2s",
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#4f46e5";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#e2e8f0";
+              }}
+            />
+            <button
+              onClick={handleSendMessage}
+              disabled={!inputText.trim() || isLoading}
+              style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                backgroundColor:
+                  !inputText.trim() || isLoading ? "#cbd5e1" : "#4f46e5",
+                color: "white",
+                border: "none",
+                cursor:
+                  !inputText.trim() || isLoading ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "18px",
+                transition: "background-color 0.2s",
+                flexShrink: 0,
+              }}
+            >
+              ➤
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Animations */}
+      <style>{`
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes pulse {
+          0%, 80%, 100% {
+            transform: scale(0.6);
+            opacity: 0.4;
+          }
+          40% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+        @media (max-width: 480px) {
+          .chat-box {
+            width: calc(100vw - 32px) !important;
+            right: 16px !important;
+            bottom: 88px !important;
+            height: 60vh !important;
+            max-height: 500px !important;
+          }
+          .chat-fab {
+            width: 52px !important;
+            height: 52px !important;
+            font-size: 24px !important;
+            bottom: 16px !important;
+            right: 16px !important;
+          }
+        }
+      `}</style>
+    </>
+  );
+};
+
+export default ChatWidget;

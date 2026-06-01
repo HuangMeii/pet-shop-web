@@ -1,0 +1,18 @@
+{
+    "sourceFile": "my-app/src/types/chatTypes.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1780299281994,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1780299281994,
+            "name": "Commit-0",
+            "content": "export interface ChatMessage {\r\n  id?: string;\r\n  sessionId: string;\r\n  senderType: 'CUSTOMER' | 'AI' | 'STAFF' | 'SYSTEM';\r\n  content: string;\r\n  createdAt?: string;\r\n}\r\n\r\nexport interface ChatRequest {\r\n  sessionId: string;\r\n  message: string;\r\n  customerId?: string;\r\n}\r\n\r\nexport interface ChatResponse {\r\n  sessionId: string;\r\n  senderType: 'AI' | 'STAFF' | 'SYSTEM';\r\n  content: string;\r\n  handoffRequired: boolean;\r\n  timestamp: string;\r\n}\r\n"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "sourceFile": "my-app/src/services/chatService.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1780299299325,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1780299313275,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { API_CONFIG } from \"../config/apiConfig\";\r\n-import { ChatRequest, ChatResponse } from \"../types/chatTypes\";\r\n+import type { ChatRequest, ChatResponse } from \"../types/chatTypes\";\r\n \r\n const BASE_URL = API_CONFIG.BASE_URL;\r\n \r\n export const chatService = {\r\n"
+                }
+            ],
+            "date": 1780299299325,
+            "name": "Commit-0",
+            "content": "import { API_CONFIG } from \"../config/apiConfig\";\r\nimport { ChatRequest, ChatResponse } from \"../types/chatTypes\";\r\n\r\nconst BASE_URL = API_CONFIG.BASE_URL;\r\n\r\nexport const chatService = {\r\n  /**\r\n   * Send a message to the AI chatbot\r\n   */\r\n  sendMessage: async (request: ChatRequest): Promise<ChatResponse> => {\r\n    const response = await fetch(\r\n      `${BASE_URL}${API_CONFIG.ENDPOINTS.CHAT.SEND_MESSAGE}`,\r\n      {\r\n        method: \"POST\",\r\n        headers: {\r\n          \"Content-Type\": \"application/json\",\r\n        },\r\n        body: JSON.stringify(request),\r\n      }\r\n    );\r\n\r\n    if (!response.ok) {\r\n      throw new Error(`Chat API error: ${response.status}`);\r\n    }\r\n\r\n    return response.json();\r\n  },\r\n\r\n  /**\r\n   * Get chat history for a session\r\n   */\r\n  getHistory: async (sessionId: string): Promise<ChatResponse[]> => {\r\n    const response = await fetch(\r\n      `${BASE_URL}${API_CONFIG.ENDPOINTS.CHAT.GET_HISTORY(sessionId)}`\r\n    );\r\n\r\n    if (!response.ok) {\r\n      throw new Error(`Chat history API error: ${response.status}`);\r\n    }\r\n\r\n    return response.json();\r\n  },\r\n};\r\n"
+        }
+    ]
+}
