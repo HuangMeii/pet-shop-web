@@ -1,30 +1,56 @@
-# Luồng quản lý dịch vụ (Service Management Flow)
+# Luồng 17: Quản lý dịch vụ (Service Management)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Cho phép admin CRUD dịch vụ (service) và user xem danh sách dịch vụ.
+Luồng quản lý dịch vụ cho phép quản trị viên quản lý các dịch vụ thú cưng (tắm, cắt tỉa lông, khám sức khỏe, etc.) và khách hàng có thể đặt lịch dịch vụ.
 
-## 2. Các trang/component liên quan
+## 2. Actors / Vai trò
 
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/pages/user/ServicesPage/ServicesPage.tsx` | Trang xem dịch vụ (user) |
-| `src/pages/admin/ServiceManagementPage/ServiceManagementPage.tsx` | Quản lý dịch vụ (admin) |
+| Vai trò | Mô tả |
+|---------|-------|
+| **USER** | Khách hàng - xem và đặt lịch dịch vụ |
+| **ADMIN** | Quản trị viên - CRUD dịch vụ |
 
-### Backend
-| File | Mô tả |
-|------|-------|
-| `controller/ServiceController.java` | REST controller service |
-| `service/ServiceService.java` | Business logic service |
-| `entity/Service.java` | Entity dịch vụ |
+## 3. Luồng xử lý chi tiết
 
-## 3. API Endpoints
+### 3.1. Xem danh sách dịch vụ
 
 ```
-GET /services                           # Lấy tất cả dịch vụ
-GET /services/{id}                      # Lấy dịch vụ theo ID
-POST /services                          # Tạo dịch vụ mới
-PUT /services/{id}                      # Cập nhật dịch vụ
-DELETE /services/{id}                   # Xoá dịch vụ
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- GET /services -------->|                                |
+   |                           |--- FindAll ------------------>|
+   |<-- ServiceResponse[] -----|                                |
 ```
+
+### 3.2. Đặt lịch dịch vụ
+
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- POST /services ------->|                                |
+   |   /bookings               |                                |
+   |   {serviceId, customerId, |                                |
+   |    petId, appointmentDate,|                                |
+   |    notes}                 |                                |
+   |                           |--- Tạo ServiceBooking -------->|
+   |<-- BookingResponse -------|                                |
+```
+
+## 4. API Endpoints
+
+| Method | Endpoint | Mô tả | Auth |
+|--------|----------|-------|------|
+| GET | `/services` | Lấy danh sách dịch vụ | PUBLIC |
+| GET | `/services/{id}` | Lấy chi tiết dịch vụ | PUBLIC |
+| POST | `/services` | Tạo dịch vụ mới | ADMIN |
+| PUT | `/services/{id}` | Cập nhật dịch vụ | ADMIN |
+| DELETE | `/services/{id}` | Xoá dịch vụ | ADMIN |
+| POST | `/services/bookings` | Đặt lịch dịch vụ | USER |
+
+## 5. Frontend Components
+
+| Component | Mô tả |
+|-----------|-------|
+| `ServicesPage.tsx` | Trang danh sách dịch vụ cho khách hàng |
+| `ServiceManagementPage.tsx` | Trang quản lý dịch vụ cho admin |

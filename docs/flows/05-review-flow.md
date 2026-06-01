@@ -1,92 +1,265 @@
-# Luồng đánh giá sản phẩm (Review Flow)
+# Luồng 5: Đánh giá sản phẩm (Review)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Cho phép khách hàng tạo đánh giá cho sản phẩm đã mua, upload hình ảnh. Hệ thống tích hợp AI moderation (kiểm tra nội dung độc hại) và sentiment analysis (phân tích cảm xúc).
+Luồng đánh giá sản phẩm cho phép khách hàng viết đánh giá sau khi mua hàng. Hệ thống tích hợp AI để kiểm duyệt nội dung (moderation), phát hiện ngôn từ độc hại (toxic), và phân tích cảm xúc (sentiment).
 
-## 2. Sơ đồ luồng
+## 2. Actors / Vai trò
 
-```mermaid
-sequenceDiagram
-    participant User as Khách hàng
-    participant UI as React App
-    participant API as Backend API
-    participant AI as AI Services
-    participant DB as Database
+| Vai trò | Mô tả |
+|---------|-------|
+| **USER** | Khách hàng - tạo đánh giá, xem đánh giá |
+| **ADMIN** | Quản trị viên - xem thống kê đánh giá, sentiment |
+
+## 3. Luồng xử lý chi tiết
+
+### 3.1. Tạo đánh giá mới
+
+```
+[Client]                    [Server]                         [External AI Services]
+   |                           |                                    |
+   |--- POST /api/reviews ---->|                                    |
+   |   /customer/{customerId}  |                                    |
+   |   {productId, rating,     |                                    |
+   |    comment, imageUrls[]}  |                                    |
+   |                           |                                    |
+   |                           |--- 1. Tìm Product --------> [DB]   |
+   |                           |--- 2. Tìm Customer ------> [DB]   |
+   |                           |--- 3. Check duplicate ----> [DB]   |
+   |                           |                                    |
+   |                           |--- 4. Check Toxic ---------------->|
+   |                           |    (ToxicService)                  |
+   |                           |    POST /predict (toxic server)    |
+   |                           |<-- {toxic: false} -----------------|
+   |                           |                                    |
+   |                           |--- 5. Check Images (nếu có) ------>|
+   |                           |    (ModerationService)             |
+   |                           |    POST /moderate (mod server)     |
+   |                           |<-- {flagged: false} ---------------|
+   |                           |                                    |
+   |                           |--- 6. Save Review + Images -> [DB] |
+   |                           |                                    |
+   |                           |--- 7. Analyze Sentiment ---------->|
+   |                           |    (SentimentService)              |
+   |                           |    POST /analyze (sentiment server)|
+   |                           |<-- {sentiment: POSITIVE} ----------|
+   |                           |                                    |
+   |                           |--- 8. Update sentiment_label ->[DB]|
+   |                           |                                    |
+   |<-- ProductReviewResponse -|                                    |
+```
+
+**Backend:**
+- **Controller:** `ReviewController.java`
+- **Service:** `ReviewService.java`
+- **Method:** `createReview(UUID customerId, ReviewCreationRequest request)`
+
+#### Xử lý chi tiết:
+
+**Bước 1-3: Validation**
+```java
+Product product = productRepository.findById(request.getProductId())
+    .orElseThrow(() -> new RuntimeException("Product not found"));
+Customer customer = customerRepository.findById(customerId)
+    .orElseThrow(() -> new RuntimeException("Customer not found"));
+// Check duplicate review
+if (reviewRepository.existsByProductIdAndCustomerId(product.getId(), customerId)) {
+    throw new RuntimeException("You have already reviewed this product");
+}
+```
+
+**Bước 4: Kiểm tra Toxic (ngôn từ độc hại)**
+```java
+toxicService.checkComment(request.getComment());
+// Gọi đến Toxic Classification Server (FastAPI)
+// POST /predict với nội dung comment
+// Nếu toxic = true → throw exception
+```
+
+**Bước 5: Kiểm duyệt hình ảnh (Moderation)**
+```java
+if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
+    moderationService.checkImages(request.getImageUrls());
+    // Gọi đến Moderation Server (FastAPI)
+    // POST /moderate với danh sách image URLs
+    // Nếu flagged = true → throw exception
     
-    Note over User,DB: === TẠO ĐÁNH GIÁ ===
-    User->>UI: Nhập đánh giá + upload ảnh
-    UI->>API: POST /api/reviews
-    API->>AI: ModerationService.checkContent()
-    AI-->>API: { isToxic, categories }
-    API->>AI: SentimentService.analyze()
-    AI-->>API: { sentiment, score }
-    API->>DB: INSERT INTO reviews
-    API->>DB: INSERT INTO review_images
-    API-->>UI: ReviewResponse
-    UI-->>User: Hiển thị đánh giá mới
-    
-    Note over User,DB: === XEM THỐNG KÊ ĐÁNH GIÁ ===
-    Admin->>UI: Vào /admin/reviewStatistics
-    UI->>API: GET /api/reviews/statistics
-    API->>DB: Aggregate reviews
-    DB-->>API: Statistics data
-    API-->>UI: ReviewStatisticsResponse
-    UI-->>Admin: Hiển thị biểu đồ thống kê
+    // Tạo ReviewImage entities
+    List<ReviewImage> images = IntStream.range(0, request.getImageUrls().size())
+        .mapToObj(i -> ReviewImage.builder()
+            .review(review)
+            .imageUrl(request.getImageUrls().get(i))
+            .sortOrder(i)
+            .build())
+        .collect(Collectors.toList());
+    review.setImages(images);
+}
 ```
 
-## 3. Các trang/component liên quan
-
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/pages/user/ReviewPage/ReviewPage.tsx` | Trang tạo đánh giá |
-| `src/pages/user/ReviewPage/useReview.ts` | Hook xử lý đánh giá |
-| `src/components/ReviewSection.tsx` | Component hiển thị đánh giá |
-| `src/pages/admin/ReviewStatisticsPage/ReviewStatisticsPage.tsx` | Thống kê đánh giá |
-| `src/services/reviewService.ts` | Service gọi API review |
-
-### Backend
-| File | Mô tả |
-|------|-------|
-| `controller/ReviewController.java` | REST controller review |
-| `service/ReviewService.java` | Business logic review |
-| `service/ModerationService.java` | Kiểm duyệt nội dung AI |
-| `service/ToxicService.java` | Phát hiện nội dung độc hại |
-| `service/SentimentService.java` | Phân tích cảm xúc |
-| `entity/Review.java` | Entity đánh giá |
-| `entity/ReviewImage.java` | Entity hình ảnh đánh giá |
-| `repository/ReviewRepository.java` | Repository review |
-| `repository/ReviewImageRepository.java` | Repository review image |
-| `mapper/ReviewMapper.java` | MapStruct mapper |
-
-## 4. API Endpoints
-
-```
-POST /api/reviews                      # Tạo đánh giá mới
-GET /api/reviews/product/{productId}   # Lấy đánh giá theo sản phẩm
-GET /api/reviews/statistics            # Thống kê đánh giá (ADMIN)
-GET /api/reviews/sentiment-stats       # Thống kê sentiment (ADMIN)
+**Bước 7: Phân tích cảm xúc (Sentiment)**
+```java
+try {
+    SentimentResult sentiment = sentimentService.analyze(request.getComment());
+    if (sentiment != null) {
+        review.setSentimentLabel(sentiment.getSentimentType()); // POSITIVE, NEUTRAL, NEGATIVE
+        reviewRepository.save(review);
+    }
+} catch (Exception e) {
+    System.err.println("Failed to analyze sentiment: " + e.getMessage());
+    // Không throw exception - sentiment là optional
+}
 ```
 
-## 5. Luồng xử lý chi tiết
+### 3.2. Xem đánh giá sản phẩm
 
-### 5.1. Tạo đánh giá
-1. User nhập nội dung đánh giá, chọn rating, upload ảnh
-2. Frontend gọi `POST /api/reviews` với `ReviewCreationRequest`
-3. Backend `ReviewController.createReview()` → `ReviewService.createReview()`
-4. `ModerationService.checkContent()` kiểm tra nội dung độc hại
-5. `SentimentService.analyze()` phân tích cảm xúc (POSITIVE/NEGATIVE/NEUTRAL)
-6. Lưu Review vào database với sentiment và moderation result
-7. Lưu ReviewImage nếu có upload ảnh
-8. Trả về `ReviewResponse`
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- GET /api/reviews ----->|                                |
+   |   /product/{productId}    |                                |
+   |                           |--- Find by productId -------->|
+   |                           |<-- List<Review> ---------------|
+   |<-- ProductReviewResponse[]|                                |
+```
 
-### 5.2. AI Moderation
-- Sử dụng `ToxicService` để phát hiện nội dung độc hại
-- Trả về các categories: TOXIC, INSULT, THREAT, IDENTITY_HATE
-- Nếu phát hiện toxic, đánh giá có thể bị ẩn hoặc gắn cờ
+**Backend:**
+- **Method:** `getReviewsByProductId(UUID productId)`
+- **Repository:** `reviewRepository.findByProductIdOrderByCreatedAtDesc(productId)`
 
-### 5.3. Sentiment Analysis
-- Phân tích cảm xúc của nội dung đánh giá
-- Kết quả: POSITIVE, NEGATIVE, NEUTRAL
-- Được lưu vào cột `sentiment` trong bảng reviews
+### 3.3. Xem thống kê đánh giá
+
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- GET /api/reviews ----->|                                |
+   |   /stats/{productId}      |                                |
+   |                           |--- Tính averageRating -------->|
+   |                           |--- Đếm totalReviews ---------->|
+   |                           |--- Lấy ratingDistribution ---->|
+   |<-- ReviewStatsResponse ---|                                |
+```
+
+**Response:**
+```json
+{
+  "averageRating": 4.5,
+  "totalReviews": 100,
+  "ratingDistribution": {
+    "1": 5, "2": 3, "3": 10, "4": 30, "5": 52
+  }
+}
+```
+
+### 3.4. Admin: Xem tất cả đánh giá
+
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- GET /api/reviews ----->|                                |
+   |   /admin/all              |                                |
+   |                           |--- FindAll order by createdAt->|
+   |<-- ProductReviewResponse[]|                                |
+```
+
+### 3.5. Admin: Thống kê Sentiment
+
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- GET /api/reviews ----->|                                |
+   |   /admin/sentiment-stats  |                                |
+   |                           |--- Count by sentimentLabel --->|
+   |<-- SentimentStatsResponse |                                |
+```
+
+**Response:**
+```json
+{
+  "totalReviews": 200,
+  "positive": 120,
+  "neutral": 60,
+  "negative": 20,
+  "positivePercent": 60.0,
+  "neutralPercent": 30.0,
+  "negativePercent": 10.0
+}
+```
+
+### 3.6. Admin: Thống kê đánh giá nâng cao
+
+```
+[Client]                    [Server]
+   |                           |
+   |--- GET /api/reviews ----->|
+   |   /admin/statistics       |
+   |                           |
+   |                           |--- getMonthlyTrend() ----------
+   |                           |   Group by year-month
+   |                           |   Tính reviewCount + averageRating
+   |                           |
+   |                           |--- getSentimentByRating() -----
+   |                           |   Với mỗi rating 1-5:
+   |                           |   Tính positive/neutral/negative count
+   |                           |
+   |                           |--- getSentimentMonthlyTrend() -
+   |                           |   Group by year-month
+   |                           |   Tính positive/neutral/negative count
+   |                           |
+   |<-- ReviewStatisticsResponse
+```
+
+## 4. Cấu trúc dữ liệu
+
+### Review Entity
+```
+Review {
+    id: UUID (PK)
+    product: Product (N-1)
+    customer: Customer (N-1)
+    rating: Integer (1-5)
+    comment: String (Text)
+    sentimentLabel: String (POSITIVE, NEUTRAL, NEGATIVE, nullable)
+    images: List<ReviewImage>
+    createdAt: LocalDateTime
+}
+```
+
+### ReviewImage Entity
+```
+ReviewImage {
+    id: UUID (PK)
+    review: Review (N-1)
+    imageUrl: String
+    sortOrder: Integer
+}
+```
+
+## 5. API Endpoints
+
+| Method | Endpoint | Mô tả | Auth |
+|--------|----------|-------|------|
+| POST | `/api/reviews/customer/{customerId}` | Tạo đánh giá mới | USER |
+| GET | `/api/reviews/product/{productId}` | Lấy đánh giá theo sản phẩm | Public |
+| GET | `/api/reviews/stats/{productId}` | Lấy thống kê đánh giá | Public |
+| GET | `/api/reviews/customer/{customerId}` | Lấy đánh giá theo khách hàng | USER |
+| GET | `/api/reviews/admin/all` | Lấy tất cả đánh giá | ADMIN |
+| GET | `/api/reviews/admin/sentiment-stats` | Thống kê sentiment | ADMIN |
+| GET | `/api/reviews/admin/statistics` | Thống kê đánh giá nâng cao | ADMIN |
+
+## 6. AI Services tích hợp
+
+| Service | Công nghệ | Mô tả |
+|---------|-----------|-------|
+| **ToxicService** | FastAPI | Kiểm tra ngôn từ độc hại trong comment |
+| **ModerationService** | FastAPI | Kiểm duyệt hình ảnh (nội dung nhạy cảm) |
+| **SentimentService** | FastAPI | Phân tích cảm xúc (Positive/Neutral/Negative) |
+
+## 7. Frontend Components
+
+| Component | Mô tả |
+|-----------|-------|
+| `ReviewSection.tsx` | Component hiển thị đánh giá trên trang chi tiết sản phẩm |
+| `ReviewPage.tsx` | Trang tạo đánh giá mới |
+| `useReview.ts` | Hook quản lý state đánh giá |
+| `ReviewStatisticsPage.tsx` | Trang thống kê đánh giá cho Admin |
+| `reviewService.ts` | Service gọi API đánh giá |

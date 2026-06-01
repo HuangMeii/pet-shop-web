@@ -1,37 +1,56 @@
-# Luồng quản lý nhân viên (Staff Management Flow)
+# Luồng 9: Quản lý nhân viên (Staff Management)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Cho phép admin CRUD nhân viên, phân ca làm việc.
+Luồng quản lý nhân viên cho phép quản trị viên thực hiện các thao tác CRUD với tài khoản nhân viên.
 
-## 2. Các trang/component liên quan
+## 2. Actors / Vai trò
 
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/pages/admin/StaffPage/StaffPage.tsx` | Trang quản lý nhân viên |
+| Vai trò | Mô tả |
+|---------|-------|
+| **ADMIN** | Quản trị viên - CRUD nhân viên |
 
-### Backend
-| File | Mô tả |
-|------|-------|
-| `controller/StaffController.java` | REST controller staff |
-| `service/StaffService.java` | Business logic staff |
-| `entity/Staff.java` | Entity nhân viên |
+## 3. Luồng xử lý chi tiết
 
-## 3. API Endpoints
+### 3.1. Tạo nhân viên mới
 
 ```
-GET /staffs                            # Lấy tất cả nhân viên
-GET /staffs/{id}                       # Lấy nhân viên theo ID
-POST /staffs                           # Tạo nhân viên mới
-PUT /staffs/{id}                       # Cập nhật nhân viên
-DELETE /staffs/{id}                    # Xoá nhân viên
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- POST /staffs --------->|                                |
+   |   {username, password,    |                                |
+   |    firstName, lastName,   |                                |
+   |    email, phone,          |                                |
+   |    address, position,     |                                |
+   |    salary, hireDate}      |                                |
+   |                           |                                |
+   |                           |--- 1. Tạo User (role=STAFF) -->|
+   |                           |--- 2. Tạo Staff -------------->|
+   |<-- StaffResponse ---------|                                |
 ```
 
-## 4. Luồng xử lý
+### 3.2. Xem danh sách nhân viên
 
-1. Admin vào trang `/admin/staffs`
-2. Xem danh sách nhân viên (gọi `GET /staffs`)
-3. Thêm nhân viên mới: nhập thông tin, chọn ca làm việc
-4. Gọi `POST /staffs` → Backend tạo User + Staff
-5. Có thể sửa/xoá thông tin nhân viên
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- GET /staffs ---------->|                                |
+   |                           |--- FindAll ------------------>|
+   |<-- StaffResponse[] -------|                                |
+```
+
+## 4. API Endpoints
+
+| Method | Endpoint | Mô tả | Auth |
+|--------|----------|-------|------|
+| GET | `/staffs` | Lấy danh sách nhân viên | ADMIN |
+| GET | `/staffs/{id}` | Lấy chi tiết nhân viên | ADMIN |
+| POST | `/staffs` | Tạo nhân viên mới | ADMIN |
+| PUT | `/staffs/{id}` | Cập nhật nhân viên | ADMIN |
+| DELETE | `/staffs/{id}` | Xoá nhân viên | ADMIN |
+
+## 5. Frontend Components
+
+| Component | Mô tả |
+|-----------|-------|
+| `StaffPage.tsx` | Trang quản lý nhân viên |

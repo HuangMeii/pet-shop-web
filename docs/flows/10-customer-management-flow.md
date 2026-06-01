@@ -1,35 +1,49 @@
-# Luồng quản lý khách hàng (Customer Management Flow)
+# Luồng 10: Quản lý khách hàng (Customer Management)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Cho phép admin xem danh sách khách hàng, quản lý điểm tích luỹ.
+Luồng quản lý khách hàng cho phép quản trị viên xem danh sách khách hàng và quản lý điểm thưởng (loyalty points).
 
-## 2. Các trang/component liên quan
+## 2. Actors / Vai trò
 
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/pages/admin/CustomerPage/CustomerPage.tsx` | Trang quản lý khách hàng |
+| Vai trò | Mô tả |
+|---------|-------|
+| **ADMIN** | Quản trị viên - xem danh sách, quản lý điểm |
 
-### Backend
-| File | Mô tả |
-|------|-------|
-| `controller/CustomerController.java` | REST controller customer |
-| `service/CustomerService.java` | Business logic customer |
-| `entity/Customer.java` | Entity khách hàng |
+## 3. Luồng xử lý chi tiết
 
-## 3. API Endpoints
+### 3.1. Xem danh sách khách hàng
 
 ```
-GET /customers                          # Lấy tất cả khách hàng
-GET /customers/{id}                     # Lấy khách hàng theo ID
-PUT /customers/{id}                     # Cập nhật thông tin
-POST /customers/{id}/points            # Thêm điểm tích luỹ
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- GET /customers ------->|                                |
+   |                           |--- FindAll ------------------>|
+   |<-- CustomerResponse[] ----|                                |
 ```
 
-## 4. Luồng xử lý
+### 3.2. Thêm điểm thưởng
 
-1. Admin vào trang `/admin/customers`
-2. Xem danh sách khách hàng (gọi `GET /customers`)
-3. Xem chi tiết: lịch sử mua hàng, điểm tích luỹ
-4. Có thể thêm điểm tích luỹ cho khách hàng
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- PUT /customers ------->|                                |
+   |   /{id}/loyalty-points    |                                |
+   |   {points}                |                                |
+   |                           |--- Cập nhật loyaltyPoints ---->|
+   |<-- CustomerResponse ------|                                |
+```
+
+## 4. API Endpoints
+
+| Method | Endpoint | Mô tả | Auth |
+|--------|----------|-------|------|
+| GET | `/customers` | Lấy danh sách khách hàng | ADMIN |
+| GET | `/customers/{id}` | Lấy chi tiết khách hàng | ADMIN |
+| PUT | `/customers/{id}/loyalty-points` | Cập nhật điểm thưởng | ADMIN |
+
+## 5. Frontend Components
+
+| Component | Mô tả |
+|-----------|-------|
+| `CustomerPage.tsx` | Trang quản lý khách hàng |

@@ -1,88 +1,184 @@
-# Luồng thanh toán (Payment Flow)
+# Luồng 15: Thanh toán PayOS (Payment)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Xử lý thanh toán qua VNPay. Khi user checkout, frontend gọi backend Spring Boot để tạo URL thanh toán VNPay, sau đó redirect user đến cổng thanh toán VNPay. Sau khi thanh toán xong, VNPay gọi callback đến payment backend (Node.js) để xác nhận.
+Luồng thanh toán tích hợp với PayOS để tạo link thanh toán online. Hệ thống sử dụng một backend riêng (Node.js/Express) để xử lý các giao dịch thanh toán qua PayOS API.
 
-## 2. Sơ đồ luồng
+## 2. Actors / Vai trò
 
-```mermaid
-sequenceDiagram
-    participant User as Khách hàng
-    participant UI as React App
-    participant API as Spring Boot API
-    participant PAY as Payment Backend (Node.js)
-    participant VNPay as VNPay Gateway
-    
-    Note over User,VNPay: === TẠO ĐƠN HÀNG & THANH TOÁN ===
-    User->>UI: Xác nhận thanh toán
-    UI->>API: POST /api/invoices/create
-    API->>API: Tạo invoice + invoice details
-    API-->>UI: InvoiceResponse
-    
-    UI->>API: POST /api/payment/create-payment
-    API->>VNPay: Tạo payment URL
-    VNPay-->>API: Payment URL
-    API-->>UI: Payment URL
-    UI->>User: Redirect đến VNPay
-    
-    Note over User,VNPay: === XỬ LÝ KẾT QUẢ ===
-    User->>VNPay: Nhập thông tin thanh toán
-    VNPay-->>PAY: IPN Callback
-    PAY->>PAY: Xác thực chữ ký
-    PAY->>API: Cập nhật trạng thái invoice
-    PAY-->>UI: Redirect kết quả
-    UI-->>User: Hiển thị kết quả thanh toán
-```
+| Vai trò | Mô tả |
+|---------|-------|
+| **USER** | Khách hàng - thanh toán đơn hàng |
+| **PayOS** | Cổng thanh toán bên thứ ba |
 
-## 3. Các trang/component liên quan
-
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/services/paymentService.ts` | Service gọi API payment |
-
-### Backend
-| File | Mô tả |
-|------|-------|
-| `controller/InvoiceController.java` | REST controller invoice |
-| `service/InvoiceService.java` | Business logic invoice |
-| `service/CartService.java` | Business logic cart |
-| `entity/Invoice.java` | Entity hoá đơn |
-| `entity/InvoiceDetail.java` | Entity chi tiết hoá đơn |
-
-### Payment Backend (Node.js)
-| File | Mô tả |
-|------|-------|
-| `controllers/payment.controller.js` | Xử lý VNPay IPN callback |
-
-## 4. API Endpoints
+## 3. Kiến trúc
 
 ```
-POST /api/invoices/create              # Tạo hoá đơn
-POST /api/payment/create-payment       # Tạo URL thanh toán VNPay
-GET /api/payment/vnpay-return          # Xử lý kết quả từ VNPay
-POST /api/payment/vnpay-ipn           # IPN callback từ VNPay
-GET /api/invoices                      # Lấy danh sách hoá đơn
-GET /api/invoices/{id}                 # Lấy chi tiết hoá đơn
+┌─────────────────────────────────────────────────────────────────┐
+│                    Frontend (React)                              │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              paymentService.ts                            │   │
+│  │  - createPaymentLink()                                   │   │
+│  │  - getPaymentStatus()                                    │   │
+│  │  - cancelPayment()                                       │   │
+│  └──────────────────────┬───────────────────────────────────┘   │
+│                          │                                       │
+└──────────────────────────┼───────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              Payment Backend (Node.js/Express - port 3000)       │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              payment.controller.js                        │   │
+│  │  - POST /api/payment/create                              │   │
+│  │  - GET /api/payment/status/:orderId                      │   │
+│  │  - POST /api/payment/cancel/:orderId                     │   │
+│  └──────────────────────┬───────────────────────────────────┘   │
+│                          │                                       │
+└──────────────────────────┼───────────────────────────────────────┘
+                           │
+                           ▼
+              ┌─────────────────────────┐
+              │      PayOS API          │
+              │  - Tạo link thanh toán  │
+              │  - Kiểm tra trạng thái  │
+              │  - Huỷ thanh toán      │
+              └─────────────────────────┘
 ```
 
-## 5. Luồng xử lý chi tiết
+## 4. Luồng xử lý chi tiết
 
-### 5.1. Tạo đơn hàng
-1. User xác nhận giỏ hàng → gọi `POST /api/invoices/create`
-2. Backend tạo `Invoice` với status `PENDING`
-3. Tạo `InvoiceDetail` từ giỏ hàng
-4. Xoá giỏ hàng sau khi tạo thành công
+### 4.1. Tạo link thanh toán
 
-### 5.2. Thanh toán VNPay
-1. Gọi `POST /api/payment/create-payment` với invoice ID
-2. Backend tạo payment URL với các tham số VNPay
-3. Redirect user đến VNPay
-4. User nhập thông tin thẻ và xác nhận
+```
+[Client]                    [Payment Backend]                   [PayOS]
+   |                           |                                  |
+   |--- POST /api/payment ---->|                                  |
+   |   /create                 |                                  |
+   |   {amount, description,   |                                  |
+   |    orderId, items[]}      |                                  |
+   |                           |                                  |
+   |                           |--- POST /v2/payment-requests -->|
+   |                           |   {orderCode, amount,            |
+   |                           |    description, items,           |
+   |                           |    returnUrl, cancelUrl}         |
+   |                           |                                  |
+   |                           |<-- {orderCode, checkoutUrl,      |
+   |                           |     qrCode} ---------------------|
+   |                           |                                  |
+   |<-- {orderCode, checkoutUrl,                                  |
+   |     qrCode} --------------|                                  |
+   |                           |                                  |
+   |--- Redirect to checkoutUrl                                   |
+   |   (PayOS payment page)                                       |
+```
 
-### 5.3. Xử lý callback
-1. VNPay gửi IPN đến payment backend (Node.js)
-2. Payment backend xác thực chữ ký (HMAC-SHA512)
-3. Gọi API Spring Boot để cập nhật trạng thái invoice
-4. Redirect user về trang kết quả
+**Backend (Payment Backend - Node.js):**
+- **Controller:** `payment.controller.js`
+- **Method:** `createPaymentLink`
+- **Xử lý:**
+  1. Nhận request từ frontend
+  2. Gọi PayOS API để tạo payment request
+  3. Trả về checkoutUrl cho frontend
+  4. Frontend redirect user đến trang thanh toán PayOS
+
+### 4.2. Kiểm tra trạng thái thanh toán
+
+```
+[Client]                    [Payment Backend]                   [PayOS]
+   |                           |                                  |
+   |--- GET /api/payment ----->|                                  |
+   |   /status/{orderId}       |                                  |
+   |                           |--- GET /v2/payment-requests ---->|
+   |                           |   /{orderId}/status              |
+   |                           |                                  |
+   |                           |<-- {status} ---------------------|
+   |<-- {status} --------------|                                  |
+```
+
+### 4.3. Huỷ thanh toán
+
+```
+[Client]                    [Payment Backend]                   [PayOS]
+   |                           |                                  |
+   |--- POST /api/payment ---->|                                  |
+   |   /cancel/{orderId}       |                                  |
+   |                           |--- POST /v2/payment-requests --->|
+   |                           |   /{orderId}/cancel              |
+   |                           |                                  |
+   |                           |<-- {success} --------------------|
+   |<-- {success} -------------|                                  |
+```
+
+## 5. API Endpoints (Payment Backend)
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| POST | `/api/payment/create` | Tạo link thanh toán PayOS |
+| GET | `/api/payment/status/:orderId` | Kiểm tra trạng thái |
+| POST | `/api/payment/cancel/:orderId` | Huỷ thanh toán |
+
+## 6. Frontend Service
+
+```typescript
+// paymentService.ts
+export interface CreatePaymentLinkRequest {
+  amount: number;
+  description?: string;
+  orderId?: string;
+  items?: { name: string; quantity: number; price: number }[];
+}
+
+export interface PaymentLinkResponse {
+  orderCode: string;
+  checkoutUrl: string;
+  qrCode?: string;
+  status?: string;
+}
+
+export const createPaymentLink = async (
+  request: CreatePaymentLinkRequest
+): Promise<PaymentLinkResponse> => {
+  const res = await axios.post<PaymentLinkResponse>(
+    `${PAYMENT_BASE_URL}/create`, request
+  );
+  return res.data;
+};
+
+export const getPaymentStatus = async (
+  orderId: string
+): Promise<{ status: string }> => {
+  const res = await axios.get<{ status: string }>(
+    `${PAYMENT_BASE_URL}/status/${orderId}`
+  );
+  return res.data;
+};
+
+export const cancelPayment = async (orderId: string): Promise<unknown> => {
+  const res = await axios.post(`${PAYMENT_BASE_URL}/cancel/${orderId}`);
+  return res.data;
+};
+```
+
+## 7. Luồng thanh toán hoàn chỉnh
+
+```
+1. User thêm sản phẩm vào giỏ hàng
+2. User vào CartPage → ReviewPage
+3. User chọn "Thanh toán online"
+4. Frontend gọi createPaymentLink() → nhận checkoutUrl
+5. Frontend redirect user đến trang PayOS
+6. User thanh toán trên PayOS
+7. PayOS redirect về returnUrl (frontend)
+8. Frontend gọi getPaymentStatus() để kiểm tra
+9. Nếu thành công → cập nhật trạng thái hoá đơn
+```
+
+## 8. Frontend Components
+
+| Component | Mô tả |
+|-----------|-------|
+| `CartPage.tsx` | Giỏ hàng - nút thanh toán |
+| `ReviewPage.tsx` | Xem lại đơn hàng trước khi thanh toán |
+| `PaidInvoicesPage.tsx` | Lịch sử hoá đơn đã thanh toán |
+| `paymentService.ts` | Service gọi API thanh toán |

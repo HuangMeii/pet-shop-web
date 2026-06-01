@@ -1,76 +1,149 @@
-# Luồng tìm kiếm bằng hình ảnh (AI Image Search Flow)
+# Luồng 14: Tìm kiếm hình ảnh AI (Image Search)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Cho phép người dùng tìm kiếm sản phẩm/thú cưng bằng cách upload hình ảnh hoặc nhập URL ảnh, sử dụng mô hình CLIP để tìm các item có hình ảnh tương tự.
+Hệ thống tìm kiếm bằng hình ảnh sử dụng mô hình CLIP (Contrastive Language-Image Pre-training) của OpenAI để tìm kiếm sản phẩm dựa trên hình ảnh đầu vào. Người dùng có thể tải lên một hình ảnh và hệ thống sẽ tìm các sản phẩm tương tự trong cửa hàng.
 
-## 2. Sơ đồ luồng
-
-```mermaid
-sequenceDiagram
-    participant User as Người dùng
-    participant UI as ImageSearchPage
-    participant IMG as Image Search Server
-    participant DB as PostgreSQL
-    
-    Note over User,DB: === TÌM BẰNG FILE ẢNH ===
-    User->>UI: Upload ảnh
-    UI->>IMG: POST /api/v1/search/image (multipart)
-    IMG->>IMG: CLIP encode image
-    IMG->>IMG: Cosine similarity search
-    IMG-->>UI: List<SearchResult>
-    UI-->>User: Hiển thị kết quả
-    
-    Note over User,DB: === TÌM BẰNG TEXT ===
-    User->>UI: Nhập mô tả text
-    UI->>IMG: POST /api/v1/search/text
-    IMG->>IMG: CLIP encode text
-    IMG->>IMG: Search index
-    IMG-->>UI: List<SearchResult>
-    UI-->>User: Hiển thị kết quả
-```
-
-## 3. Các trang/component liên quan
-
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/pages/user/ImageSearchPage/ImageSearchPage.tsx` | Trang tìm kiếm hình ảnh |
-| `src/services/imageSearchService.ts` | Service gọi API image search |
-
-### Image Search Server (FastAPI)
-| File | Mô tả |
-|------|-------|
-| `main.py` | FastAPI app + endpoints |
-| `embedding_service.py` | CLIP embedding service |
-| `product_service.py` | Product data service |
-| `search_service.py` | Search logic |
-
-## 4. API Endpoints
+## 2. Kiến trúc
 
 ```
-POST /api/v1/search/image             # Tìm bằng file ảnh (multipart)
-POST /api/v1/search/image-url         # Tìm bằng URL ảnh
-POST /api/v1/search/text              # Tìm bằng text description
-POST /api/v1/index/rebuild            # Rebuild index
-GET /api/v1/stats                     # Index statistics
+┌─────────────────────────────────────────────────────────────────┐
+│                    Frontend (React)                              │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              ImageSearchPage.tsx                          │   │
+│  │  - Upload image                                          │   │
+│  │  - Display results                                       │   │
+│  └──────────────────────┬───────────────────────────────────┘   │
+│                          │                                       │
+│  ┌──────────────────────┴───────────────────────────────────┐   │
+│  │              imageSearchService.ts                        │   │
+│  │  - searchByImage(file)                                   │   │
+│  └──────────────────────┬───────────────────────────────────┘   │
+│                          │                                       │
+└──────────────────────────┼───────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              Image Search Server (FastAPI - Python)              │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              main.py                                      │   │
+│  │  - POST /api/search/image                                │   │
+│  │  - POST /api/search/text                                 │   │
+│  └──────────────────────┬───────────────────────────────────┘   │
+│                          │                                       │
+│  ┌──────────────────────┴───────────────────────────────────┐   │
+│  │              CLIP Model (OpenAI)                          │   │
+│  │  - image_encoder: ResNet/ViT                             │   │
+│  │  - text_encoder: Transformer                             │   │
+│  │  - Embedding dimension: 512                              │   │
+│  └──────────────────────┬───────────────────────────────────┘   │
+│                          │                                       │
+│  ┌──────────────────────┴───────────────────────────────────┐   │
+│  │              product_service.py                           │   │
+│  │  - get_all_products()                                    │   │
+│  │  - compute_similarity()                                  │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## 5. Luồng xử lý chi tiết
+## 3. Luồng xử lý chi tiết
 
-### 5.1. Tìm bằng hình ảnh
-1. User upload ảnh (JPEG/PNG) hoặc nhập URL
-2. Image Search Server encode ảnh qua CLIP model → vector embedding
-3. Tính cosine similarity với tất cả item trong index
-4. Trả về top-k kết quả (sản phẩm + thú cưng) có độ tương đồng cao nhất
+### 3.1. Tìm kiếm bằng hình ảnh
 
-### 5.2. Tìm bằng text
-1. User nhập mô tả (VD: "a brown dog", "cat food")
-2. Server encode text qua CLIP text encoder
-3. So sánh với index đã có
-4. Trả về kết quả phù hợp
+```
+[Client]                    [Image Search Server]              [Database]
+   |                           |                                |
+   |--- POST /api/search ----->|                                |
+   |   /image                  |                                |
+   |   (multipart: file)       |                                |
+   |                           |                                |
+   |                           |--- 1. Load image --------------|
+   |                           |    PIL Image.open()            |
+   |                           |                                |
+   |                           |--- 2. Extract image embedding -|
+   |                           |    CLIP image_encoder          |
+   |                           |    → 512-dim vector            |
+   |                           |                                |
+   |                           |--- 3. Load product embeddings -|
+   |                           |    (pre-computed)              |
+   |                           |                                |
+   |                           |--- 4. Compute cosine similarity|
+   |                           |    sim = cos(emb_query, emb_i) |
+   |                           |                                |
+   |                           |--- 5. Sort by similarity ------|
+   |                           |    Top-K results               |
+   |                           |                                |
+   |                           |--- 6. Get product details ---->|
+   |                           |    (Spring Boot API)           |
+   |                           |                                |
+   |<-- {results: [{productId, |                                |
+   |     similarity, imageUrl}]|                                |
+```
 
-### 5.3. Index
-- Được xây dựng từ dữ liệu sản phẩm/thú cưng trong PostgreSQL
-- Cache trên disk để không cần rebuild mỗi lần khởi động
-- Có thể force rebuild qua API
+**Backend (Image Search Server - FastAPI):**
+- **File:** `main.py`
+- **Method:** `POST /api/search/image`
+- **Xử lý:**
+  1. Nhận file ảnh từ request
+  2. Dùng CLIP model để encode ảnh thành vector embedding (512 dimensions)
+  3. So sánh với embeddings của tất cả sản phẩm trong database
+  4. Tính cosine similarity
+  5. Trả về top-K sản phẩm tương tự nhất
+
+### 3.2. Tìm kiếm bằng văn bản (Text Search)
+
+```
+[Client]                    [Image Search Server]
+   |                           |
+   |--- POST /api/search ----->|
+   |   /text                   |
+   |   {query: "chó vàng"}     |
+   |                           |
+   |                           |--- 1. Encode text query -------|
+   |                           |    CLIP text_encoder           |
+   |                           |    → 512-dim vector            |
+   |                           |                                |
+   |                           |--- 2. Compare with product ----|
+   |                           |    image embeddings            |
+   |                           |                                |
+   |<-- {results} -------------|                                |
+```
+
+## 4. Công nghệ
+
+| Component | Công nghệ |
+|-----------|-----------|
+| **Model** | OpenAI CLIP (ViT-B/32) |
+| **Framework** | FastAPI (Python) |
+| **Image Processing** | Pillow (PIL) |
+| **Similarity** | Cosine Similarity |
+| **Embedding Dim** | 512 |
+
+## 5. API Endpoints (Image Search Server)
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| POST | `/api/search/image` | Tìm kiếm bằng hình ảnh (multipart) |
+| POST | `/api/search/text` | Tìm kiếm bằng văn bản |
+
+## 6. Frontend Service
+
+```typescript
+// imageSearchService.ts
+export const searchByImage = async (file: File): Promise<SearchResult[]> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  
+  const res = await axios.post(`${IMAGE_SEARCH_URL}/image`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data.results;
+};
+```
+
+## 7. Frontend Components
+
+| Component | Mô tả |
+|-----------|-------|
+| `ImageSearchPage.tsx` | Trang tìm kiếm bằng hình ảnh - upload ảnh và hiển thị kết quả |
+| `imageSearchService.ts` | Service gọi API image search |

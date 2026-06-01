@@ -1,83 +1,177 @@
-# Luồng gợi ý sản phẩm (AI Recommendation Flow)
+# Luồng 13: Gợi ý sản phẩm AI (Recommendation)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Hệ thống gợi ý sản phẩm sử dụng mô hình AI kết hợp ALS (Alternating Least Squares) và Content-based filtering để đề xuất sản phẩm/thú cưng phù hợp với người dùng.
+Hệ thống gợi ý sản phẩm sử dụng mô hình Hybrid kết hợp giữa ALS (Alternating Least Squares - Collaborative Filtering) và Content-Based Filtering để đề xuất sản phẩm phù hợp cho từng khách hàng.
 
-## 2. Sơ đồ luồng
-
-```mermaid
-sequenceDiagram
-    participant User as Người dùng
-    participant UI as React App
-    participant REC as Recommendation Server
-    participant DB as PostgreSQL
-    
-    Note over User,DB: === GỢI Ý CÁ NHÂN HOÁ ===
-    User->>UI: Vào trang /user/recommendations
-    UI->>REC: GET /api/v1/recommendations?user_id=X
-    REC->>DB: Lấy lịch sử mua hàng
-    DB-->>REC: User purchase history
-    REC->>REC: ALS model predict
-    REC->>REC: Content-based similarity
-    REC->>REC: Hybrid scoring
-    REC-->>UI: List<RecommendationItem>
-    UI-->>User: Hiển thị gợi ý
-    
-    Note over User,DB: === SẢN PHẨM TƯƠNG TỰ ===
-    User->>UI: Xem chi tiết sản phẩm
-    UI->>REC: POST /api/v1/recommendations/similar-products
-    REC->>REC: Content-based + ALS
-    REC-->>UI: List<RecommendationItem>
-    UI-->>User: Hiển thị "Sản phẩm tương tự"
-```
-
-## 3. Các trang/component liên quan
-
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/pages/user/RecommendationsPage/RecommendationsPage.tsx` | Trang gợi ý |
-| `src/components/RecommendationSection.tsx` | Component gợi ý |
-| `src/services/recommendationService.ts` | Service gọi API recommendation |
-
-### Recommendation Server (FastAPI)
-| File | Mô tả |
-|------|-------|
-| `app/api/routes.py` | API endpoints |
-| `app/models/als.py` | ALS model (Implicit) |
-| `app/models/content_based.py` | Content-based (TF-IDF + Cosine) |
-| `app/models/hybrid.py` | Hybrid recommender |
-| `app/schemas.py` | Request/Response schemas |
-| `app/config.py` | Configuration |
-| `app/db/postgres_db.py` | Database connection |
-
-## 4. API Endpoints
+## 2. Kiến trúc
 
 ```
-GET /api/v1/recommendations?user_id=X&limit=10
-POST /api/v1/recommendations
-POST /api/v1/recommendations/similar-products
-POST /api/v1/recommendations/similar-pets
-POST /api/v1/recommendations/search
-POST /api/v1/train
-POST /api/v1/sync
+┌─────────────────────────────────────────────────────────────────┐
+│                    Frontend (React)                              │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              recommendationService.ts                     │   │
+│  │  - getRecommendations(userId)                            │   │
+│  │  - getSimilarProducts(productId)                         │   │
+│  └──────────────────────┬───────────────────────────────────┘   │
+│                          │                                       │
+└──────────────────────────┼───────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              Recommendation Server (FastAPI - Python)            │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │              /api/recommendations                         │   │
+│  │  - GET /{user_id}?n=10                                   │   │
+│  │  - GET /similar/{product_id}?n=5                         │   │
+│  │  - POST /train                                           │   │
+│  └──────────────────────┬───────────────────────────────────┘   │
+│                          │                                       │
+│  ┌──────────────────────┴───────────────────────────────────┐   │
+│  │              Models                                       │   │
+│  │  ┌────────────────┐  ┌──────────────────────────────┐    │   │
+│  │  │  ALS Model     │  │  Content-Based Model         │    │   │
+│  │  │  (collaborative)│  │  (product features)         │    │   │
+│  │  └───────┬────────┘  └──────────┬───────────────────┘    │   │
+│  │          │                      │                         │   │
+│  │          └──────────┬───────────┘                         │   │
+│  │                     ▼                                     │   │
+│  │              Hybrid Model                                  │   │
+│  │         (weighted combination)                             │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                          │                                       │
+│                          ▼                                       │
+│              ┌─────────────────────────┐                        │
+│              │      PostgreSQL         │                        │
+│              │  (user-item interactions)│                       │
+│              └─────────────────────────┘                        │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## 5. Luồng xử lý chi tiết
+## 3. Models
 
-### 5.1. Gợi ý Hybrid
-1. Frontend gọi `GET /api/v1/recommendations?user_id=X`
-2. Recommendation Server kết hợp 4 nguồn:
-   - **ALS**: Gợi ý dựa trên lịch sử mua hàng (collaborative filtering)
-   - **Content-based**: Gợi ý dựa trên đặc điểm sản phẩm
-   - **Bestseller**: Sản phẩm bán chạy
-   - **Co-purchase**: Sản phẩm thường mua cùng
-3. Tính điểm hybrid và trả về danh sách gợi ý
+### 3.1. ALS Model (Collaborative Filtering)
 
-### 5.2. Train Model
-1. Admin gọi `POST /api/v1/train`
-2. Server đọc dữ liệu từ PostgreSQL
-3. Xây dựng content embeddings (TF-IDF)
-4. Train ALS model
-5. Clear Redis cache
+- **File:** `app/models/als.py`
+- **Thuật toán:** Alternating Least Squares từ thư viện implicit
+- **Input:** User-item interaction matrix (purchase history)
+- **Output:** User và item latent factors
+- **Cách hoạt động:** Dựa trên hành vi mua hàng của người dùng để tìm những người dùng tương tự và gợi ý sản phẩm
+
+```python
+model = implicit.als.AlternatingLeastSquares(factors=50, iterations=15)
+model.fit(user_item_matrix)
+```
+
+### 3.2. Content-Based Model
+
+- **File:** `app/models/content_based.py`
+- **Input:** Product features (category, price range, description)
+- **Output:** Product similarity matrix
+- **Cách hoạt động:** Dựa trên đặc điểm sản phẩm để tìm sản phẩm tương tự
+
+### 3.3. Hybrid Model
+
+- **File:** `app/models/hybrid.py`
+- **Kết hợp:** ALS score + Content-Based score với trọng số
+- **Công thức:** `final_score = w1 * als_score + w2 * content_score`
+
+## 4. Luồng xử lý chi tiết
+
+### 4.1. Lấy gợi ý cho người dùng
+
+```
+[Client]                    [Recommendation Server]           [Database]
+   |                           |                                |
+   |--- GET /api/recommend --->|                                |
+   |   /{userId}?n=10          |                                |
+   |                           |                                |
+   |                           |--- 1. Load user history ------>|
+   |                           |    (purchased product IDs)     |
+   |                           |                                |
+   |                           |--- 2. ALS predict -------------|
+   |                           |    score = model.user_factors  |
+   |                           |    × item_factors.T            |
+   |                           |                                |
+   |                           |--- 3. Content-based score -----|
+   |                           |    similarity with purchased   |
+   |                           |                                |
+   |                           |--- 4. Hybrid combination ------|
+   |                           |    final_score = 0.7*als +     |
+   |                           |    0.3*content                 |
+   |                           |                                |
+   |                           |--- 5. Filter purchased items --|
+   |                           |    Remove already bought       |
+   |                           |                                |
+   |                           |--- 6. Get product details ---->|
+   |                           |    (Spring Boot API)           |
+   |                           |                                |
+   |<-- {productIds, scores} --|                                |
+```
+
+### 4.2. Lấy sản phẩm tương tự
+
+```
+[Client]                    [Recommendation Server]
+   |                           |
+   |--- GET /api/recommend --->|
+   |   /similar/{productId}    |
+   |   ?n=5                    |
+   |                           |
+   |                           |--- Content-based similarity ---
+   |                           |    Dựa trên category, features
+   |                           |
+   |<-- {productIds, scores} --|
+```
+
+### 4.3. Huấn luyện mô hình
+
+```
+[Admin]                     [Recommendation Server]           [Database]
+   |                           |                                |
+   |--- POST /api/recommend -->|                                |
+   |   /train                  |                                |
+   |                           |--- Load all interactions ----->|
+   |                           |--- Train ALS model ------------|
+   |                           |--- Save model to disk ---------|
+   |<-- {success: true} -------|                                |
+```
+
+## 5. API Endpoints (Recommendation Server)
+
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | `/api/recommend/{user_id}` | Lấy gợi ý cho user |
+| GET | `/api/recommend/similar/{product_id}` | Lấy sản phẩm tương tự |
+| POST | `/api/recommend/train` | Huấn luyện lại mô hình |
+
+## 6. Frontend Service
+
+```typescript
+// recommendationService.ts
+export const getRecommendations = async (
+  userId: string,
+  n: number = 10
+): Promise<string[]> => {
+  const res = await axios.get(`${RECOMMENDATION_URL}/${userId}?n=${n}`);
+  return res.data;
+};
+
+export const getSimilarProducts = async (
+  productId: string,
+  n: number = 5
+): Promise<string[]> => {
+  const res = await axios.get(
+    `${RECOMMENDATION_URL}/similar/${productId}?n=${n}`
+  );
+  return res.data;
+};
+```
+
+## 7. Frontend Components
+
+| Component | Mô tả |
+|-----------|-------|
+| `RecommendationsPage.tsx` | Trang gợi ý sản phẩm cho user |
+| `RecommendationSection.tsx` | Component hiển thị gợi ý trên trang chủ |
+| `recommendationService.ts` | Service gọi API recommendation |

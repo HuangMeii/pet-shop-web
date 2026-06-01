@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_CONFIG } from "../config/apiConfig";
+import { API_CONFIG, STORAGE_KEYS } from "../config/apiConfig";
 import { getAuthToken } from "../utils/storageUtils";
 
 declare module "axios" {
@@ -52,7 +52,7 @@ apiClient.interceptors.response.use(
         // Only redirect to login on 401 for authenticated requests (e.g. expired token).
         // Do NOT redirect when login itself fails (login request uses skipAuth).
         if (error.response.status === 401 && !error.config?.skipAuth) {
-          localStorage.removeItem("token");
+          localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
           window.location.href = "/login";
         }
 
@@ -69,29 +69,6 @@ apiClient.interceptors.response.use(
       }
 
       return Promise.reject(new Error(error.message));
-    }
-);
-
-/* =========================
-   RESPONSE INTERCEPTOR
-========================= */
-apiClient.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response) {
-        const message =
-            error.response.data?.message ||
-            error.response.data?.error ||
-            "Server error";
-
-        return Promise.reject(new Error(message));
-      }
-
-      if (error.request) {
-        return Promise.reject(new Error("Server không phản hồi"));
-      }
-
-      return Promise.reject(error);
     }
 );
 

@@ -1,205 +1,201 @@
-# Luồng xác thực & Phân quyền (Authentication Flow)
+# Luồng 1: Xác thực & Phân quyền (Authentication & Authorization)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Hệ thống hỗ trợ xác thực người dùng qua JWT (JSON Web Token) với 3 vai trò: **USER**, **STAFF**, **ADMIN**. Người dùng có thể đăng nhập, đăng ký, đăng xuất và refresh token.
+Luồng xác thực và phân quyền quản lý việc đăng nhập, đăng ký, và kiểm soát truy cập trong hệ thống HappyPetShop. Hệ thống hỗ trợ đăng nhập bằng JWT (username/password) và OAuth2 (Google Login).
 
-## 2. Sơ đồ luồng
+## 2. Actors / Vai trò
 
-```mermaid
-sequenceDiagram
-    participant User as Người dùng
-    participant UI as React App
-    participant AuthCtx as AuthContext
-    participant API as Backend API
-    participant DB as Database
-    
-    Note over User,DB: === ĐĂNG NHẬP ===
-    User->>UI: Nhập credentials
-    UI->>AuthCtx: login(credentials)
-    AuthCtx->>API: POST /auth/login
-    API->>DB: Xác thực user
-    DB-->>API: User info + role
-    API-->>AuthCtx: JWT Token + user info
-    AuthCtx-->>UI: Lưu token vào localStorage
-    UI->>UI: Redirect đến trang chủ
-    
-    Note over User,DB: === KIỂM TRA TOKEN ===
-    UI->>AuthCtx: useEffect (reload)
-    AuthCtx->>API: POST /auth/introspect
-    API-->>AuthCtx: Token valid/invalid
-    AuthCtx->>API: GET /customers/info (nếu cần)
-    API-->>AuthCtx: Customer info
-    AuthCtx-->>UI: Cập nhật state user
-    
-    Note over User,DB: === ĐĂNG XUẤT ===
-    User->>UI: Click logout
-    UI->>AuthCtx: logout()
-    AuthCtx->>API: POST /auth/logout
-    API->>DB: Lưu token vào blacklist
-    AuthCtx-->>UI: Xoá token, reset state
-    UI->>UI: Redirect đến /login
+| Vai trò | Mô tả |
+|---------|-------|
+| **USER** | Khách hàng - có thể xem sản phẩm, mua hàng, chat |
+| **STAFF** | Nhân viên - quản lý đơn hàng, nhập hàng, chat hỗ trợ |
+| **ADMIN** | Quản trị viên - toàn quyền quản lý hệ thống |
+| **Guest** | Chưa đăng nhập - chỉ xem được sản phẩm công khai |
+
+## 3. Luồng xử lý chi tiết
+
+### 3.1. Đăng ký (Register)
+
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- POST /auth/register -->|                                |
+   |   {username, password,    |                                |
+   |    firstName, lastName,   |                                |
+   |    email, phone,          |                                |
+   |    address, gender,       |                                |
+   |    dateOfBirth}           |                                |
+   |                           |--- Kiểm tra username unique -->|
+   |                           |--- Hash password (BCrypt) ---->|
+   |                           |--- Tạo User + Customer ------->|
+   |                           |                                |
+   |<-- {token, authenticated, |                                |
+   |     user info} -----------|                                |
 ```
 
-## 3. Các trang/component liên quan
+**Backend:**
+- **Controller:** `AuthController.java`
+- **Service:** `AuthenticationService.java`
+- **Method:** `register(RegisterRequest)`
+- **Xử lý:**
+  1. Kiểm tra username đã tồn tại chưa
+  2. Mã hóa password bằng BCrypt (strength = 12)
+  3. Tạo entity `User` với role mặc định là `USER`
+  4. Tạo entity `Customer` liên kết với User
+  5. Tạo JWT token và trả về
 
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/pages/LoginPage/LoginPage.tsx` | Trang đăng nhập |
-| `src/pages/LoginPage/useLogin.ts` | Hook xử lý đăng nhập |
-| `src/pages/user/RegisterPage/RegisterPage.tsx` | Trang đăng ký |
-| `src/context/authContext.tsx` | Context quản lý auth state |
-| `src/services/authService.ts` | Service gọi API auth |
-| `src/utils/storageUtils.ts` | Utility lưu token |
+### 3.2. Đăng nhập (Login)
 
-### Backend
-| File | Mô tả |
-|------|-------|
-| `controller/AuthController.java` | REST controller auth |
-| `service/AuthService.java` | Business logic auth |
-| `configuration/SecurityConfig.java` | Cấu hình bảo mật |
-| `configuration/CustomJWTDecoder.java` | JWT decoder |
-| `configuration/OAuth2SuccessHandler.java` | OAuth2 success handler |
-| `entity/User.java` | Entity người dùng |
-| `entity/Role.java` | Entity vai trò |
-| `entity/InvalidatedToken.java` | Token đã logout |
-
-## 4. API Endpoints
-
-### 4.1. Đăng nhập
 ```
-POST /auth/login
-Content-Type: application/json
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- POST /auth/login ----->|                                |
+   |   {username, password}    |                                |
+   |                           |--- Tìm user theo username ---->|
+   |                           |<-- User entity ----------------|
+   |                           |--- Verify password (BCrypt) ---|
+   |                           |--- Tạo JWT token --------------|
+   |                           |--- Tạo Authentication object --|
+   |<-- {token, authenticated, |                                |
+   |     user info} -----------|                                |
+```
 
-Request:
-{
-    "username": "string",
-    "password": "string"
+**Backend:**
+- **Controller:** `AuthController.java`
+- **Service:** `AuthenticationService.java`
+- **Method:** `authenticate(AuthRequest)`
+- **Xử lý:**
+  1. Tìm user theo username
+  2. Verify password với BCryptPasswordEncoder
+  3. Tạo JWT token với claims: username, roles
+  4. Trả về token + thông tin user
+
+### 3.3. Đăng nhập Google (OAuth2)
+
+```
+[Client]                    [Server]                    [Google OAuth]
+   |                           |                             |
+   |--- Redirect /oauth2/ -->  |--- Redirect to Google ----> |
+   |                           |                             |
+   |<-- Google Login Page -----|                             |
+   |--- Login credentials ---->|                             |
+   |                           |--- Verify token ----------> |
+   |                           |<-- User info ---------------|
+   |                           |--- Tìm/Create User ---------|
+   |                           |--- Tạo JWT token -----------|
+   |<-- Redirect với token ----|                             |
+```
+
+**Backend:**
+- **Handler:** `OAuth2SuccessHandler.java`
+- **Xử lý:**
+  1. Nhận thông tin user từ Google (email, name, avatar)
+  2. Tìm user trong DB theo email
+  3. Nếu chưa tồn tại → tạo mới User + Customer
+  4. Tạo JWT token
+  5. Redirect về frontend với token trong URL
+
+### 3.4. Xác thực Request (JWT Validation)
+
+```
+[Client]                    [Server]
+   |                           |
+   |--- Request + Bearer JWT ->|
+   |                           |--- CustomJWTDecoder.decode() ---
+   |                           |--- Verify signature ------------
+   |                           |--- Extract claims (username, roles)
+   |                           |--- Tạo JwtAuthenticationToken ---
+   |                           |--- Kiểm tra authorities ---------
+   |                           |--- Kiểm tra @PreAuthorize -------
+   |<-- Response --------------|
+```
+
+**Backend:**
+- **Config:** `SecurityConfig.java`
+- **Decoder:** `CustomJWTDecoder.java`
+- **Converter:** `JwtAuthenticationConverter` → chuyển roles thành authorities
+- **Xử lý:**
+  1. `CustomJWTDecoder` giải mã và verify JWT
+  2. `JwtAuthenticationConverter` đọc roles từ claims
+  3. `@PreAuthorize("hasAuthority('ROLE_ADMIN')")` kiểm tra quyền
+
+### 3.5. Public Endpoints (Không cần xác thực)
+
+```java
+// Endpoints công khai (POST, GET đều được)
+PUBLIC_ENDPOINTS = {
+    "/swagger-ui.html", "/swagger-ui/**",
+    "/v3/api-docs/**", "/v2/api-docs",
+    "/oauth2/**", "/login/oauth2/**", "/user",
+    "/ws/**",
+    "/api/chat/**", "/api/staff/chat/**"
+};
+
+// Endpoints GET công khai
+PUBLIC_GET_ENDPOINT = {
+    "/products/**", "/categories/**",
+    "/pets/**", "/api/reviews/**"
+};
+```
+
+## 4. Cấu trúc dữ liệu
+
+### User Entity
+```
+User {
+    id: UUID (PK)
+    username: String (unique)
+    password: String (BCrypt hashed)
+    firstName: String
+    lastName: String
+    email: String
+    phone: String
+    address: String
+    gender: String
+    dateOfBirth: LocalDate
+    role: String (USER, STAFF, ADMIN)
+    avatar: String
+    provider: String (LOCAL, GOOGLE)
+    providerId: String
 }
+```
 
-Response (200):
-{
-    "success": true,
-    "data": {
-        "token": "jwt_token_string",
-        "authenticated": true,
-        "user": {
-            "id": "uuid",
-            "username": "string",
-            "role": "USER|STAFF|ADMIN"
-        }
-    },
-    "message": "login successfully"
+### Customer Entity
+```
+Customer {
+    id: UUID (PK)
+    user: User (1-1)
+    loyaltyPoints: Integer
 }
 ```
 
-### 4.2. Đăng ký
+### Staff Entity
 ```
-POST /auth/register
-Content-Type: application/json
-
-Request:
-{
-    "username": "string",
-    "password": "string",
-    "email": "string",
-    "fullName": "string",
-    "phone": "string",
-    "address": "string"
-}
-
-Response (200): Tương tự login
-```
-
-### 4.3. Kiểm tra token
-```
-POST /auth/introspect
-Content-Type: application/json
-
-Request:
-{
-    "token": "jwt_token_string"
-}
-
-Response (200):
-{
-    "success": true,
-    "data": {
-        "valid": true
-    },
-    "message": "Introspect successfully"
+Staff {
+    id: UUID (PK)
+    user: User (1-1)
+    position: String
+    salary: BigDecimal
+    hireDate: LocalDate
 }
 ```
 
-### 4.4. Đăng xuất
-```
-POST /auth/logout
-Content-Type: application/json
+## 5. API Endpoints
 
-Request:
-{
-    "token": "jwt_token_string"
-}
-
-Response (200):
-{
-    "success": true,
-    "data": null,
-    "message": "Logout successfully"
-}
-```
-
-### 4.5. Refresh token
-```
-POST /auth/refresh
-Content-Type: application/json
-
-Request:
-{
-    "token": "jwt_token_string"
-}
-
-Response (200): Token mới
-```
-
-## 5. Luồng xử lý chi tiết
-
-### 5.1. Đăng nhập
-1. User nhập username/password trên LoginPage
-2. `useLogin` hook gọi `authContext.login()`
-3. `AuthContext` gọi `authService.login()` → `POST /auth/login`
-4. Backend `AuthController.login()` → `AuthService.authenticate()`
-5. `AuthService` kiểm tra credentials trong database
-6. Nếu hợp lệ, tạo JWT token và trả về
-7. Frontend lưu token vào localStorage (key: `authToken`)
-8. Gọi `getInfo()` để lấy thông tin customer
-9. Redirect đến trang chủ
-
-### 5.2. Kiểm tra token khi reload
-1. App reload → `AuthProvider` useEffect chạy
-2. Đọc token từ localStorage
-3. Gọi `POST /auth/introspect` để kiểm tra token
-4. Nếu token hợp lệ, gọi `GET /customers/info` lấy thông tin
-5. Cập nhật state `isAuthenticated` và `user`
-
-### 5.3. Phân quyền
-- **USER**: Chỉ truy cập được các route `/user/*`
-- **STAFF**: Truy cập được `/admin/*` (quản lý đơn hàng, nhập hàng)
-- **ADMIN**: Truy cập tất cả route `/admin/*`
+| Method | Endpoint | Mô tả | Auth |
+|--------|----------|-------|------|
+| POST | `/auth/register` | Đăng ký tài khoản | Public |
+| POST | `/auth/login` | Đăng nhập | Public |
+| POST | `/auth/logout` | Đăng xuất | Authenticated |
+| POST | `/auth/refresh` | Refresh token | Public |
+| GET | `/oauth2/authorization/google` | Đăng nhập Google | Public |
+| GET | `/login/oauth2/code/google` | Callback Google | Public |
 
 ## 6. Security Config
 
-```java
-// Các endpoint public (không cần auth)
-"/auth/**", "/login", "/register"
-
-// Các endpoint yêu cầu role USER
-"/user/**"
-
-// Các endpoint yêu cầu role ADMIN
-"/admin/**"
-
-// Các endpoint yêu cầu role STAFF hoặc ADMIN
-"/staffs/**"
-```
+- **CSRF:** Disabled
+- **CORS:** Cho phép tất cả origins, methods, headers
+- **Password Encoder:** BCrypt (strength 12)
+- **JWT:** OAuth2 Resource Server với custom decoder
+- **Authentication Entry Point:** `CustomAuthenticationEntryPoint` (xử lý lỗi 401)

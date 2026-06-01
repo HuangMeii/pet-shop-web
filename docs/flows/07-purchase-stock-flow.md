@@ -1,67 +1,100 @@
-# Luồng nhập hàng & Quản lý kho (Purchase & Stock Flow)
+# Luồng 7: Nhập hàng & Quản lý kho (Purchase & Stock)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Cho phép nhân viên/admin tạo phiếu nhập hàng từ nhà cung cấp, quản lý số lượng tồn kho.
+Luồng nhập hàng cho phép nhân viên/quản trị viên tạo phiếu nhập hàng từ nhà cung cấp, quản lý số lượng tồn kho của sản phẩm.
 
-## 2. Sơ đồ luồng
+## 2. Actors / Vai trò
 
-```mermaid
-sequenceDiagram
-    participant Staff as Nhân viên
-    participant UI as Admin Page
-    participant API as Backend API
-    participant DB as Database
-    
-    Note over Staff,DB: === TẠO PHIẾU NHẬP ===
-    Staff->>UI: Vào /admin/purchases
-    Staff->>UI: Click "Thêm phiếu nhập"
-    UI->>API: POST /purchases
-    API->>DB: INSERT purchase
-    API->>DB: INSERT purchase_details
-    API->>DB: UPDATE products SET stock += qty
-    API-->>UI: PurchaseResponse
-    
-    Note over Staff,DB: === XEM DANH SÁCH PHIẾU NHẬP ===
-    Staff->>UI: Vào trang quản lý
-    UI->>API: GET /purchases
-    API->>DB: SELECT * FROM purchases
-    DB-->>API: Danh sách phiếu nhập
-    API-->>UI: List<PurchaseResponse>
-```
+| Vai trò | Mô tả |
+|---------|-------|
+| **STAFF** | Nhân viên - tạo phiếu nhập, xem lịch sử nhập hàng |
+| **ADMIN** | Quản trị viên - toàn quyền quản lý nhập hàng |
 
-## 3. Các trang/component liên quan
+## 3. Luồng xử lý chi tiết
 
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/pages/admin/PurchasePage/PurchasePage.tsx` | Trang quản lý phiếu nhập |
-| `src/pages/admin/AddPurchasePage/AddPurchasePage.tsx` | Trang thêm phiếu nhập |
-
-### Backend
-| File | Mô tả |
-|------|-------|
-| `controller/PurchaseController.java` | REST controller purchase |
-| `service/PurchaseService.java` | Business logic purchase |
-| `entity/Purchase.java` | Entity phiếu nhập |
-| `entity/PurchaseDetail.java` | Entity chi tiết phiếu nhập |
-| `entity/Supplier.java` | Entity nhà cung cấp |
-
-## 4. API Endpoints
+### 3.1. Tạo phiếu nhập hàng
 
 ```
-GET /purchases                          # Lấy tất cả phiếu nhập
-GET /purchases/{id}                     # Lấy phiếu nhập theo ID
-POST /purchases                         # Tạo phiếu nhập mới
-PUT /purchases/{id}                     # Cập nhật phiếu nhập
-DELETE /purchases/{id}                  # Xoá phiếu nhập
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- POST /purchases ------>|                                |
+   |   {supplierId, staffId,   |                                |
+   |    purchaseDetails: [     |                                |
+   |      {productId, quantity,|                                |
+   |       unitPrice}          |                                |
+   |    ]}                     |                                |
+   |                           |                                |
+   |                           |--- 1. Tìm Supplier ----------->|
+   |                           |--- 2. Tìm Staff -------------->|
+   |                           |--- 3. Tạo Purchase ----------->|
+   |                           |--- 4. Tạo PurchaseDetails ---->|
+   |                           |       ├── Tìm Product          |
+   |                           |       └── Cập nhật quantity    |
+   |                           |           (tăng stock)         |
+   |                           |--- 5. Save Purchase ---------->|
+   |<-- PurchaseResponse ------|                                |
 ```
 
-## 5. Luồng xử lý chi tiết
+**Backend:**
+- **Controller:** `PurchaseController.java`
+- **Service:** `PurchaseService.java`
+- **Xử lý:**
+  1. Kiểm tra supplier và staff tồn tại
+  2. Tạo `Purchase` với tổng tiền
+  3. Với mỗi `PurchaseDetail`:
+     - Tìm `Product`
+     - Cập nhật `quantity` (tăng stock)
+     - Tính `totalPrice = quantity * unitPrice`
+  4. Lưu và trả về response
 
-1. Staff vào trang `/admin/purchases`, click "Thêm phiếu nhập"
-2. Chọn nhà cung cấp, nhập danh sách sản phẩm + số lượng + giá nhập
-3. Gọi `POST /purchases` với danh sách `PurchaseDetail`
-4. Backend tạo `Purchase` và `PurchaseDetail`
-5. Cập nhật `stock` trong bảng `products` (tăng số lượng tồn kho)
-6. Trả về `PurchaseResponse`
+### 3.2. Xem danh sách phiếu nhập
+
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- GET /purchases ------->|                                |
+   |                           |--- FindAll order by createdAt->|
+   |<-- PurchaseResponse[] ----|                                |
+```
+
+## 4. Cấu trúc dữ liệu
+
+### Purchase Entity
+```
+Purchase {
+    id: UUID (PK)
+    supplier: Supplier (N-1)
+    staff: Staff (N-1)
+    totalAmount: BigDecimal
+    purchaseDetails: Set<PurchaseDetail>
+    createdAt: LocalDateTime
+}
+```
+
+### PurchaseDetail Entity
+```
+PurchaseDetail {
+    id: UUID (PK)
+    purchase: Purchase (N-1)
+    product: Product (N-1)
+    quantity: Integer
+    unitPrice: BigDecimal
+    totalPrice: BigDecimal
+}
+```
+
+## 5. API Endpoints
+
+| Method | Endpoint | Mô tả | Auth |
+|--------|----------|-------|------|
+| POST | `/purchases` | Tạo phiếu nhập hàng | STAFF/ADMIN |
+| GET | `/purchases` | Lấy danh sách phiếu nhập | STAFF/ADMIN |
+| GET | `/purchases/{id}` | Lấy chi tiết phiếu nhập | STAFF/ADMIN |
+
+## 6. Frontend Components
+
+| Component | Mô tả |
+|-----------|-------|
+| `PurchasePage.tsx` | Trang danh sách phiếu nhập |
+| `AddPurchasePage.tsx` | Trang tạo phiếu nhập mới |

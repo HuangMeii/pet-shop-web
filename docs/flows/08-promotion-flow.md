@@ -1,39 +1,95 @@
-# Luồng khuyến mãi (Promotion Flow)
+# Luồng 8: Khuyến mãi (Promotion)
 
-## 1. Mô tả chức năng
+## 1. Tổng quan
 
-Cho phép admin tạo, sửa, xoá chương trình khuyến mãi và áp dụng cho sản phẩm.
+Luồng khuyến mãi cho phép quản trị viên tạo các chương trình khuyến mãi áp dụng cho sản phẩm. Hỗ trợ hai loại giảm giá: phần trăm (%) và cố định (FIXED).
 
-## 2. Các trang/component liên quan
+## 2. Actors / Vai trò
 
-### Frontend
-| File | Mô tả |
-|------|-------|
-| `src/pages/admin/PromotionManagementPage/PromotionManagementPage.tsx` | Quản lý khuyến mãi |
-| `src/pages/admin/AddPromotionPage/AddPromotionPage.tsx` | Thêm khuyến mãi |
+| Vai trò | Mô tả |
+|---------|-------|
+| **ADMIN** | Quản trị viên - CRUD khuyến mãi |
 
-### Backend
-| File | Mô tả |
-|------|-------|
-| `controller/PromotionController.java` | REST controller promotion |
-| `service/PromotionService.java` | Business logic promotion |
-| `entity/Promotion.java` | Entity khuyến mãi |
-| `entity/PromotionDetail.java` | Entity chi tiết khuyến mãi |
+## 3. Luồng xử lý chi tiết
 
-## 3. API Endpoints
+### 3.1. Tạo khuyến mãi
 
 ```
-GET /promotions                         # Lấy tất cả khuyến mãi
-GET /promotions/{id}                    # Lấy khuyến mãi theo ID
-POST /promotions                        # Tạo khuyến mãi mới
-PUT /promotions/{id}                    # Cập nhật khuyến mãi
-DELETE /promotions/{id}                 # Xoá khuyến mãi
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- POST /promotions ----->|                                |
+   |   {name, description,     |                                |
+   |    discountType,          |                                |
+   |    discountValue,         |                                |
+   |    maxDiscountValue,      |                                |
+   |    startDate, endDate,    |                                |
+   |    productIds[]}          |                                |
+   |                           |                                |
+   |                           |--- 1. Tạo Promotion ---------->|
+   |                           |--- 2. Tạo PromotionDetails --->|
+   |                           |    Cho mỗi productId           |
+   |                           |                                |
+   |<-- PromotionResponse -----|                                |
 ```
 
-## 4. Luồng xử lý
+**Backend:**
+- **Controller:** `PromotionController.java`
+- **Service:** `PromotionService.java`
+- **Xử lý:**
+  1. Tạo `Promotion` với thông tin khuyến mãi
+  2. Với mỗi `productId`, tạo `PromotionDetail` liên kết
+  3. Lưu và trả về response
 
-1. Admin vào trang `/admin/promotions`, click "Thêm khuyến mãi"
-2. Nhập thông tin: tên, mô tả, % giảm giá, ngày bắt đầu/kết thúc
-3. Chọn sản phẩm áp dụng khuyến mãi
-4. Gọi `POST /promotions` → Backend tạo Promotion + PromotionDetail
-5. Khi user xem sản phẩm, giá sẽ được tính với discount
+### 3.2. Xoá khuyến mãi
+
+```
+[Client]                    [Server]                         [Database]
+   |                           |                                |
+   |--- DELETE /promotions --->|                                |
+   |   /{id}                   |                                |
+   |                           |--- Xoá PromotionDetails ------>|
+   |                           |--- Xoá Promotion ------------->|
+   |<-- Success ----------------|                                |
+```
+
+## 4. Cấu trúc dữ liệu
+
+### Promotion Entity
+```
+Promotion {
+    id: UUID (PK)
+    name: String
+    description: String
+    discountType: DiscountType (PERCENT, FIXED)
+    discountValue: BigDecimal
+    maxDiscountValue: BigDecimal (nullable - chỉ cho PERCENT)
+    startDate: LocalDate
+    endDate: LocalDate
+    promotionDetails: Set<PromotionDetail>
+}
+```
+
+### PromotionDetail Entity
+```
+PromotionDetail {
+    id: UUID (PK)
+    promotion: Promotion (N-1)
+    product: Product (N-1)
+}
+```
+
+## 5. API Endpoints
+
+| Method | Endpoint | Mô tả | Auth |
+|--------|----------|-------|------|
+| POST | `/promotions` | Tạo khuyến mãi mới | ADMIN |
+| GET | `/promotions` | Lấy danh sách khuyến mãi | ADMIN |
+| GET | `/promotions/{id}` | Lấy chi tiết khuyến mãi | ADMIN |
+| DELETE | `/promotions/{id}` | Xoá khuyến mãi | ADMIN |
+
+## 6. Frontend Components
+
+| Component | Mô tả |
+|-----------|-------|
+| `PromotionManagementPage.tsx` | Trang quản lý khuyến mãi |
+| `AddPromotionPage.tsx` | Trang tạo khuyến mãi mới |

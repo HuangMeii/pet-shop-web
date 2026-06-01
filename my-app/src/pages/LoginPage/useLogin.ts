@@ -68,13 +68,14 @@ export function useLogin(): UseLoginReturn {
       console.error("Login error:", error);
 
       if (error instanceof Error) {
-        setErrors({ general: "Sai thông tin đăng nhập, vui lòng thử lại" });
+        setErrors({ general: error.message });
       } else {
         setErrors({
           general: "Đăng nhập thất bại. Vui lòng thử lại.",
         });
       }
     } finally {
+
       setIsLoading(false);
       document.body.style.overflow = "";
     }
