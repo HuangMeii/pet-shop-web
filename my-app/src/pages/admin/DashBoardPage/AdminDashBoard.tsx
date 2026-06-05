@@ -181,7 +181,7 @@ const AdminDashboard: FC = () => {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
                     <XAxis dataKey="date" tick={{fontSize: 12}}/>
                     <YAxis tick={{fontSize: 12}}/>
-                    <Tooltip formatter={(value: number) => value.toLocaleString("vi-VN")}/>
+                    <Tooltip formatter={(value: number | string | ReadonlyArray<number | string>) => `${(value as number)?.toLocaleString("vi-VN") ?? ""}`}/>
                     <Line type="monotone" dataKey="doanhThu" stroke="#6366f1" strokeWidth={2} dot={{r: 4}}/>
                   </LineChart>
                 </ResponsiveContainer>
