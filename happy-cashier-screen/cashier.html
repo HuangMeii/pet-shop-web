@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="vi" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pet Shop Staff Screen</title>
+  <title>Màn hình thu ngân - Pet Shop</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
@@ -30,29 +30,29 @@
         </div>
         <div>
           <h1 id="store-name" class="text-xl font-bold">Pawsome Pet Shop</h1>
-          <p id="welcome-msg" class="text-orange-100 text-sm">Welcome, Staff!</p>
+          <p id="welcome-msg" class="text-orange-100 text-sm">Chào mừng, Nhân viên!</p>
         </div>
       </div>
       <div class="flex items-center gap-4">
         <div class="text-right">
-          <p class="text-xs text-orange-200">Today's Date</p>
+          <p class="text-xs text-orange-200">Ngày hôm nay</p>
           <p id="current-date" class="font-semibold"></p>
         </div>
         <!-- Chat button -->
         <button onclick="openChat()" class="bg-orange-700 hover:bg-orange-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-          <i data-lucide="message-circle" class="w-4 h-4"></i> Messages
+          <i data-lucide="message-circle" class="w-4 h-4"></i> Tin nhắn
         </button>
         <button onclick="toggleSalesHistory()" class="bg-orange-700 hover:bg-orange-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-          <i data-lucide="history" class="w-4 h-4"></i> Sales History
+          <i data-lucide="history" class="w-4 h-4"></i> Lịch sử bán hàng
         </button>
         <a href="history.html" class="bg-orange-700 hover:bg-orange-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-          <i data-lucide="file-text" class="w-4 h-4"></i> Full History
+          <i data-lucide="file-text" class="w-4 h-4"></i> Xem tất cả
         </a>
         <button onclick="toggleStaffAccount()" class="bg-orange-700 hover:bg-orange-800 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-          <i data-lucide="user" class="w-4 h-4"></i> Staff Account
+          <i data-lucide="user" class="w-4 h-4"></i> Tài khoản
         </button>
         <button onclick="handleLogout()" class="bg-orange-800 hover:bg-orange-900 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-          <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+          <i data-lucide="log-out" class="w-4 h-4"></i> Đăng xuất
         </button>
       </div>
     </header>
@@ -61,12 +61,12 @@
       <!-- Products Section -->
       <div class="flex-1 flex flex-col p-4 overflow-hidden">
         <div class="flex gap-2 mb-4 flex-wrap">
-          <button onclick="filterCategory('all')" class="category-btn active px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="all">🏠 All</button>
-          <button onclick="filterCategory('food')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="food">🍖 Food</button>
-          <button onclick="filterCategory('toys')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="toys">🎾 Toys</button>
-          <button onclick="filterCategory('accessories')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="accessories">🎀 Accessories</button>
-          <button onclick="filterCategory('health')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="health">💊 Health</button>
-          <button onclick="filterCategory('grooming')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="grooming">✨ Grooming</button>
+          <button onclick="filterCategory('all')" class="category-btn active px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="all">🏠 Tất cả</button>
+          <button onclick="filterCategory('food')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="food">🍖 Thức ăn</button>
+          <button onclick="filterCategory('toys')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="toys">🎾 Đồ chơi</button>
+          <button onclick="filterCategory('accessories')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="accessories">🎀 Phụ kiện</button>
+          <button onclick="filterCategory('health')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="health">💊 Sức khỏe</button>
+          <button onclick="filterCategory('grooming')" class="category-btn px-4 py-2 rounded-full bg-white text-gray-700 font-semibold shadow-sm transition-all" data-category="grooming">✨ Chăm sóc</button>
         </div>
         <div id="products-grid" class="flex-1 overflow-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 content-start pb-4"></div>
       </div>
@@ -74,26 +74,26 @@
       <!-- Cart Section -->
       <div class="w-96 bg-white shadow-xl flex flex-col border-l border-gray-200">
         <div class="p-4 bg-gray-50 border-b border-gray-200">
-          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i data-lucide="shopping-cart" class="w-5 h-5 text-orange-500"></i> Current Order</h2>
+          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2"><i data-lucide="shopping-cart" class="w-5 h-5 text-orange-500"></i> Đơn hàng hiện tại</h2>
         </div>
         <div id="cart-items" class="flex-1 overflow-auto p-4 space-y-3">
           <div id="empty-cart" class="text-center py-12 text-gray-400">
             <i data-lucide="shopping-bag" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
-            <p>No items in cart</p>
-            <p class="text-sm">Tap products to add them</p>
+            <p>Giỏ hàng trống</p>
+            <p class="text-sm">Chọn sản phẩm để thêm vào</p>
           </div>
         </div>
         <div class="border-t border-gray-200 p-4 bg-gray-50">
           <div class="space-y-2 mb-4">
-            <div class="flex justify-between text-gray-600"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
-            <div class="flex justify-between text-gray-600"><span>Tax (8%)</span><span id="tax">$0.00</span></div>
-            <div class="flex justify-between text-xl font-bold text-gray-800 pt-2 border-t"><span>Total</span><span id="total">$0.00</span></div>
+            <div class="flex justify-between text-gray-600"><span>Tạm tính</span><span id="subtotal">0 ₫</span></div>
+            <div class="flex justify-between text-gray-600"><span>Thuế (8%)</span><span id="tax">0 ₫</span></div>
+            <div class="flex justify-between text-xl font-bold text-gray-800 pt-2 border-t"><span>Tổng cộng</span><span id="total">0 ₫</span></div>
           </div>
           <div class="grid grid-cols-2 gap-2 mb-3">
-            <button onclick="processPayment('cash')" class="bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"><i data-lucide="banknote" class="w-5 h-5"></i> Cash</button>
-            <button onclick="processPayment('card')" class="bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"><i data-lucide="credit-card" class="w-5 h-5"></i> Card</button>
+            <button onclick="processPayment('cash')" class="bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"><i data-lucide="banknote" class="w-5 h-5"></i> Tiền mặt</button>
+            <button onclick="processPayment('card')" class="bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg font-semibold flex items-center justify-center gap-2 transition-colors"><i data-lucide="credit-card" class="w-5 h-5"></i> Thẻ</button>
           </div>
-          <button onclick="clearCart()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg font-semibold transition-colors">Clear Cart</button>
+          <button onclick="clearCart()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg font-semibold transition-colors">Xóa giỏ hàng</button>
         </div>
       </div>
     </div>
@@ -102,21 +102,21 @@
     <div id="sales-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80%] flex flex-col m-4">
         <div class="p-4 border-b flex items-center justify-between bg-orange-50 rounded-t-2xl">
-          <h3 class="text-lg font-bold text-gray-800">📊 Sales History</h3>
+          <h3 class="text-lg font-bold text-gray-800">📊 Lịch sử bán hàng</h3>
           <button onclick="toggleSalesHistory()" class="p-2 hover:bg-orange-100 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
         <div id="sales-history" class="flex-1 overflow-auto p-4">
           <div id="no-sales" class="text-center py-12 text-gray-400">
             <i data-lucide="receipt" class="w-16 h-16 mx-auto mb-4 opacity-50"></i>
-            <p>No sales recorded yet</p>
+            <p>Chưa có giao dịch nào</p>
           </div>
         </div>
         <div class="p-4 border-t bg-gray-50 rounded-b-2xl flex justify-between items-center">
           <div class="flex justify-between text-lg font-bold flex-1">
-            <span>Today's Total:</span>
-            <span id="daily-total" class="text-green-600">$0.00</span>
+            <span>Tổng hôm nay:</span>
+            <span id="daily-total" class="text-green-600">0 ₫</span>
           </div>
-          <a href="history.html" class="ml-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm font-semibold">View Full History</a>
+          <a href="history.html" class="ml-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 text-sm font-semibold">Xem lịch sử đầy đủ</a>
         </div>
       </div>
     </div>
@@ -125,18 +125,18 @@
     <div id="staff-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 modal-content">
         <div class="p-4 border-b flex items-center justify-between bg-orange-50 rounded-t-2xl">
-          <h3 class="text-lg font-bold text-gray-800">👤 Staff Account</h3>
+          <h3 class="text-lg font-bold text-gray-800">👤 Tài khoản nhân viên</h3>
           <button onclick="toggleStaffAccount()" class="p-2 hover:bg-orange-100 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
         <div class="p-4 space-y-3">
-          <p><span class="text-gray-500 text-sm">Name:</span> <span id="staff-display-name" class="font-semibold"></span></p>
-          <p><span class="text-gray-500 text-sm">Role:</span> <span id="staff-display-role" class="font-semibold"></span></p>
+          <p><span class="text-gray-500 text-sm">Tên:</span> <span id="staff-display-name" class="font-semibold"></span></p>
+          <p><span class="text-gray-500 text-sm">Vai trò:</span> <span id="staff-display-role" class="font-semibold"></span></p>
           <p><span class="text-gray-500 text-sm">Email:</span> <span id="staff-email-display"></span></p>
-          <p><span class="text-gray-500 text-sm">Phone:</span> <span id="staff-phone-display"></span></p>
-          <p><span class="text-gray-500 text-sm">Joined:</span> <span id="staff-joined-display"></span></p>
+          <p><span class="text-gray-500 text-sm">SĐT:</span> <span id="staff-phone-display"></span></p>
+          <p><span class="text-gray-500 text-sm">Ngày tham gia:</span> <span id="staff-joined-display"></span></p>
         </div>
         <div class="p-4 border-t bg-gray-50 rounded-b-2xl">
-          <button onclick="toggleEditStaff()" class="w-full py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700">Edit Profile</button>
+          <button onclick="toggleEditStaff()" class="w-full py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700">Chỉnh sửa</button>
         </div>
       </div>
     </div>
@@ -145,12 +145,12 @@
     <div id="edit-staff-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
       <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md m-4 modal-content">
         <div class="p-4 border-b flex items-center justify-between bg-orange-50 rounded-t-2xl">
-          <h3 class="text-lg font-bold text-gray-800">Edit Profile</h3>
+          <h3 class="text-lg font-bold text-gray-800">Chỉnh sửa hồ sơ</h3>
           <button onclick="toggleEditStaff()" class="p-2 hover:bg-orange-100 rounded-full transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
         <form onsubmit="saveStaffProfile(event)" class="p-4 space-y-3">
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Name</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Tên</label>
             <input type="text" id="edit-staff-name" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none">
           </div>
           <div>
@@ -158,18 +158,18 @@
             <input type="email" id="edit-staff-email" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none">
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Phone</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Số điện thoại</label>
             <input type="tel" id="edit-staff-phone" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none">
           </div>
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Role</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Vai trò</label>
             <select id="edit-staff-role" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none">
-              <option value="Cashier">Cashier</option>
-              <option value="Manager">Manager</option>
-              <option value="Staff">Staff</option>
+              <option value="Cashier">Thu ngân</option>
+              <option value="Manager">Quản lý</option>
+              <option value="Staff">Nhân viên</option>
             </select>
           </div>
-          <button type="submit" class="w-full py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700">Save</button>
+          <button type="submit" class="w-full py-2 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700">Lưu</button>
         </form>
       </div>
     </div>
@@ -177,7 +177,7 @@
     <!-- Toast -->
     <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden items-center gap-2 toast z-50">
       <i data-lucide="check-circle" class="w-5 h-5"></i>
-      <span id="toast-message">Sale completed!</span>
+      <span id="toast-message">Đã thanh toán!</span>
     </div>
   </div>
 
@@ -224,7 +224,7 @@
 
     const defaultConfig = {
       store_name: 'Pawsome Pet Shop',
-      welcome_message: 'Welcome, Staff!',
+      welcome_message: 'Chào mừng, Nhân viên!',
       primary_color: '#ea580c',
       secondary_color: '#ffffff',
       text_color: '#1f2937',
@@ -311,7 +311,7 @@
             if (invoice.invoiceDetails && invoice.invoiceDetails.length > 0) {
               return invoice.invoiceDetails.map(detail => ({
                 id: invoice.id,
-                product_name: detail.productName || 'Product',
+                product_name: detail.productName || 'Sản phẩm',
                 quantity: detail.quantity || 1,
                 unit_price: detail.unitPrice || 0,
                 total: detail.totalPrice || (detail.quantity * detail.unitPrice) || 0,
@@ -321,7 +321,7 @@
             }
             return [{
               id: invoice.id,
-              product_name: 'Order',
+              product_name: 'Đơn hàng',
               quantity: 1,
               unit_price: invoice.realAmount || invoice.totalAmount || 0,
               total: invoice.realAmount || invoice.totalAmount || 0,
@@ -351,22 +351,26 @@
       localStorage.setItem('petShopSales', JSON.stringify(salesHistory));
     }
 
-    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'short', month: 'short', day: 'numeric' });
 
-    const staffName = sessionStorage.getItem('staffUser') || localStorage.getItem('staffUser') || 'Staff';
-    document.getElementById('welcome-msg').textContent = `Welcome, ${staffName}!`;
+    const staffName = sessionStorage.getItem('staffUser') || localStorage.getItem('staffUser') || 'Nhân viên';
+    document.getElementById('welcome-msg').textContent = `Chào mừng, ${staffName}!`;
+
+    function formatVND(amount) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    }
 
     function renderProducts() {
       const grid = document.getElementById('products-grid');
       const filtered = currentCategory === 'all' ? products : products.filter(p => p.category === currentCategory);
       if (filtered.length === 0) {
-        grid.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400"><i data-lucide="package" class="w-16 h-16 mx-auto mb-4 opacity-50"></i><p>No products found</p></div>';
+        grid.innerHTML = '<div class="col-span-full text-center py-12 text-gray-400"><i data-lucide="package" class="w-16 h-16 mx-auto mb-4 opacity-50"></i><p>Không tìm thấy sản phẩm</p></div>';
       } else {
         grid.innerHTML = filtered.map(p => `
           <div class="product-card bg-white rounded-xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all border border-gray-100" onclick="addToCart('${p.id}')">
             <div class="text-4xl mb-2 text-center">${p.emoji}</div>
             <h3 class="font-semibold text-gray-800 text-sm mb-1 truncate" title="${p.name}">${p.name}</h3>
-            <p class="text-orange-600 font-bold">$${(p.price / 23000).toFixed(2)}</p>
+            <p class="text-orange-600 font-bold">${formatVND(p.price)}</p>
           </div>
         `).join('');
       }
@@ -413,7 +417,7 @@
             <span class="text-2xl">${item.emoji}</span>
             <div class="flex-1 min-w-0">
               <p class="font-semibold text-gray-800 text-sm truncate">${item.name}</p>
-              <p class="text-orange-600 font-bold">$${(item.price * item.quantity / 23000).toFixed(2)}</p>
+              <p class="text-orange-600 font-bold">${formatVND(item.price * item.quantity)}</p>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="updateQuantity('${item.id}', -1)" class="w-8 h-8 bg-white rounded-full shadow flex items-center justify-center hover:bg-gray-100"><i data-lucide="minus" class="w-4 h-4"></i></button>
@@ -430,18 +434,18 @@
     function updateTotals() {
       const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       const tax = subtotal * 0.08;
-      document.getElementById('subtotal').textContent = `$${(subtotal / 23000).toFixed(2)}`;
-      document.getElementById('tax').textContent = `$${(tax / 23000).toFixed(2)}`;
-      document.getElementById('total').textContent = `$${((subtotal + tax) / 23000).toFixed(2)}`;
+      document.getElementById('subtotal').textContent = formatVND(subtotal);
+      document.getElementById('tax').textContent = formatVND(tax);
+      document.getElementById('total').textContent = formatVND(subtotal + tax);
     }
 
     async function processPayment(method) {
       if (cart.length === 0) return;
-      if (currentRecordCount >= 999) { showToast('Maximum sales records reached!', false); return; }
+      if (currentRecordCount >= 999) { showToast('Đã đạt giới hạn giao dịch!', false); return; }
 
       const payBtn = document.querySelector(`button[onclick="processPayment('${method}')"]`);
       payBtn.disabled = true;
-      payBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Processing...';
+      payBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Đang xử lý...';
       lucide.createIcons();
 
       for (const item of cart) {
@@ -458,9 +462,9 @@
         if (window.dataSdk) {
           const result = await window.dataSdk.create(sale);
           if (result.isError) {
-            showToast('Error saving sale', false);
+            showToast('Lỗi khi lưu giao dịch', false);
             payBtn.disabled = false;
-            payBtn.innerHTML = method === 'cash' ? '<i data-lucide="banknote" class="w-5 h-5"></i> Cash' : '<i data-lucide="credit-card" class="w-5 h-5"></i> Card';
+            payBtn.innerHTML = method === 'cash' ? '<i data-lucide="banknote" class="w-5 h-5"></i> Tiền mặt' : '<i data-lucide="credit-card" class="w-5 h-5"></i> Thẻ';
             lucide.createIcons();
             return;
           }
@@ -473,9 +477,9 @@
       cart = [];
       renderCart();
       renderSalesHistory();
-      showToast(`Payment received via ${method}!`, true);
+      showToast(`Đã thanh toán qua ${method === 'cash' ? 'tiền mặt' : 'thẻ'}!`, true);
       payBtn.disabled = false;
-      payBtn.innerHTML = method === 'cash' ? '<i data-lucide="banknote" class="w-5 h-5"></i> Cash' : '<i data-lucide="credit-card" class="w-5 h-5"></i> Card';
+      payBtn.innerHTML = method === 'cash' ? '<i data-lucide="banknote" class="w-5 h-5"></i> Tiền mặt' : '<i data-lucide="credit-card" class="w-5 h-5"></i> Thẻ';
       lucide.createIcons();
     }
 
@@ -500,7 +504,7 @@
       } else {
         noSales.style.display = 'none';
         const grouped = todaySales.reduce((acc, sale) => {
-          const time = new Date(sale.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const time = new Date(sale.timestamp).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
           if (!acc[time]) acc[time] = [];
           acc[time].push(sale);
           return acc;
@@ -509,13 +513,13 @@
           <div class="mb-4 bg-gray-50 rounded-lg p-3">
             <div class="flex items-center justify-between mb-2">
               <span class="font-semibold text-gray-700">${time}</span>
-              <span class="text-xs px-2 py-1 rounded-full ${sales[0].payment_method === 'cash' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${sales[0].payment_method.toUpperCase()}</span>
+              <span class="text-xs px-2 py-1 rounded-full ${sales[0].payment_method === 'cash' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">${sales[0].payment_method === 'cash' ? 'TIỀN MẶT' : 'THẺ'}</span>
             </div>
-            ${sales.map(s => `<div class="flex justify-between text-sm text-gray-600 py-1"><span>${s.product_name} x${s.quantity}</span><span>$${(s.total / 23000).toFixed(2)}</span></div>`).join('')}
+            ${sales.map(s => `<div class="flex justify-between text-sm text-gray-600 py-1"><span>${s.product_name} x${s.quantity}</span><span>${formatVND(s.total)}</span></div>`).join('')}
           </div>
         `).join('');
       }
-      document.getElementById('daily-total').textContent = `$${(todaySales.reduce((sum, s) => sum + s.total, 0) / 23000).toFixed(2)}`;
+      document.getElementById('daily-total').textContent = formatVND(todaySales.reduce((sum, s) => sum + s.total, 0));
       lucide.createIcons();
     }
 
@@ -538,8 +542,8 @@
       name: staffName,
       email: staffName + '@petshop.com',
       phone: '555-1234',
-      role: 'Cashier',
-      joined: new Date().toLocaleDateString()
+      role: 'Thu ngân',
+      joined: new Date().toLocaleDateString('vi-VN')
     };
 
     function loadStaffProfile() {
@@ -556,7 +560,7 @@
       localStorage.setItem('staffProfile', JSON.stringify(staffProfile));
       renderStaffAccount();
       toggleEditStaff();
-      showToast('Profile updated successfully!', true);
+      showToast('Cập nhật hồ sơ thành công!', true);
       lucide.createIcons();
     }
 
