@@ -652,16 +652,26 @@ public class CashierController implements Initializable {
      *   <li>Tạo link thanh toán PayOS</li>
      *   <li>Mở trình duyệt cho khách quét QR</li>
      *   <li>Polling kiểm tra trạng thái mỗi 3 giây (tối đa 5 phút)</li>
-     *   <li>Nếu PAID → tạo hóa đơn; nếu không → hủy, thông báo</li>
+     *   <li>Nếu PAID → tạo hóa đơn</li>
+     *   <li>Nếu không → hiển thị dialog có nút "Thanh toán lại"</li>
      * </ol>
      */
     private void processPayOsPayment(InvoiceCreationRequest request, List<CartItem> snapshot, ReviewResponse review) {
+        doPayOsPayment(request, snapshot, review, null);
+    }
+
+    /**
+     * Thực hiện luồng PayOS, hỗ trợ retry.
+     *
+     * @param previousCheckoutUrl URL checkout của lần trước (nếu đang retry), null nếu lần đầu
+     */
+    private void doPayOsPayment(InvoiceCreationRequest request, List<CartItem> snapshot, ReviewResponse review,
+                                 String previousCheckoutUrl) {
         try {
             long amount = review != null && review.getRealAmount() != null
                     ? review.getRealAmount().longValue()
                     : 0;
             if (amount <= 0) {
-                // fallback: tính từ giỏ hàng
                 amount = snapshot.stream()
                         .mapToLong(i -> i.product.getPrice() != null
                                 ? i.product.getPrice().longValue() * i.quantity
@@ -693,7 +703,6 @@ public class CashierController implements Initializable {
                 try {
                     openBrowser(finalCheckoutUrl);
                 } catch (Exception ignored) {
-                    // fallback: copy link ra clipboard
                     new Alert(Alert.AlertType.INFORMATION,
                             "Vui lòng mở link sau để thanh toán:\n" + finalCheckoutUrl).showAndWait();
                 }
@@ -703,7 +712,7 @@ public class CashierController implements Initializable {
             int maxAttempts = 100;
             boolean paid = false;
             for (int i = 0; i < maxAttempts; i++) {
-                Thread.sleep(3000); // 3 giây
+                Thread.sleep(3000);
                 try {
                     Map<String, Object> statusResult = PaymentService.getPaymentStatus(payosOrderCode);
                     String status = statusResult.containsKey("status")
@@ -743,16 +752,45 @@ public class CashierController implements Initializable {
                 try {
                     PaymentService.cancelPayment(payosOrderCode);
                 } catch (Exception ignored) {}
-                Platform.runLater(() -> new Alert(
-                        Alert.AlertType.WARNING,
-                        "⏰ Thanh toán không hoàn tất hoặc đã hết thời gian chờ.\nVui lòng thử lại."
-                ).showAndWait());
+
+                // Hiển thị dialog với nút "Thanh toán lại"
+                Platform.runLater(() -> showRetryPaymentDialog(request, snapshot, review, checkoutUrl));
             }
         } catch (Exception e) {
             Platform.runLater(() -> new Alert(
                     Alert.AlertType.ERROR,
                     "Lỗi thanh toán PayOS: " + e.getMessage()
             ).showAndWait());
+        }
+    }
+
+    /**
+     * Hiển thị dialog khi thanh toán thất bại, cho phép staff chọn:
+     * - "Thanh toán lại" → tạo link PayOS mới
+     * - "Hủy" → quay lại
+     */
+    private void showRetryPaymentDialog(InvoiceCreationRequest request, List<CartItem> snapshot,
+                                         ReviewResponse review, String oldCheckoutUrl) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Thanh toán thất bại");
+        alert.setHeaderText("⏰ Khách chưa hoàn tất thanh toán");
+        alert.setContentText("""
+                Khách hàng chưa thanh toán hoặc đã hủy.
+                
+                Bạn có muốn tạo link thanh toán mới cho khách không?
+                
+                - Chọn "Thanh toán lại" để tạo link QR mới
+                - Chọn "Hủy" để quay lại giỏ hàng
+                """);
+
+        ButtonType retryBtn = new ButtonType("🔄 Thanh toán lại");
+        ButtonType cancelBtn = new ButtonType("Hủy", ButtonBar.ButtonData.CANCEL_CLOSE);
+        alert.getButtonTypes().setAll(retryBtn, cancelBtn);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == retryBtn) {
+            // Tạo link thanh toán mới
+            new Thread(() -> doPayOsPayment(request, snapshot, review, oldCheckoutUrl), "payos-retry").start();
         }
     }
 

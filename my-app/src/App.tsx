@@ -36,6 +36,7 @@ import ManagePetsPage from "./pages/admin/ManagePetsPage/ManagePetsPage.tsx";
 import ChatManagementPage from "./pages/admin/ChatManagementPage/ChatManagementPage.tsx";
 import RevenueStatisticsPage from "./pages/admin/RevenueStatisticsPage/RevenueStatisticsPage.tsx";
 import ReviewStatisticsPage from "./pages/admin/ReviewStatisticsPage/ReviewStatisticsPage.tsx";
+import PaymentResultPage from "./pages/user/PaymentResultPage/PaymentResultPage.tsx";
 
 const App: React.FC = () => {
   return (
@@ -49,6 +50,7 @@ const App: React.FC = () => {
 
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/payment-result" element={<PaymentResultPage />} />
 
             <Route path="/admin/login" element={<LoginPage />} />
             <Route path="/admin/register" element={<RegisterPage />} />
