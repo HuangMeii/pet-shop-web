@@ -118,14 +118,16 @@
   </main>
 
   <script>
-    // Auth check
+    // Auth check - check both storages
     function getStaffToken() {
-      return sessionStorage.getItem('staffToken') || localStorage.getItem('staffToken');
+      return localStorage.getItem('staffToken') || sessionStorage.getItem('staffToken');
     }
     function getStaffUser() {
-      return sessionStorage.getItem('staffUser') || localStorage.getItem('staffUser');
+      return localStorage.getItem('staffUser') || sessionStorage.getItem('staffUser');
     }
+    console.log('Auth check - token:', !!getStaffToken(), 'user:', !!getStaffUser());
     if (!getStaffToken() || !getStaffUser()) {
+      console.warn('No auth found, redirecting to login');
       window.location.href = 'login.html';
     }
 
@@ -134,42 +136,30 @@
 
     const API_BASE_URL = 'http://localhost:8080/happy-pet-shop';
 
-    async function loadSales() {
-      try {
-        const token = getStaffToken();
-        const response = await fetch(`${API_BASE_URL}/invoices`, {
-          headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
-        });
-        const result = await response.json();
-        if (result.success && result.data) {
-          salesHistory = result.data.flatMap(invoice => {
-            if (invoice.invoiceDetails && invoice.invoiceDetails.length > 0) {
-              return invoice.invoiceDetails.map(detail => ({
-                id: invoice.id,
-                product_name: detail.productName || 'Product',
-                quantity: detail.quantity || 1,
-                unit_price: detail.unitPrice || 0,
-                total: detail.totalPrice || (detail.quantity * detail.unitPrice) || 0,
-                timestamp: invoice.createdAt || invoice.invoiceDate,
-                payment_method: (invoice.paymentMethod || 'cash').toLowerCase()
-              }));
-            }
-            return [{
-              id: invoice.id,
-              product_name: 'Order',
-              quantity: 1,
-              unit_price: invoice.realAmount || invoice.totalAmount || 0,
-              total: invoice.realAmount || invoice.totalAmount || 0,
-              timestamp: invoice.createdAt || invoice.invoiceDate,
-              payment_method: (invoice.paymentMethod || 'cash').toLowerCase()
-            }];
-          });
+    function normalizePaymentMethod(method) {
+      if (!method) return 'cash';
+      const m = method.toLowerCase();
+      if (m === 'cod' || m === 'cash') return 'cash';
+      if (m === 'qr_scanning' || m === 'card' || m === 'credit_card') return 'card';
+      return m;
+    }
+
+    function formatVND(amount) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    }
+
+    function loadSales() {
+      // Read from localStorage (saved by cashier.html)
+      const stored = localStorage.getItem('petShopSales');
+      if (stored) {
+        try {
+          salesHistory = JSON.parse(stored);
+          console.log('Loaded from localStorage:', salesHistory.length, 'items');
+        } catch(e) {
+          console.error('Error parsing localStorage data:', e);
         }
-      } catch (err) {
-        console.error('Failed to load invoices from API:', err);
-        // Fallback to localStorage
-        const stored = localStorage.getItem('petShopSales');
-        if (stored) salesHistory = JSON.parse(stored);
+      } else {
+        console.log('No data in localStorage');
       }
       renderSales();
     }

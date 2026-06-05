@@ -17,6 +17,7 @@ public class InvoiceDetailResponse {
     UUID id;
 
     UUID productId;
+    String productName;
     UUID petId;
 
     BigDecimal unitPrice;

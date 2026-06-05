@@ -202,7 +202,7 @@ public class CashierController implements Initializable {
             name.setWrapText(true);
             name.setMaxWidth(140);
             BigDecimal priceBd = p.getPrice();
-            String priceStr = priceBd != null ? String.format("$%.2f", priceBd.doubleValue()) : "—";
+            String priceStr = priceBd != null ? formatMoney(priceBd) : "—";
             Label price = new Label(priceStr);
             price.setStyle("-fx-font-weight: bold; -fx-text-fill: rgb(234, 88, 12);");
 
@@ -258,7 +258,7 @@ public class CashierController implements Initializable {
             double lineTotal = item.product.getPrice() != null
                     ? item.product.getPrice().doubleValue() * item.quantity
                     : 0;
-            Label total = new Label(String.format("$%.2f", lineTotal));
+            Label total = new Label(formatMoney(BigDecimal.valueOf(lineTotal)));
             total.setStyle("-fx-text-fill: rgb(234, 88, 12); -fx-font-weight: bold;");
             info.getChildren().addAll(name, codeLine, total);
             Button minus = new Button("−");
@@ -299,8 +299,8 @@ public class CashierController implements Initializable {
                         : 0)
                 .sum();
         double total = subtotal;
-        subtotalLabel.setText(String.format("$%.2f", subtotal));
-        totalLabel.setText(String.format("$%.2f", total));
+        subtotalLabel.setText(formatMoney(BigDecimal.valueOf(subtotal)));
+        totalLabel.setText(formatMoney(BigDecimal.valueOf(total)));
     }
 
     /**
@@ -438,7 +438,7 @@ public class CashierController implements Initializable {
             HBox totalRow = new HBox();
             totalRow.setAlignment(Pos.CENTER_RIGHT);
             totalRow.setPadding(new Insets(8, 0, 0, 0));
-            Label totalLbl = new Label(String.format("Tạm tính (giỏ): $%.2f", sum));
+            Label totalLbl = new Label("Tạm tính (giỏ): " + formatMoney(BigDecimal.valueOf(sum)));
             totalLbl.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: rgb(107, 114, 128);");
             totalRow.getChildren().add(totalLbl);
             linesCard.getChildren().add(totalRow);
@@ -488,7 +488,7 @@ public class CashierController implements Initializable {
         Label meta = new Label("Mã SP: " + formatProductCode(item.product.getId()) + "  ·  SL: " + item.quantity);
         meta.getStyleClass().add("invoice-review-line-meta");
         left.getChildren().addAll(name, meta);
-        Label price = new Label(String.format("$%.2f", lineTotal));
+        Label price = new Label(formatMoney(BigDecimal.valueOf(lineTotal)));
         price.setStyle("-fx-font-weight: bold; -fx-text-fill: rgb(234, 88, 12);");
         row.getChildren().addAll(left, price);
         return row;
@@ -524,7 +524,8 @@ public class CashierController implements Initializable {
         if (amount == null) {
             return "—";
         }
-        return String.format("$%.2f", amount.doubleValue());
+        long wholePart = amount.longValue();
+        return String.format("%,d", wholePart).replace(",", ".");
     }
 
     private static String formatUuid(UUID id) {
