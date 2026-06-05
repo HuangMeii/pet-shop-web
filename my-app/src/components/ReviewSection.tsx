@@ -13,10 +13,12 @@ const MAX_IMAGES = 3;
 
 function formatDate(dateString: string): string {
   try {
-    return new Date(dateString).toLocaleDateString("vi-VN", {
+    return new Date(dateString).toLocaleString("vi-VN", {
       year: "numeric",
-      month: "long",
-      day: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   } catch {
     return dateString;

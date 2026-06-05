@@ -102,7 +102,7 @@ export default function InvoiceHistory() {
   } = useInvoiceHistory(mockInvoices);
 
   const fmtMoney = (n: number) => `₫${n.toLocaleString("vi-VN")}`;
-  const fmtDate = (d: string) => new Date(d).toLocaleDateString("vi-VN");
+  const fmtDate = (d: string) => new Date(d).toLocaleString("vi-VN", {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"});
 
   return (
     <div className="space-y-6">

@@ -123,7 +123,8 @@ const ReviewStatisticsPage: FC = () => {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
                     <XAxis dataKey="rating"/>
                     <YAxis/>
-                    <Tooltip formatter={(value: any) => `${(value as number).toLocaleString("vi-VN")} đánh giá`}/>
+                    {/* @ts-expect-error recharts formatter type mismatch */}
+                    <Tooltip formatter={(value: number) => `${value.toLocaleString("vi-VN")} đánh giá`}/>
                     <Bar dataKey="count" fill="#6366f1" radius={[6, 6, 0, 0]}/>
                   </BarChart>
                 </ResponsiveContainer>
@@ -150,7 +151,8 @@ const ReviewStatisticsPage: FC = () => {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]}/>
                       ))}
                     </Pie>
-                    <Tooltip formatter={(value: any) => `${(value as number).toLocaleString("vi-VN")} đánh giá`}/>
+                    {/* @ts-expect-error recharts formatter type mismatch */}
+                    <Tooltip formatter={(value: number) => `${value.toLocaleString("vi-VN")} đánh giá`}/>
                     <Legend/>
                   </PieChart>
                 </ResponsiveContainer>
@@ -169,7 +171,8 @@ const ReviewStatisticsPage: FC = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb"/>
                   <XAxis dataKey="month"/>
                   <YAxis/>
-                  <Tooltip formatter={(value: any) => `${(value as number).toLocaleString("vi-VN")} đánh giá`}/>
+                  {/* @ts-expect-error recharts formatter type mismatch */}
+                  <Tooltip formatter={(value: number) => `${value.toLocaleString("vi-VN")} đánh giá`}/>
                   <Bar dataKey="count" fill="#06b6d4" radius={[6, 6, 0, 0]}/>
                 </BarChart>
               </ResponsiveContainer>
@@ -227,7 +230,7 @@ const ReviewStatisticsPage: FC = () => {
                             </span>
                           </td>
                           <td className="py-3 text-sm text-gray-500">
-                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString("vi-VN") : "N/A"}
+                            {review.createdAt ? new Date(review.createdAt).toLocaleString("vi-VN", {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"}) : "N/A"}
                           </td>
                         </tr>
                     );

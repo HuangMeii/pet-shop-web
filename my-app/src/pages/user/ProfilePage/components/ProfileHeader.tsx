@@ -37,7 +37,7 @@ export default function ProfileHeader() {
 
   const u = user.user;
   const name = displayName(u.firstName, u.lastName, u.username);
-  const joinDate = u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : "—";
+  const joinDate = u.createdAt ? new Date(u.createdAt).toLocaleString("vi-VN", {year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"}) : "—";
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

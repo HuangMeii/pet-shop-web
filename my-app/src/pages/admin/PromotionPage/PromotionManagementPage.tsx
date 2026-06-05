@@ -25,7 +25,13 @@ function formatDate(dateString: string | undefined): string {
 
 function formatDateOnly(dateString: string | undefined): string {
   if (!dateString) return "—";
-  return new Date(dateString).toLocaleDateString("vi-VN");
+  return new Date(dateString).toLocaleString("vi-VN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 function statusClass(status: string): string {

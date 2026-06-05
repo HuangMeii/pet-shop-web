@@ -34,10 +34,10 @@ function formatDate(dateString?: string | null): string {
   const date = new Date(dateString);
   if (Number.isNaN(date.getTime())) return "Khong co";
 
-  return date.toLocaleDateString("vi-VN", {
+  return date.toLocaleString("vi-VN", {
     year: "numeric",
-    month: "long",
-    day: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
   });

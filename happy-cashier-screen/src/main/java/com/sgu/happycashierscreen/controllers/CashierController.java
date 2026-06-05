@@ -55,7 +55,7 @@ public class CashierController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        dateLabel.setText(new SimpleDateFormat("EEE, MMM d").format(new Date()));
+        dateLabel.setText(new SimpleDateFormat("HH:mm dd/MM/yyyy").format(new Date()));
         welcomeLabel.setText(buildWelcomeMessage());
 
         productSearchField.textProperty().addListener((obs, oldVal, newVal) -> renderProducts());
