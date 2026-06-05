@@ -201,7 +201,7 @@ public class HistoryController implements Initializable {
         cardTotalLabel.setText(formatMoney(BigDecimal.valueOf(cardSum)));
 
         salesTableView.getItems().clear();
-        SimpleDateFormat dtFmt = new SimpleDateFormat("MMM d, yyyy HH:mm");
+        SimpleDateFormat dtFmt = new SimpleDateFormat("HH:mm dd/MM/yyyy");
         for (AppState.SaleRecord s : filtered) {
             String dtStr = s.timestamp();
             try {
