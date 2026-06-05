@@ -11,6 +11,7 @@ import com.sgu.happycashierscreen.dto.response.ReviewDetailResponse;
 import com.sgu.happycashierscreen.dto.response.ReviewResponse;
 import com.sgu.happycashierscreen.services.CustomerService;
 import com.sgu.happycashierscreen.services.InvoiceService;
+import com.sgu.happycashierscreen.services.PaymentService;
 import com.sgu.happycashierscreen.services.ProductService;
 import com.sgu.happycashierscreen.util.ObjectMapperUtil;
 import javafx.application.Platform;
@@ -549,7 +550,12 @@ public class CashierController implements Initializable {
     private void processCard() { processPayment(CARD_LIKE); }
 
     /**
-     * Builds {@link InvoiceCreationRequest}, shows confirmation with full payload, then {@link InvoiceService#createInvoice}.
+     * Builds {@link InvoiceCreationRequest}, shows confirmation with full payload, then:
+     * <ul>
+     *   <li>For {@link #PAY_AT_COUNTER} (COD): creates invoice directly.</li>
+     *   <li>For {@link #CARD_LIKE} (QR_Scanning): creates PayOS payment link, opens browser,
+     *       polls for payment status, then creates invoice only if paid.</li>
+     * </ul>
      *
      * @param paymentMethod server enum name ({@link #PAY_AT_COUNTER} or {@link #CARD_LIKE})
      */
@@ -596,28 +602,14 @@ public class CashierController implements Initializable {
                     if (!showInvoiceReviewDialog(invoiceRequest, cartSnapshot, prettyJson, review)) {
                         return;
                     }
-                    new Thread(() -> {
-                        try {
-                            InvoiceResponse invoice = InvoiceService.createInvoice(invoiceRequest);
-                            Platform.runLater(() -> {
-                                addSalesHistory(cartSnapshot, payMethod);
-                                cart.clear();
-                                updateCartDisplay();
-                                String idText = invoice != null && invoice.getId() != null
-                                        ? invoice.getId().toString()
-                                        : "(unknown)";
-                                new Alert(
-                                        Alert.AlertType.INFORMATION,
-                                        "Invoice created successfully.\nInvoice ID: " + idText
-                                ).showAndWait();
-                            });
-                        } catch (Exception e) {
-                            Platform.runLater(() -> new Alert(
-                                    Alert.AlertType.ERROR,
-                                    "Failed to create invoice: " + e.getMessage()
-                            ).showAndWait());
-                        }
-                    }, "create-invoice").start();
+
+                    if (CARD_LIKE.equals(payMethod)) {
+                        // --- PayOS online payment flow ---
+                        new Thread(() -> processPayOsPayment(invoiceRequest, cartSnapshot, review), "payos-payment").start();
+                    } else {
+                        // --- Cash (COD) — create invoice directly ---
+                        new Thread(() -> createInvoiceDirectly(invoiceRequest, cartSnapshot, payMethod), "create-invoice").start();
+                    }
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> new Alert(
@@ -626,6 +618,161 @@ public class CashierController implements Initializable {
                 ).showAndWait());
             }
         }, "create-review").start();
+    }
+
+    /**
+     * Tạo hóa đơn trực tiếp (cho thanh toán tiền mặt COD).
+     */
+    private void createInvoiceDirectly(InvoiceCreationRequest request, List<CartItem> snapshot, String payMethod) {
+        try {
+            InvoiceResponse invoice = InvoiceService.createInvoice(request);
+            Platform.runLater(() -> {
+                addSalesHistory(snapshot, payMethod);
+                cart.clear();
+                updateCartDisplay();
+                String idText = invoice != null && invoice.getId() != null
+                        ? invoice.getId().toString()
+                        : "(unknown)";
+                new Alert(
+                        Alert.AlertType.INFORMATION,
+                        "Tạo hóa đơn thành công.\nMã hóa đơn: " + idText
+                ).showAndWait();
+            });
+        } catch (Exception e) {
+            Platform.runLater(() -> new Alert(
+                    Alert.AlertType.ERROR,
+                    "Không thể tạo hóa đơn: " + e.getMessage()
+            ).showAndWait());
+        }
+    }
+
+    /**
+     * Luồng thanh toán online qua PayOS:
+     * <ol>
+     *   <li>Tạo link thanh toán PayOS</li>
+     *   <li>Mở trình duyệt cho khách quét QR</li>
+     *   <li>Polling kiểm tra trạng thái mỗi 3 giây (tối đa 5 phút)</li>
+     *   <li>Nếu PAID → tạo hóa đơn; nếu không → hủy, thông báo</li>
+     * </ol>
+     */
+    private void processPayOsPayment(InvoiceCreationRequest request, List<CartItem> snapshot, ReviewResponse review) {
+        try {
+            long amount = review != null && review.getRealAmount() != null
+                    ? review.getRealAmount().longValue()
+                    : 0;
+            if (amount <= 0) {
+                // fallback: tính từ giỏ hàng
+                amount = snapshot.stream()
+                        .mapToLong(i -> i.product.getPrice() != null
+                                ? i.product.getPrice().longValue() * i.quantity
+                                : 0)
+                        .sum();
+            }
+
+            String orderCode = String.valueOf(System.currentTimeMillis() % 1000000);
+            String description = "PetShop";
+
+            // 1. Tạo link thanh toán PayOS
+            Map<String, Object> paymentResult = PaymentService.createPaymentLink(amount, description, orderCode);
+            String checkoutUrl = paymentResult.containsKey("checkoutUrl")
+                    ? (String) paymentResult.get("checkoutUrl")
+                    : null;
+            String payosOrderCode = paymentResult.containsKey("orderCode")
+                    ? String.valueOf(paymentResult.get("orderCode"))
+                    : orderCode;
+
+            if (checkoutUrl == null || checkoutUrl.isBlank()) {
+                Platform.runLater(() -> new Alert(Alert.AlertType.ERROR,
+                        "Không thể tạo link thanh toán PayOS.").showAndWait());
+                return;
+            }
+
+            // 2. Mở trình duyệt
+            final String finalCheckoutUrl = checkoutUrl;
+            Platform.runLater(() -> {
+                try {
+                    openBrowser(finalCheckoutUrl);
+                } catch (Exception ignored) {
+                    // fallback: copy link ra clipboard
+                    new Alert(Alert.AlertType.INFORMATION,
+                            "Vui lòng mở link sau để thanh toán:\n" + finalCheckoutUrl).showAndWait();
+                }
+            });
+
+            // 3. Polling kiểm tra trạng thái (tối đa 100 lần × 3 giây = 5 phút)
+            int maxAttempts = 100;
+            boolean paid = false;
+            for (int i = 0; i < maxAttempts; i++) {
+                Thread.sleep(3000); // 3 giây
+                try {
+                    Map<String, Object> statusResult = PaymentService.getPaymentStatus(payosOrderCode);
+                    String status = statusResult.containsKey("status")
+                            ? (String) statusResult.get("status")
+                            : "";
+                    System.out.println("PayOS status check #" + (i + 1) + ": " + status);
+
+                    if ("PAID".equalsIgnoreCase(status)) {
+                        paid = true;
+                        break;
+                    }
+                    if ("CANCELLED".equalsIgnoreCase(status)) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    System.out.println("PayOS status check error: " + e.getMessage());
+                }
+            }
+
+            if (paid) {
+                // 4. Thanh toán thành công → tạo hóa đơn
+                InvoiceResponse invoice = InvoiceService.createInvoice(request);
+                Platform.runLater(() -> {
+                    addSalesHistory(snapshot, CARD_LIKE);
+                    cart.clear();
+                    updateCartDisplay();
+                    String idText = invoice != null && invoice.getId() != null
+                            ? invoice.getId().toString()
+                            : "(unknown)";
+                    new Alert(
+                            Alert.AlertType.INFORMATION,
+                            "✅ Thanh toán thành công!\nMã hóa đơn: " + idText
+                    ).showAndWait();
+                });
+            } else {
+                // Hủy link thanh toán trên PayOS
+                try {
+                    PaymentService.cancelPayment(payosOrderCode);
+                } catch (Exception ignored) {}
+                Platform.runLater(() -> new Alert(
+                        Alert.AlertType.WARNING,
+                        "⏰ Thanh toán không hoàn tất hoặc đã hết thời gian chờ.\nVui lòng thử lại."
+                ).showAndWait());
+            }
+        } catch (Exception e) {
+            Platform.runLater(() -> new Alert(
+                    Alert.AlertType.ERROR,
+                    "Lỗi thanh toán PayOS: " + e.getMessage()
+            ).showAndWait());
+        }
+    }
+
+    /**
+     * Mở URL trong trình duyệt mặc định của hệ thống.
+     * Dùng {@link Runtime#exec} thay vì {@link java.awt.Desktop} để tương thích Java module.
+     */
+    private static void openBrowser(String url) {
+        String os = System.getProperty("os.name").toLowerCase(Locale.ROOT);
+        try {
+            if (os.contains("win")) {
+                Runtime.getRuntime().exec(new String[]{"rundll32", "url.dll,FileProtocolHandler", url});
+            } else if (os.contains("mac")) {
+                Runtime.getRuntime().exec(new String[]{"open", url});
+            } else {
+                Runtime.getRuntime().exec(new String[]{"xdg-open", url});
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot open browser: " + e.getMessage(), e);
+        }
     }
 
     private static String toPrettyJson(InvoiceCreationRequest request) {

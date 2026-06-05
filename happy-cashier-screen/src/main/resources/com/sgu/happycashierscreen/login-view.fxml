@@ -17,20 +17,20 @@
         <!-- Header -->
         <Label text="🐾" styleClass="login-logo"/>
         <Label text="Pawsome Pet Shop" styleClass="login-title"/>
-        <Label text="Staff Login" styleClass="login-subtitle"/>
-        <Label text="Sign in to access the cashier screen" styleClass="login-hint"/>
+        <Label text="Đăng nhập nhân viên" styleClass="login-subtitle"/>
+        <Label text="Đăng nhập để truy cập màn hình thu ngân" styleClass="login-hint"/>
 
         <!-- Form -->
         <VBox spacing="12" styleClass="login-form">
-            <Label text="Username" styleClass="field-label"/>
-            <TextField fx:id="usernameField" promptText="Enter your username" prefHeight="36"/>
+            <Label text="Tên đăng nhập" styleClass="field-label"/>
+            <TextField fx:id="usernameField" promptText="Nhập tên đăng nhập" prefHeight="36"/>
 
-            <Label text="Password" styleClass="field-label"/>
-            <PasswordField fx:id="passwordField" promptText="Enter your password" prefHeight="36"/>
+            <Label text="Mật khẩu" styleClass="field-label"/>
+            <PasswordField fx:id="passwordField" promptText="Nhập mật khẩu" prefHeight="36"/>
 
-            <CheckBox fx:id="rememberCheckbox" text="Remember me"/>
+            <CheckBox fx:id="rememberCheckbox" text="Ghi nhớ đăng nhập"/>
 
-            <Button text="Sign In" onAction="#handleSignIn" prefHeight="40" styleClass="primary-button"/>
+            <Button text="Đăng nhập" onAction="#handleSignIn" prefHeight="40" styleClass="primary-button"/>
         </VBox>
 
         <Label text="© 2026 Pawsome Pet Shop" styleClass="footer-label"/>
