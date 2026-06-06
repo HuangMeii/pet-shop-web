@@ -2,8 +2,10 @@ package com.funcoders.happy_pet_shop.service;
 
 import com.funcoders.happy_pet_shop.dto.response.TicketResponse;
 import com.funcoders.happy_pet_shop.entity.SupportTicket;
+import com.funcoders.happy_pet_shop.entity.User;
 import com.funcoders.happy_pet_shop.repository.StaffRepository;
 import com.funcoders.happy_pet_shop.repository.SupportTicketRepository;
+import com.funcoders.happy_pet_shop.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +26,23 @@ public class StaffAssignmentService {
 
     SupportTicketRepository supportTicketRepository;
     StaffRepository staffRepository;
+    UserRepository userRepository;
+
+    /**
+     * Resolve staff ID: if it's a phone number (not UUID), look up the user by username/phone
+     */
+    public UUID resolveStaffId(String staffIdStr) {
+        // Try to parse as UUID first
+        try {
+            return UUID.fromString(staffIdStr);
+        } catch (IllegalArgumentException e) {
+            // Not a UUID, treat as phone number / username
+            log.info("staffId is not a UUID, looking up by username: {}", staffIdStr);
+            User user = userRepository.findByUsername(staffIdStr)
+                    .orElseThrow(() -> new RuntimeException("User not found with username: " + staffIdStr));
+            return user.getId();
+        }
+    }
 
     /**
      * Get all pending tickets

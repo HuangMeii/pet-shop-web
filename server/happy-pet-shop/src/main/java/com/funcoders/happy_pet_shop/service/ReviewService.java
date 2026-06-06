@@ -133,6 +133,13 @@ public class ReviewService {
         );
     }
 
+    @Transactional
+    public void deleteReview(UUID reviewId) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new RuntimeException("Review not found with id: " + reviewId));
+        reviewRepository.delete(review);
+    }
+
     @Transactional(readOnly = true)
     public SentimentStatsResponse getSentimentStats() {
         List<Object[]> results = reviewRepository.countBySentimentLabel();

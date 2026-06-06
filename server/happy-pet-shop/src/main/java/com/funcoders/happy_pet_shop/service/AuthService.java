@@ -142,6 +142,7 @@ public class AuthService {
         JWTClaimsSet claimSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
                 .claim("scope", buildScope(user))
+                .claim("userId", user.getId().toString())
                 .jwtID(UUID.randomUUID().toString())
                 .issuer("domainname")
                 .issueTime(new Date())

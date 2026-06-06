@@ -32,21 +32,23 @@ public class StaffChatController {
     }
 
     /**
-     * Get tickets assigned to a specific staff
+     * Get tickets assigned to a specific staff (supports UUID or phone number)
      */
     @GetMapping("/tickets/my/{staffId}")
-    public ResponseEntity<List<TicketResponse>> getMyTickets(@PathVariable UUID staffId) {
-        return ResponseEntity.ok(staffAssignmentService.getStaffTickets(staffId));
+    public ResponseEntity<List<TicketResponse>> getMyTickets(@PathVariable String staffId) {
+        UUID resolvedId = staffAssignmentService.resolveStaffId(staffId);
+        return ResponseEntity.ok(staffAssignmentService.getStaffTickets(resolvedId));
     }
 
     /**
-     * Staff accepts a ticket
+     * Staff accepts a ticket (supports UUID or phone number)
      */
     @PostMapping("/tickets/{ticketId}/accept")
     public ResponseEntity<TicketResponse> acceptTicket(
             @PathVariable UUID ticketId,
-            @RequestBody Map<String, UUID> body) {
-        return ResponseEntity.ok(staffAssignmentService.acceptTicket(ticketId, body.get("staffId")));
+            @RequestBody Map<String, String> body) {
+        UUID resolvedId = staffAssignmentService.resolveStaffId(body.get("staffId"));
+        return ResponseEntity.ok(staffAssignmentService.acceptTicket(ticketId, resolvedId));
     }
 
     /**
@@ -58,14 +60,15 @@ public class StaffChatController {
     }
 
     /**
-     * Staff sends a message to a customer session
+     * Staff sends a message to a customer session (supports UUID or phone number)
      */
     @PostMapping("/send")
     public ResponseEntity<ChatResponse> staffSendMessage(@RequestBody Map<String, String> body) {
+        UUID resolvedId = staffAssignmentService.resolveStaffId(body.get("staffId"));
         return ResponseEntity.ok(chatService.staffSendMessage(
                 body.get("sessionId"),
                 body.get("message"),
-                UUID.fromString(body.get("staffId")),
+                resolvedId,
                 body.get("imageUrl")
         ));
     }

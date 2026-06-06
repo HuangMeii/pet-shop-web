@@ -19,6 +19,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "dịch vụ", href: "/admin/manageServices" },
   { label: "Thống kê doanh thu", href: "/admin/revenue-statistics" },
   { label: "Thống kê đánh giá", href: "/admin/review-statistics" },
+  { label: "Quản lý đánh giá", href: "/admin/review-management" },
   { label: "Hỗ trợ trực tuyến", href: "/admin/chat" },
 ];
 

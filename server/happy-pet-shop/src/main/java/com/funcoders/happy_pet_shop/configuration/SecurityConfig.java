@@ -53,6 +53,7 @@ public class SecurityConfig {
             // Chat endpoints
             "/api/chat/**",
             "/api/staff/chat/**",
+            "/api/staff/info",
 
             // Review endpoints (public GET)
             "/api/reviews/**"

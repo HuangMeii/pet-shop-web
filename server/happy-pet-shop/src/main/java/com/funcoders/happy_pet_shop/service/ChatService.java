@@ -54,11 +54,11 @@ public class ChatService {
         // 2. Create a support ticket for staff to handle
         createSupportTicket(sessionId, customerId, message != null ? message : (imageUrl != null ? "[Hình ảnh]" : ""));
 
-        // 3. Return response indicating the message was sent to staff
+        // 3. Return success response (no auto-reply, staff will respond)
         return ChatResponse.builder()
                 .sessionId(sessionId)
                 .senderType("SYSTEM")
-                .content("Đã gửi yêu cầu tư vấn. Nhân viên sẽ phản hồi trong thời gian sớm nhất.")
+                .content("")
                 .timestamp(LocalDateTime.now())
                 .build();
     }

@@ -115,3 +115,13 @@ export const getReviewStatistics = async (): Promise<ReviewStatisticsResponse> =
   }
   return api.data;
 };
+
+export const deleteReview = async (reviewId: string): Promise<void> => {
+  const res = await apiClient.delete<ApiResponse<void>>(
+    API_CONFIG.ENDPOINTS.REVIEW.DELETE(reviewId)
+  );
+  const api = res.data;
+  if (!api.success) {
+    throw new Error(api.message ?? "Failed to delete review");
+  }
+};

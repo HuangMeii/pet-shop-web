@@ -111,11 +111,12 @@ export const API_CONFIG = {
             GET_ALL: "/api/reviews/all",
             GET_SENTIMENT_STATS: "/api/reviews/sentiment-stats",
             GET_STATISTICS: "/api/reviews/statistics",
+            DELETE: (reviewId: string) => `/api/reviews/${reviewId}`,
         },
 
         CHAT: {
-            SEND_MESSAGE: "/chat/message",
-            GET_HISTORY: (sessionId: string) => `/chat/history/${sessionId}`,
+            SEND_MESSAGE: "/api/chat/message",
+            GET_HISTORY: (sessionId: string) => `/api/chat/history/${sessionId}`,
         },
 
         DASHBOARD: {

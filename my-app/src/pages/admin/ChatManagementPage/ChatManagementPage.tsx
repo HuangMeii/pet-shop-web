@@ -3,6 +3,8 @@ import { Client } from "@stomp/stompjs";
 import { API_CONFIG } from "../../../config/apiConfig";
 import { chatService } from "../../../services/chatService";
 import type { ChatMessage } from "../../../types/chatTypes";
+import { useAuth } from "../../../context/authContext";
+import { getAuthToken } from "../../../utils/storageUtils";
 
 interface Ticket {
   id: string;
@@ -35,18 +37,49 @@ const ChatManagementPage: React.FC = () => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Load staff ID from localStorage or auth context
+  const { user } = useAuth();
+
+  // Helper: decode JWT để lấy userId (có thể là UUID hoặc số điện thoại)
+  const getUserIdFromToken = (): string | null => {
+    try {
+      const token = getAuthToken();
+      if (!token) return null;
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const id = payload?.userId || payload?.sub;
+      if (id) {
+        localStorage.setItem("staffId", id);
+        return id;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Load staff ID from localStorage, auth context, or API
   useEffect(() => {
     const storedStaffId = localStorage.getItem("staffId");
     if (storedStaffId) {
       setStaffId(storedStaffId);
+    } else if (user?.user?.id) {
+      setStaffId(user.user.id);
+      localStorage.setItem("staffId", user.user.id);
+    } else {
+      const id = getUserIdFromToken();
+      if (id) setStaffId(id);
     }
-  }, []);
+  }, [user]);
 
   const loadPendingTickets = useCallback(async () => {
     try {
+      const token = getAuthToken();
       const response = await fetch(
-        `${API_CONFIG.BASE_URL}/api/staff/chat/tickets/pending`
+        `${API_CONFIG.BASE_URL}/api/staff/chat/tickets/pending`,
+        {
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
@@ -60,8 +93,14 @@ const ChatManagementPage: React.FC = () => {
   const loadActiveTickets = useCallback(async () => {
     if (!staffId) return;
     try {
+      const token = getAuthToken();
       const response = await fetch(
-        `${API_CONFIG.BASE_URL}/api/staff/chat/tickets/my/${staffId}`
+        `${API_CONFIG.BASE_URL}/api/staff/chat/tickets/my/${staffId}`,
+        {
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
@@ -158,11 +197,15 @@ const ChatManagementPage: React.FC = () => {
       return;
     }
     try {
+      const token = getAuthToken();
       const response = await fetch(
         `${API_CONFIG.BASE_URL}/api/staff/chat/tickets/${ticketId}/accept`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: JSON.stringify({ staffId }),
         }
       );
@@ -177,9 +220,15 @@ const ChatManagementPage: React.FC = () => {
 
   const handleCloseTicket = async (ticketId: string) => {
     try {
+      const token = getAuthToken();
       const response = await fetch(
         `${API_CONFIG.BASE_URL}/api/staff/chat/tickets/${ticketId}/close`,
-        { method: "POST" }
+        {
+          method: "POST",
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
       );
       if (response.ok) {
         loadActiveTickets();
@@ -223,11 +272,15 @@ const ChatManagementPage: React.FC = () => {
     if ((!text && !selectedImage) || !selectedTicket || !staffId) return;
 
     try {
+      const token = getAuthToken();
       const response = await fetch(
         `${API_CONFIG.BASE_URL}/api/staff/chat/send`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: JSON.stringify({
             sessionId: selectedTicket.sessionId,
             message: text || (selectedImage ? "[Hình ảnh]" : ""),
@@ -248,6 +301,18 @@ const ChatManagementPage: React.FC = () => {
         setMessages((prev) => [...prev, staffMsg]);
         setInputText("");
         setSelectedImage(null);
+        // Scroll to bottom after sending
+        setTimeout(scrollToBottom, 100);
+      } else {
+        const errorText = await response.text();
+        console.error("Send message failed:", response.status, errorText);
+        if (response.status === 401) {
+          alert("❌ Phiên đăng nhập hết hạn, vui lòng đăng nhập lại.");
+        } else if (response.status === 500) {
+          alert("❌ Lỗi server khi gửi tin nhắn. Vui lòng thử lại sau.");
+        } else {
+          alert(`❌ Gửi tin nhắn thất bại (${response.status}). Vui lòng thử lại.`);
+        }
       }
     } catch (err: unknown) {
       const error = err as { message?: string };

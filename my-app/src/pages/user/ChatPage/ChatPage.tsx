@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { chatService } from "../../../services/chatService";
 import type { ChatMessage } from "../../../types/chatTypes";
 import { Client } from "@stomp/stompjs";
 import { API_CONFIG } from "../../../config/apiConfig";
+import { useAuth } from "../../../context/authContext";
 
 // Generate a simple UUID v4
 const generateSessionId = (): string => {
@@ -25,6 +27,7 @@ const getSessionId = (): string => {
 };
 
 const ChatPage: React.FC = () => {
+  const { user, isAuthenticated } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -155,16 +158,19 @@ const ChatPage: React.FC = () => {
       const response = await chatService.sendMessage({
         sessionId,
         message: text || (selectedImage ? "[Hình ảnh]" : ""),
+        customerId: user?.id || undefined,
         imageUrl: selectedImage || undefined,
       });
 
-      // Show system response (confirmation that message was sent to staff)
-      const systemMessage: ChatMessage = {
-        sessionId: response.sessionId,
-        senderType: "SYSTEM",
-        content: response.content,
-      };
-      setMessages((prev) => [...prev, systemMessage]);
+      // Show system response only if there's content (e.g. error messages)
+      if (response.content) {
+        const systemMessage: ChatMessage = {
+          sessionId: response.sessionId,
+          senderType: "SYSTEM",
+          content: response.content,
+        };
+        setMessages((prev) => [...prev, systemMessage]);
+      }
     } catch (error: unknown) {
       let errorContent = "❌ Rất tiếc, đã xảy ra lỗi kết nối. Vui lòng thử lại sau.";
       
@@ -194,6 +200,40 @@ const ChatPage: React.FC = () => {
       handleSendMessage();
     }
   };
+
+  // If user is not authenticated, show login prompt
+  if (!isAuthenticated) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-80px)]">
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 h-full flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 text-center">
+            <div className="text-7xl mb-6">🔒</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">
+              Vui lòng đăng nhập
+            </h2>
+            <p className="text-gray-500 mb-8 max-w-md">
+              Bạn cần đăng nhập để sử dụng tính năng hỗ trợ trực tuyến. 
+              Nhân viên của HappyPetShop sẽ phản hồi bạn trong thời gian sớm nhất!
+            </p>
+            <div className="flex gap-4">
+              <Link
+                to="/login?redirect=/user/chat"
+                className="px-8 py-3 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition font-medium shadow-lg shadow-indigo-200"
+              >
+                Đăng nhập ngay
+              </Link>
+              <Link
+                to="/user/products"
+                className="px-8 py-3 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200 transition font-medium"
+              >
+                Quay lại
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6 h-[calc(100vh-80px)]">
@@ -253,7 +293,7 @@ const ChatPage: React.FC = () => {
                   <div className="flex items-center gap-1.5 mb-1.5">
                     <span className="text-sm">🧑‍💼</span>
                     <span className="text-xs font-semibold text-indigo-600">
-                      Nhân viên hỗ trợ
+                      Shop
                     </span>
                   </div>
                 )}

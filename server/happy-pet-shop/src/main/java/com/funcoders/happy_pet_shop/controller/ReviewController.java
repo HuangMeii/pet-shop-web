@@ -118,4 +118,20 @@ public class ReviewController {
                 .data(stats)
                 .build();
     }
+
+    @DeleteMapping("/{reviewId}")
+    public ApiResponse<Void> deleteReview(@PathVariable UUID reviewId) {
+        try {
+            reviewService.deleteReview(reviewId);
+            return ApiResponse.<Void>builder()
+                    .success(true)
+                    .message("Review deleted successfully")
+                    .build();
+        } catch (RuntimeException e) {
+            return ApiResponse.<Void>builder()
+                    .success(false)
+                    .message(e.getMessage())
+                    .build();
+        }
+    }
 }

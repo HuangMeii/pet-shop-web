@@ -57,8 +57,13 @@ export function useLogin(): UseLoginReturn {
     try {
       await login({ username, password });
 
-      // 🔥 Kiểm tra nếu đang ở đường dẫn admin
-      if (location.pathname.includes("/admin")) {
+      // 🔥 Kiểm tra nếu có redirect param (ví dụ: từ chat page)
+      const params = new URLSearchParams(location.search);
+      const redirectPath = params.get("redirect");
+
+      if (redirectPath) {
+        navigate(redirectPath);
+      } else if (location.pathname.includes("/admin")) {
         navigate("/admin/dashBoard");
       } else {
         navigate("/user/products");
