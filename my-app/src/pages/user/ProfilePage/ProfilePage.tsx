@@ -6,9 +6,10 @@ import ProfileHeader from "./components/ProfileHeader";
 import AddressList from "./components/AddressList";
 import InvoiceHistory from "./components/InvoiceHistory";
 import OverviewTab from "./components/overview";
+import ReviewTab from "./components/ReviewTab";
 
 export default function ProfilePage() {
-  const [activeTab, setActiveTab] = useState<"overview" | "addresses" | "invoices">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "addresses" | "invoices" | "reviews">("overview");
   const { user, loading } = useProfile();
 
   if (loading) {
@@ -73,6 +74,17 @@ export default function ProfilePage() {
             >
               Hóa đơn
             </button>
+            <button
+              onClick={() => setActiveTab("reviews")}
+              className={`py-4 px-2 font-semibold transition border-b-2 ${
+                activeTab === "reviews"
+                  ? "text-blue-600 border-blue-600"
+                  : "text-gray-600 border-transparent hover:text-gray-800"
+              }`}
+              aria-selected={activeTab === "reviews"}
+            >
+              📝 Đánh giá
+            </button>
           </div>
         </div>
 
@@ -84,6 +96,8 @@ export default function ProfilePage() {
           {activeTab === "addresses" && <AddressList />}
 
           {activeTab === "invoices" && <InvoiceHistory />}
+
+          {activeTab === "reviews" && <ReviewTab />}
         </div>
       </div>
     </div>
