@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat hỗ trợ - Pet Shop</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Nunito', sans-serif; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .message-bubble { animation: fadeIn 0.2s ease-out; }
+    .chat-sidebar { border-right: 1px solid #e5e7eb; }
+    .conversation-item:hover { background: #fef3c7; }
+    .conversation-item.active { background: #fed7aa; border-left: 3px solid #ea580c; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+  </style>
+</head>
+<body class="h-full bg-amber-50">
+  <div class="h-full flex flex-col">
+    <!-- Header -->
+    <header class="bg-orange-600 text-white px-6 py-4 flex items-center justify-between shadow-lg">
+      <div class="flex items-center gap-3">
+        <a href="cashier.html" class="p-2 hover:bg-orange-700 rounded-lg transition-colors">
+          <i data-lucide="arrow-left" class="w-6 h-6"></i>
+        </a>
+        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+          <span class="text-2xl">🐾</span>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold">Pawsome Pet Shop</h1>
+          <p class="text-orange-100 text-sm">Chat hỗ trợ</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <p class="text-xs text-orange-200">Đăng nhập bởi</p>
+          <p id="staff-name-header" class="font-semibold">Nhân viên</p>
+        </div>
+        <button onclick="handleLogout()" class="bg-orange-800 hover:bg-orange-900 px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+          <i data-lucide="log-out" class="w-4 h-4"></i> Đăng xuất
+        </button>
+      </div>
+    </header>
+
+    <!-- Chat Area -->
+    <div class="flex-1 flex overflow-hidden">
+      <!-- Conversations Sidebar -->
+      <div class="w-80 bg-white flex flex-col chat-sidebar">
+        <div class="p-4 border-b border-gray-200">
+          <h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+            <i data-lucide="message-circle" class="w-5 h-5 text-orange-500"></i> Hội thoại
+          </h2>
+          <div class="mt-2 relative">
+            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            <input type="text" id="search-conversation" placeholder="Tìm kiếm khách hàng..." 
+              class="w-full pl-9 pr-3 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none text-sm"
+              oninput="filterConversations()">
+          </div>
+        </div>
+        <div id="conversations-list" class="flex-1 overflow-auto">
+          <div id="no-conversations" class="text-center py-12 text-gray-400">
+            <i data-lucide="inbox" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+            <p class="text-sm">Chưa có hội thoại nào</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chat Messages -->
+      <div class="flex-1 flex flex-col bg-gray-50">
+        <!-- Chat Header -->
+        <div id="chat-header" class="bg-white px-6 py-4 border-b border-gray-200 hidden">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+              <span id="chat-customer-avatar" class="text-lg">👤</span>
+            </div>
+            <div>
+              <h3 id="chat-customer-name" class="font-bold text-gray-800">Khách hàng</h3>
+              <p id="chat-customer-status" class="text-xs text-green-600">● Trực tuyến</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="messages-area" class="flex-1 overflow-auto p-6 space-y-4">
+          <div id="no-chat-selected" class="text-center py-20 text-gray-400">
+            <i data-lucide="message-square" class="w-20 h-20 mx-auto mb-4 opacity-30"></i>
+            <p class="text-xl font-semibold">Chọn một hội thoại</p>
+            <p class="text-sm mt-1">Chọn khách hàng bên trái để bắt đầu chat</p>
+          </div>
+        </div>
+
+        <!-- Message Input -->
+        <div id="message-input-area" class="bg-white px-6 py-4 border-t border-gray-200 hidden">
+          <form onsubmit="sendMessage(event)" class="flex gap-3">
+            <input type="text" id="message-input" placeholder="Nhập tin nhắn..." 
+              class="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none">
+            <button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 transition-colors">
+              <i data-lucide="send" class="w-5 h-5"></i> Gửi
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE_URL = 'http://localhost:8080/happy-pet-shop';
+
+    function getStaffToken() {
+      return sessionStorage.getItem('staffToken') || localStorage.getItem('staffToken');
+    }
+
+    function getStaffUser() {
+      return sessionStorage.getItem('staffUser') || localStorage.getItem('staffUser');
+    }
+
+    if (!getStaffToken() || !getStaffUser()) {
+      window.location.href = 'login.html';
+    }
+
+    document.getElementById('staff-name-header').textContent = getStaffUser() || 'Nhân viên';
+
+    let staffId = null;
+    let conversations = [];
+    let selectedConversation = null;
+    let messages = {};
+    let pollingInterval = null;
+
+    // Load staff info to get staffId
+    async function loadStaffInfo() {
+      try {
+        const token = getStaffToken();
+        const response = await fetch(`${API_BASE_URL}/staffs/info`, {
+          headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (result.success && result.data) {
+          staffId = result.data.id;
+          document.getElementById('staff-name-header').textContent = 
+            (result.data.user?.firstName || '') + ' ' + (result.data.user?.lastName || '');
+          // Load conversations after getting staffId
+          loadConversations();
+        }
+      } catch (err) {
+        console.error('Failed to load staff info:', err);
+      }
+    }
+
+    // Load conversations (tickets) - get both pending and my tickets
+    async function loadConversations() {
+      if (!staffId) return;
+      try {
+        const token = getStaffToken();
+        // Get pending tickets
+        const [pendingRes, myRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/staff/chat/tickets/pending`, {
+            headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
+          }),
+          fetch(`${API_BASE_URL}/api/staff/chat/tickets/my/${staffId}`, {
+            headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
+          })
+        ]);
+
+        const pendingData = await pendingRes.json();
+        const myData = await myRes.json();
+
+        // Merge and deduplicate by id
+        const allTickets = [...(pendingData || []), ...(myData || [])];
+        const seen = new Set();
+        conversations = allTickets.filter(t => {
+          if (seen.has(t.id)) return false;
+          seen.add(t.id);
+          return true;
+        });
+
+        renderConversations();
+      } catch (err) {
+        console.error('Failed to load conversations:', err);
+      }
+    }
+
+    function renderConversations() {
+      const container = document.getElementById('conversations-list');
+      const noConv = document.getElementById('no-conversations');
+      const searchTerm = (document.getElementById('search-conversation').value || '').toLowerCase();
+
+      const filtered = conversations.filter(c => 
+        (c.customerName || '').toLowerCase().includes(searchTerm)
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        noConv.style.display = 'block';
+        container.appendChild(noConv);
+      } else {
+        noConv.style.display = 'none';
+        container.innerHTML = filtered.map(c => `
+          <div class="conversation-item p-4 cursor-pointer border-b border-gray-100 transition-colors ${selectedConversation && selectedConversation.id === c.id ? 'active' : ''}" 
+               onclick="selectConversation('${c.id}')">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <span class="text-lg">👤</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="flex justify-between items-center">
+                  <h4 class="font-semibold text-gray-800 text-sm truncate">${c.customerName || 'Khách vãng lai'}</h4>
+                  <span class="text-xs text-gray-400">${c.createdAt ? new Date(c.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                </div>
+                <p class="text-xs text-gray-500 truncate mt-0.5">${c.customerMessage || 'Chưa có tin nhắn'}</p>
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-xs px-2 py-0.5 rounded-full ${c.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' : c.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">${c.status === 'PENDING' ? 'CHỜ' : c.status === 'ACTIVE' ? 'ĐANG CHAT' : 'ĐÃ ĐÓNG'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+      lucide.createIcons();
+    }
+
+    function filterConversations() {
+      renderConversations();
+    }
+
+    async function selectConversation(ticketId) {
+      selectedConversation = conversations.find(c => c.id === ticketId);
+      if (!selectedConversation) return;
+
+      // Update active state
+      document.querySelectorAll('.conversation-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.querySelector(`[onclick="selectConversation('${ticketId}')"]`);
+      if (activeEl) activeEl.classList.add('active');
+
+      // Show chat header and input
+      document.getElementById('chat-header').classList.remove('hidden');
+      document.getElementById('message-input-area').classList.remove('hidden');
+      document.getElementById('no-chat-selected').style.display = 'none';
+
+      document.getElementById('chat-customer-name').textContent = selectedConversation.customerName || 'Khách vãng lai';
+      document.getElementById('chat-customer-status').textContent = '● ' + (selectedConversation.status === 'PENDING' ? 'CHỜ' : selectedConversation.status === 'ACTIVE' ? 'ĐANG CHAT' : 'ĐÃ ĐÓNG');
+
+      // Accept ticket if pending
+      if (selectedConversation.status === 'PENDING' && staffId) {
+        try {
+          const token = getStaffToken();
+          await fetch(`${API_BASE_URL}/api/staff/chat/tickets/${ticketId}/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ staffId })
+          });
+          selectedConversation.status = 'ACTIVE';
+          renderConversations();
+        } catch (err) {
+          console.error('Failed to accept ticket:', err);
+        }
+      }
+
+      // Load messages for this ticket's session
+      await loadMessages(selectedConversation.sessionId);
+    }
+
+    async function loadMessages(sessionId) {
+      try {
+        const token = getStaffToken();
+        const response = await fetch(`${API_BASE_URL}/api/chat/history/${sessionId}`, {
+          headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (Array.isArray(result)) {
+          messages[sessionId] = result;
+          renderMessages(sessionId);
+        }
+      } catch (err) {
+        console.error('Failed to load messages:', err);
+      }
+    }
+
+    function renderMessages(sessionId) {
+      const container = document.getElementById('messages-area');
+      const msgs = messages[sessionId] || [];
+
+      if (msgs.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-20 text-gray-400">
+            <i data-lucide="message-square" class="w-20 h-20 mx-auto mb-4 opacity-30"></i>
+            <p class="text-xl font-semibold">Chưa có tin nhắn nào</p>
+            <p class="text-sm mt-1">Gửi tin nhắn để bắt đầu hội thoại</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = msgs.map(msg => {
+          const isStaff = msg.senderType === 'STAFF' || msg.senderType === 'ADMIN';
+          return `
+            <div class="flex ${isStaff ? 'justify-end' : 'justify-start'} message-bubble">
+              <div class="max-w-[70%] ${isStaff ? 'bg-orange-500 text-white rounded-2xl rounded-br-sm' : 'bg-white text-gray-800 rounded-2xl rounded-bl-sm shadow-sm'} px-4 py-3">
+                <p class="text-sm">${msg.content || ''}</p>
+                ${msg.imageUrl ? `<img src="${msg.imageUrl}" class="mt-2 rounded-lg max-w-[200px] cursor-pointer" onclick="window.open('${msg.imageUrl}','_blank')">` : ''}
+                <p class="text-xs ${isStaff ? 'text-orange-100' : 'text-gray-400'} mt-1 text-right">
+                  ${msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
+                </p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+    }
+
+    async function sendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('message-input');
+      const content = input.value.trim();
+      if (!content || !selectedConversation || !staffId) return;
+
+      input.value = '';
+      const token = getStaffToken();
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/staff/chat/send`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            sessionId: selectedConversation.sessionId,
+            message: content,
+            staffId: staffId
+          })
+        });
+        const result = await response.json();
+        if (result) {
+          // Reload messages
+          await loadMessages(selectedConversation.sessionId);
+        }
+      } catch (err) {
+        console.error('Failed to send message:', err);
+      }
+    }
+
+    // Poll for new messages every 5 seconds
+    function startPolling() {
+      if (pollingInterval) clearInterval(pollingInterval);
+      pollingInterval = setInterval(async () => {
+        await loadConversations();
+        if (selectedConversation) {
+          await loadMessages(selectedConversation.sessionId);
+        }
+      }, 5000);
+    }
+
+    function handleLogout() {
+      if (pollingInterval) clearInterval(pollingInterval);
+      sessionStorage.removeItem('staffUser');
+      sessionStorage.removeItem('staffToken');
+      localStorage.removeItem('staffUser');
+      localStorage.removeItem('staffToken');
+      window.location.href = 'login.html';
+    }
+
+    // Initialize
+    loadStaffInfo();
+    startPolling();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
