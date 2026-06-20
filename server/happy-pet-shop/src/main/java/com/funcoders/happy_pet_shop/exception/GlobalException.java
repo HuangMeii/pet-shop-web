@@ -26,7 +26,16 @@ public class GlobalException {
     ) {
         log.error("Data integrity violation", exception);
 
-        ErrorType errorType = ErrorType.USERNAME_ALREADY_EXISTS;
+        String message = exception.getMostSpecificCause().getMessage();
+        ErrorType errorType = ErrorType.UNCATEGORIZED;
+
+        if (message != null) {
+            if (message.contains("username") || message.contains("email")) {
+                errorType = ErrorType.USERNAME_ALREADY_EXISTS;
+            } else if (message.contains("foreign key") || message.contains("violates foreign key")) {
+                errorType = ErrorType.INVALID_CATEGORY;
+            }
+        }
 
         ApiResponse apiResponse = new ApiResponse(errorType);
 

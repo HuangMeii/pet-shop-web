@@ -291,7 +291,7 @@ export default function ListProductsPage() {
         unit: formData.unit,
         origin: formData.origin.trim() || undefined,
         imageUrl: formData.imageUrl.trim() || undefined,
-        available: formData.available || undefined,
+        available: formData.available,
       };
       if (formData.expiry) (payload as ProductUpdateRequest).expiryDate = formData.expiry;
       await handleCreateOrUpdateProduct(payload);
