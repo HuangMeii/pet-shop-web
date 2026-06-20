@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.sgu.happycashierscreen.controllers.LoginController"
+           prefHeight="500" prefWidth="450"
+           styleClass="login-root">
+    <VBox alignment="CENTER" spacing="20" prefWidth="400">
+        <padding>
+            <Insets bottom="30" left="40" right="40" top="30"/>
+        </padding>
+
+        <!-- Header -->
+        <Label text="🐾" styleClass="login-logo"/>
+        <Label text="Pawsome Pet Shop" styleClass="login-title"/>
+        <Label text="Đăng nhập nhân viên" styleClass="login-subtitle"/>
+        <Label text="Đăng nhập để truy cập màn hình thu ngân" styleClass="login-hint"/>
+
+        <!-- Form -->
+        <VBox spacing="12" styleClass="login-form">
+            <Label text="Tên đăng nhập" styleClass="field-label"/>
+            <TextField fx:id="usernameField" promptText="Nhập tên đăng nhập" prefHeight="36"/>
+
+            <Label text="Mật khẩu" styleClass="field-label"/>
+            <PasswordField fx:id="passwordField" promptText="Nhập mật khẩu" prefHeight="36"/>
+
+            <CheckBox fx:id="rememberCheckbox" text="Ghi nhớ đăng nhập"/>
+
+            <Button text="Đăng nhập" onAction="#handleSignIn" prefHeight="40" styleClass="primary-button"/>
+        </VBox>
+
+        <Label text="© 2026 Pawsome Pet Shop" styleClass="footer-label"/>
+    </VBox>
+</StackPane>

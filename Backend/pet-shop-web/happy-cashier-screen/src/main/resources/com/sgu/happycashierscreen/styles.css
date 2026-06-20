@@ -1,0 +1,263 @@
+/* Pet Shop Cashier - Orange/Amber Theme */
+
+.root {
+    -fx-font-family: "Nunito", "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: #fffbeb;
+}
+
+/* Login */
+.login-root {
+    -fx-background-color: #fffbeb;
+}
+
+.login-logo {
+    -fx-font-size: 48px;
+    -fx-padding: 0 0 10 0;
+}
+
+.login-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1f2937;
+}
+
+.login-subtitle {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ea580c;
+}
+
+.login-hint {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6b7280;
+}
+
+.login-form .field-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #374151;
+}
+
+.primary-button {
+    -fx-background-color: #ea580c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #c2410c;
+}
+
+.footer-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #9ca3af;
+}
+
+/* Cashier Header */
+.cashier-header {
+    -fx-background-color: #ea580c;
+    -fx-padding: 15 20;
+}
+
+.cashier-header .label {
+    -fx-text-fill: white;
+}
+
+.header-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.header-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #fed7aa;
+}
+
+.header-logo {
+    -fx-font-size: 24px;
+}
+
+/* Category Buttons */
+.category-button {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-padding: 8 16;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.category-button.active {
+    -fx-background-color: #ea580c;
+    -fx-text-fill: white;
+}
+
+.category-button:hover {
+    -fx-background-color: #ffedd5;
+}
+
+/* Product Card */
+.product-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 12;
+    -fx-cursor: hand;
+}
+
+.product-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0, 0, 2);
+}
+
+/* Cart */
+.cart-panel {
+    -fx-background-color: white;
+    -fx-padding: 15;
+}
+
+.cart-item-row {
+    -fx-background-color: #f9fafb;
+    -fx-background-radius: 8;
+    -fx-padding: 10;
+}
+
+.pay-cash-button {
+    -fx-background-color: #22c55e;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.pay-cash-button:hover {
+    -fx-background-color: #16a34a;
+}
+
+.pay-card-button {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.pay-card-button:hover {
+    -fx-background-color: #2563eb;
+}
+
+.header-button {
+    -fx-background-color: #c2410c;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.header-button:hover {
+    -fx-background-color: #9a3412;
+}
+
+/* Invoice review dialog */
+.invoice-review-dialog {
+    -fx-background-color: rgb(255, 251, 235);
+}
+
+.invoice-review-dialog > *.header-panel {
+    -fx-background-color: rgb(255, 251, 235);
+}
+
+.invoice-review-scroll {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.invoice-review-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.invoice-review-root {
+    -fx-spacing: 14;
+    -fx-padding: 8 4 12 4;
+}
+
+.invoice-review-hero {
+    -fx-alignment: center-left;
+    -fx-spacing: 10;
+}
+
+.invoice-review-hero-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgb(234, 88, 12);
+}
+
+.invoice-review-hero-sub {
+    -fx-font-size: 12px;
+    -fx-text-fill: rgb(107, 114, 128);
+}
+
+.invoice-review-card {
+    -fx-spacing: 10;
+    -fx-padding: 14 16;
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 10, 0, 0, 2);
+}
+
+.invoice-review-card-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgb(55, 65, 81);
+}
+
+.invoice-review-row {
+    -fx-spacing: 6;
+}
+
+.invoice-review-key {
+    -fx-font-size: 11px;
+    -fx-text-fill: rgb(107, 114, 128);
+}
+
+.invoice-review-val {
+    -fx-font-size: 13px;
+    -fx-text-fill: rgb(17, 24, 39);
+    -fx-wrap-text: true;
+}
+
+.invoice-review-badge {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: rgb(234, 88, 12);
+    -fx-background-radius: 6;
+    -fx-padding: 4 10;
+}
+
+.invoice-review-line {
+    -fx-spacing: 8;
+    -fx-padding: 10 12;
+    -fx-background-color: rgb(249, 250, 251);
+    -fx-background-radius: 8;
+    -fx-alignment: center-left;
+}
+
+.invoice-review-line-name {
+    -fx-font-weight: bold;
+    -fx-text-fill: rgb(31, 41, 55);
+}
+
+.invoice-review-line-meta {
+    -fx-font-size: 11px;
+    -fx-text-fill: rgb(107, 114, 128);
+}
+
+.invoice-review-json {
+    -fx-font-family: "Consolas", "Cascadia Code", monospace;
+    -fx-font-size: 11px;
+    -fx-control-inner-background: rgb(249, 250, 251);
+    -fx-background-radius: 8;
+}
+
+.invoice-review-titled-pane > *.title {
+    -fx-background-color: rgb(254, 243, 199);
+    -fx-background-radius: 8;
+}
+
+.invoice-review-titled-pane {
+    -fx-text-fill: rgb(120, 53, 15);
+}

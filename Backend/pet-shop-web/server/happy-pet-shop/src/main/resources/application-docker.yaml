@@ -1,0 +1,12 @@
+recommendation:
+  service:
+    url: ${RECOMMENDATION_SERVICE_URL:http://localhost:8000}
+
+moderation:
+  base-url: ${MODERATION_SERVICE_URL:http://localhost:8888}
+
+toxic:
+  base-url: ${TOXIC_SERVICE_URL:http://localhost:8000}
+
+sentiment:
+  base-url: ${SENTIMENT_SERVICE_URL:http://localhost:5000}
