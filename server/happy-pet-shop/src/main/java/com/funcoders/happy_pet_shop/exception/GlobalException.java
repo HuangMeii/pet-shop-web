@@ -53,17 +53,15 @@ public class GlobalException {
                 .getFieldError()
                 .getDefaultMessage();
 
-        ErrorType errorType;
-        try {
-            errorType = ErrorType.valueOf(message);
-        } catch (Exception e) {
-            errorType = ErrorType.UNCATEGORIZED;
-        }
-
-        ApiResponse apiResponse = new ApiResponse(errorType);
+        ApiResponse apiResponse = ApiResponse.builder()
+                .success(false)
+                .message(message)
+                .errorCode(4000)
+                .status(400)
+                .build();
 
         return ResponseEntity
-                .status(errorType.getHttpStatus())
+                .badRequest()
                 .body(apiResponse);
     }
 }
