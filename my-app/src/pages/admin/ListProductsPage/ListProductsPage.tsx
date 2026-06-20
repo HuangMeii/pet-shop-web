@@ -33,12 +33,10 @@ function ProductGridCard({
                            product,
                            categoryName,
                            onEdit,
-                           onDelete,
                          }: {
   product: ProductResponse;
   categoryName: string;
   onEdit: (p: ProductResponse) => void;
-  onDelete: (p: ProductResponse) => void;
 }) {
   const [imgFailed, setImgFailed] = useState(false);
   const emoji = "📦";
@@ -94,9 +92,6 @@ function ProductGridCard({
               <button type="button" onClick={() => onEdit(product)}
                       className="p-2 hover:bg-slate-100 rounded-lg transition-all" title="Edit">✏️
               </button>
-              <button type="button" onClick={() => onDelete(product)}
-                      className="p-2 hover:bg-rose-50 rounded-lg transition-all" title="Delete">🗑️
-              </button>
             </div>
           </div>
         </div>
@@ -108,12 +103,10 @@ function ProductListRow({
                           product,
                           categoryName,
                           onEdit,
-                          onDelete,
                         }: {
   product: ProductResponse;
   categoryName: string;
   onEdit: (p: ProductResponse) => void;
-  onDelete: (p: ProductResponse) => void;
 }) {
   const emoji = "📦";
   const q = product.quantity ?? 0;
@@ -157,9 +150,6 @@ function ProductListRow({
             <button type="button" onClick={() => onEdit(product)}
                     className="p-2 hover:bg-slate-100 rounded-lg transition-all" title="Edit">✏️
             </button>
-            <button type="button" onClick={() => onDelete(product)}
-                    className="p-2 hover:bg-rose-50 rounded-lg transition-all" title="Delete">🗑️
-            </button>
           </div>
         </div>
       </div>
@@ -192,7 +182,6 @@ export default function ListProductsPage() {
     openAddModal,
     openEditModal,
     closeProductModal,
-    openDeleteModal,
     closeDeleteModal,
     handleCreateOrUpdateProduct,
     handleDeleteProduct,
@@ -596,7 +585,6 @@ export default function ListProductsPage() {
                             product={p}
                             categoryName={getCategoryName(p)}
                             onEdit={openEditModal}
-                            onDelete={openDeleteModal}
                         />
                     ))
                     : filteredProducts.map((p) => (
@@ -605,7 +593,6 @@ export default function ListProductsPage() {
                             product={p}
                             categoryName={getCategoryName(p)}
                             onEdit={openEditModal}
-                            onDelete={openDeleteModal}
                         />
                     ))}
               </div>
