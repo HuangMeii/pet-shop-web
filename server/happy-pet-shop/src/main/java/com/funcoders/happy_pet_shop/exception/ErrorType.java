@@ -40,6 +40,7 @@ public enum ErrorType {
     INVALID_PRODUCT_PRICE("Giá sản phẩm không hợp lệ", 3003, HttpStatus.BAD_REQUEST),
     INVALID_PRODUCT_QUANTITY("Số lượng sản phẩm không hợp lệ", 3004, HttpStatus.BAD_REQUEST),
     PRODUCT_NOT_AVAILABLE("Sản phẩm không có sẵn", 3005, HttpStatus.BAD_REQUEST),
+    PRODUCT_HAS_PURCHASES("Sản phẩm đã có giao dịch, không thể xóa", 3006, HttpStatus.BAD_REQUEST),
 
     // ===== PET =====
     PET_NOT_FOUND("Thú cưng không tồn tại", 3501, HttpStatus.NOT_FOUND),

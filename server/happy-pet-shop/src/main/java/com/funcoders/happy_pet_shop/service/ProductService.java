@@ -95,9 +95,14 @@ public class ProductService {
     @Transactional
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void deleteProduct(UUID id) {
-        if (!productRepository.existsById(id)) {
-            throw new AppException(ErrorType.NOT_FOUND);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorType.NOT_FOUND));
+
+        long purchaseCount = purchaseDetailRepository.countByProductId(id);
+        if (purchaseCount > 0) {
+            throw new AppException(ErrorType.PRODUCT_HAS_PURCHASES);
         }
-        productRepository.deleteById(id);
+
+        productRepository.delete(product);
     }
 }
