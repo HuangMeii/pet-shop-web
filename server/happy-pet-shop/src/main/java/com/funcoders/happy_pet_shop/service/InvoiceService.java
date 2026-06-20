@@ -1,6 +1,7 @@
 package com.funcoders.happy_pet_shop.service;
 
 import com.funcoders.happy_pet_shop.constant.DiscountType;
+import com.funcoders.happy_pet_shop.constant.PaymentMethod;
 import com.funcoders.happy_pet_shop.constant.PaymentStatus;
 import com.funcoders.happy_pet_shop.dto.request.*;
 import com.funcoders.happy_pet_shop.dto.response.InvoiceResponse;
@@ -346,12 +347,39 @@ public class InvoiceService {
     @Transactional()
     @PreAuthorize("hasRole('ADMIN')")
     public InvoiceResponse updateInvoiceStatus(UUID id, InvoiceStatusUpdateRequest request) {
-        PaymentStatus paymentStatus = request.getPaymentStatus();
+        PaymentStatus newStatus = request.getPaymentStatus();
 
         Invoice managedInvoice = invoiceRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorType.INVOICE_NOT_FOUND));
 
-        managedInvoice.setStatus(paymentStatus);
+        PaymentStatus currentStatus = managedInvoice.getStatus();
+
+        // Validate status transitions
+        boolean isCOD = PaymentMethod.COD == managedInvoice.getPaymentMethod();
+
+        boolean isValidTransition = switch (currentStatus) {
+            case PENDING -> {
+                if (isCOD) {
+                    // COD: skip PAID, go directly to SHIPPING
+                    yield newStatus == PaymentStatus.SHIPPING
+                            || newStatus == PaymentStatus.CANCELLED;
+                }
+                // Online payment: confirm payment first
+                yield newStatus == PaymentStatus.PAID
+                        || newStatus == PaymentStatus.CANCELLED;
+            }
+            case PAID -> newStatus == PaymentStatus.SHIPPING
+                    || newStatus == PaymentStatus.CANCELLED;
+            case SHIPPING -> newStatus == PaymentStatus.COMPLETED
+                    || newStatus == PaymentStatus.CANCELLED;
+            default -> false;
+        };
+
+        if (!isValidTransition) {
+            throw new AppException(ErrorType.INVALID_STATUS_TRANSITION);
+        }
+
+        managedInvoice.setStatus(newStatus);
 
         return invoiceMapper.toResponse(invoiceRepository.save(managedInvoice));
     }

@@ -164,6 +164,9 @@ export default function ReviewSection({ productId }: ReviewSectionProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Show all reviews state
+  const [showAllReviews, setShowAllReviews] = useState(false);
+
   // Form state
   const [showForm, setShowForm] = useState(false);
   const [newRating, setNewRating] = useState(5);
@@ -438,9 +441,9 @@ export default function ReviewSection({ productId }: ReviewSectionProps) {
           {reviews.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-800 border-b border-gray-200 pb-2">
-                Tất cả đánh giá ({reviews.length})
+                {showAllReviews ? "Tất cả đánh giá" : "Đánh giá"} ({reviews.length})
               </h3>
-              {reviews.map((review) => (
+              {(showAllReviews ? reviews : reviews.slice(0, 3)).map((review) => (
                 <div key={review.id} className="border border-gray-100 rounded-lg p-4 hover:shadow-sm transition">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -463,6 +466,18 @@ export default function ReviewSection({ productId }: ReviewSectionProps) {
                   )}
                 </div>
               ))}
+              {/* Xem thêm / Thu gọn button */}
+              {reviews.length > 3 && (
+                <div className="text-center pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAllReviews(!showAllReviews)}
+                    className="px-6 py-2.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition font-medium text-sm"
+                  >
+                    {showAllReviews ? "Thu gọn" : `Xem tất cả ${reviews.length} đánh giá`}
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </>

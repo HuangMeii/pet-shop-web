@@ -4,6 +4,7 @@ import { useAuth } from "../../../../context/authContext";
 import { getReviewsByCustomerId } from "../../../../services/reviewService";
 import { getInvoicesByCustomerId } from "../../../../services/invoiceService";
 import type { ProductReviewResponse } from "../../../../types/reviewTypes";
+import type { InvoiceResponse } from "../../../../types/invoiceTypes";
 
 interface UnreviewedProduct {
   productId: string;
@@ -33,11 +34,21 @@ export default function ReviewTab() {
         setLoading(true);
         setError(null);
 
-        // Fetch reviews and invoices in parallel
-        const [reviewData, invoices] = await Promise.all([
-          getReviewsByCustomerId(user.id),
-          getInvoicesByCustomerId(user.id),
-        ]);
+        // Fetch reviews and invoices separately to avoid one failure breaking the other
+        let reviewData: ProductReviewResponse[] = [];
+        let invoices: InvoiceResponse[] = [];
+
+        try {
+          reviewData = await getReviewsByCustomerId(user.id);
+        } catch (err) {
+          console.warn("Failed to fetch reviews:", err);
+        }
+
+        try {
+          invoices = await getInvoicesByCustomerId(user.id);
+        } catch (err) {
+          console.warn("Failed to fetch invoices:", err);
+        }
 
         setReviews(reviewData);
 

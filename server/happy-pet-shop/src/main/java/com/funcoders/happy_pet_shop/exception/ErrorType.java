@@ -79,6 +79,7 @@ public enum ErrorType {
     INVALID_INVOICE_STATUS("Trạng thái hóa đơn không hợp lệ", 6002, HttpStatus.BAD_REQUEST),
     INVOICE_ALREADY_PAID("Hóa đơn đã được thanh toán", 6003, HttpStatus.BAD_REQUEST),
     INVALID_INVOICE_DETAIL("Chi tiết hóa đơn không hợp lệ", 6004, HttpStatus.BAD_REQUEST),
+    INVALID_STATUS_TRANSITION("Không thể chuyển trạng thái đơn hàng", 6005, HttpStatus.BAD_REQUEST),
 
     // ===== PURCHASE =====
     PURCHASE_NOT_FOUND("Phiếu nhập không tồn tại", 7001, HttpStatus.NOT_FOUND),
