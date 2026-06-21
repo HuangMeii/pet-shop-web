@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Entity
@@ -68,7 +69,7 @@ public class Pet {
 
     @PrePersist
     void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         this.createdAt = now;
         this.updatedAt = now;
 
@@ -78,7 +79,7 @@ public class Pet {
 
     @PreUpdate
     void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public void markAsSold() {

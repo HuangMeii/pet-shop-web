@@ -35,8 +35,15 @@ public class PetController {
     }
 
     @GetMapping
-    public ApiResponse<List<PetResponse>> getAllPets() {
-        List<PetResponse> responseList = petService.getAllPets();
+    public ApiResponse<List<PetResponse>> getAllPets(
+            @RequestParam(required = false) String species
+    ) {
+        List<PetResponse> responseList;
+        if (species != null && !species.isBlank()) {
+            responseList = petService.getPetsBySpecies(species);
+        } else {
+            responseList = petService.getAllPets();
+        }
         return new ApiResponse<>(responseList, "Get all pets successfully");
     }
 

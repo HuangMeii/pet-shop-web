@@ -95,7 +95,11 @@ public enum ErrorType {
     PROMOTION_USAGE_LIMIT_REACHED("Khuyến mãi đã đạt giới hạn sử dụng", 8006, HttpStatus.BAD_REQUEST),
     PROMOTION_NOT_APPLICABLE("Khuyến mãi không áp dụng cho đơn hàng này", 8007, HttpStatus.BAD_REQUEST),
     INVALID_PROMOTION_VALUE("Giá trị khuyến mãi không hợp lệ", 8008, HttpStatus.BAD_REQUEST),
-    INVALID_PROMOTION_DATE("Thời gian khuyến mãi không hợp lệ", 8009, HttpStatus.BAD_REQUEST);
+    INVALID_PROMOTION_DATE("Thời gian khuyến mãi không hợp lệ", 8009, HttpStatus.BAD_REQUEST),
+
+    // ===== WISHLIST =====
+    ALREADY_EXISTS("Đã tồn tại", 9001, HttpStatus.BAD_REQUEST),
+    WISHLIST_NOT_FOUND("Danh sách yêu thích không tồn tại", 9002, HttpStatus.NOT_FOUND);
 
     private final String message;
     private final int errorCode;

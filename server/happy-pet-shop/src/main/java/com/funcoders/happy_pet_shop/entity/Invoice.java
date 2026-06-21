@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -79,7 +80,7 @@ public class Invoice {
     // ===== LIFECYCLE =====
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now(ZoneOffset.UTC);
         this.status = PaymentStatus.PENDING;
 
         if (realAmount == null || realAmount.compareTo(BigDecimal.ZERO) == 0) {

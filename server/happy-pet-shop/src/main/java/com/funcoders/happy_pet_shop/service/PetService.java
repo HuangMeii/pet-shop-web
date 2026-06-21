@@ -55,6 +55,13 @@ public class PetService {
                 .collect(Collectors.toList());
     }
 
+    public List<PetResponse> getPetsBySpecies(String species) {
+        return petRepository.findBySpeciesIgnoreCase(species)
+                .stream()
+                .map(petMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
     public List<PetResponse> getAllPetsPaginated(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
